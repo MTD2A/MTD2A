@@ -25,28 +25,9 @@ delay (10);
 }
 ```
 
-### DANSK eksempel
-```
-MTD2A_binary_input FC_51_left ("FC-51 left", 5000, lastTrigger, timeDelay);
-// "FC-51 left" = Sensor (object) navn, som vises sammen med tilstandsbeskeder.
-// 5000 = Tidsforsinkelse i milliseskunder (5 sekunder).
-// lastTrigger = Tidspunkt for start på tidstagning. Her sidste impuls i tidsperioden (LOW->HIGH) 
-// timeDelay = Benyt tidsforsinkelse (timer funktion)
+## Detailed danish documentation
+https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A%20binary%20input.pdf
 
-void setup () {
-  Serial.begin (250000);  // Nødvendigt og først, hvis der skal vises tilstandsbeskeder.
-  FC_51_left.init_setup (DigitalPin_2); 
-  // DigitalPin_2 = Arduino board ben nummer.
-  FC_51_left.set_debugPrint (on); 
-  // on = Vis tilstandsbeskeder.
-}
-
-void loop () {
-  FC_51_left.loop_fast();
-  // Opdatere klasseobjektet. Typisk 10 millisekunder
-  delay (10);
-}
-```
 ## Chronological logic overview
 
 ![](/image/monostable_timing_and_delay.png)
