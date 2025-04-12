@@ -24,7 +24,7 @@ delay (10);
 }
 ```
 
-### DANSK Eksempel
+### DANSK eksempel
 ```
 MTD2A_binary_input FC_51_left ("FC-51 left", 5000, lastTrigger, timeDelay);
 // "FC-51 left" = Sensor (object) navn, som vises sammen med tilstandsbeskeder.
