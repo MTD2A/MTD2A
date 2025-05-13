@@ -1,5 +1,3 @@
-Version 1.1
-
 ### Classes
 MTD2A.h
 
