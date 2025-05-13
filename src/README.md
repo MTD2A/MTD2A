@@ -2,7 +2,7 @@
 MTD2A.h
 
 ### Functions
-MTD2A.cpp
+MTD2A.cpp (base class functions)
 
 MTD2A_binary_input.cpp
 
