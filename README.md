@@ -1,6 +1,3 @@
 # MTD2A
-Advanced train control logic functions that is simple to use
-
-### Test software
-
+Source code 
 ### Work in proggress
