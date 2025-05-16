@@ -6,7 +6,7 @@
  * Non blocking, simple, yet efficient event-driven state machine
 
 
-## MTD2A_binary_input 
+### MTD2A_binary_input 
 object_name ( "Object Name", delayTimeMS, {firstTrigger | lastTrigger}, {timeDelay | monoStable}, pinBlockTimeMS );
 
 ### Detailed danish documentation
