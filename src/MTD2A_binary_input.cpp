@@ -4,11 +4,11 @@
  * @author  Joergen Bo Madsen
  * @version V1.1
  * @date    12. maj 2025
- * @brief   functions for MTD2A.h (Mobile Train Detection And Action)
+ * @brief   functions for MTD2A_binary_input.h (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
  * Simple to use to build complex solutions 
- * Non blocking simple yet efficient state machine
+ * Non blocking, simple, yet efficient event-driven state machine
  *
  ******************************************************************************
  * @attention
@@ -30,7 +30,8 @@
 
 
 #include "Arduino.h"
-#include "MTD2A.h"
+#include "MTD2A_base.h"
+#include "MTD2A_binary_input.h"
 
 
 // Constructor
@@ -60,7 +61,7 @@ void MTD2A_binary_input::initialize (const uint8_t &setPinNumber, const bool &se
   if (errorNumber == 0) {
     pinRead = enable;
     pinNumber = setPinNumber;
-    if (setPinPullupOrInput != 1  & setPinPullupOrInput != 2) {
+    if (setPinPullupOrInput != 0  &  setPinPullupOrInput != 2) {
       errorNumber = 8; MTD2A_print_error_text (errorNumber);
     }
     pinMode(pinNumber, pinType);
@@ -85,7 +86,7 @@ void MTD2A_binary_input::set_pinRead (const bool &setPinEnableOrDisable, const b
 
 
 void MTD2A_binary_input::set_pinInput (const bool &setPinNomalOrInverted, const bool &LoopFastOnce) {
-  if (pinNumber = !255) {
+  if (pinNumber != 255) {
     pinInput = setPinNomalOrInverted;
     if (LoopFastOnce == enable)
       loop_fast();

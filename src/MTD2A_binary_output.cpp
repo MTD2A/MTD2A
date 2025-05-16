@@ -4,11 +4,11 @@
  * @author  Joergen Bo Madsen
  * @version V1.1
  * @date    12. maj 2025
- * @brief   functions for MTD2A.h (Mobile Train Detection And Action)
+ * @brief   functions for MTD2A_binary_output.h (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
  * Simple to use to build complex solutions 
- * Non blocking simple yet efficient state machine
+ * Non blocking, simple, yet efficient event-driven state machine
  *
  ******************************************************************************
  * @attention
@@ -28,8 +28,11 @@
  ******************************************************************************
  */
 
+
 #include "Arduino.h"
-#include "MTD2A.h"
+#include "MTD2A_base.h"
+#include "MTD2A_binary_output.h"
+
 
 // Constructor
 MTD2A_binary_output::MTD2A_binary_output
