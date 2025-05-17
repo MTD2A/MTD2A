@@ -71,7 +71,7 @@ class MTD2A_binary_output: public MTD2A
     // Constructor inittializers
     /*
      * @brief Create object and set configuration parameters or use defaults
-     * @name MTD2A_binary_output object_name
+     * @name MTD2A_binary_output
      * @param ( "Object Name", outputTimeMS, beginDelayMS, endDelayMS, {binary | PWM}, pinBeginValueMS, pinEndValue );
      * @param outputTimeMS, beginDelayMS, endDelayMSd {0 - 4294967295} milliseconds. pinValue {0 - 255}
      * @return none

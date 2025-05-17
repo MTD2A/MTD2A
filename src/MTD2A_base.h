@@ -97,10 +97,10 @@ class MTD2A  // base class
     
   private:
     static bool    allDebugPrint;
-    //
+    // Internal functions
     static char   *MTD2A_set_object_name       (const char    *setObjectName);
-    static uint8_t MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const uint8_t &checkPinFlags, const bool &checkDebugPrint);
-    static void    MTD2A_print_phase_line      (const bool    &printDebugPrint, const char *printObjectName, const char *printPhaseText);
+    static uint8_t MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber,   const uint8_t &checkPinFlags, const bool &checkDebugPrint);
+    static void    MTD2A_print_phase_line      (const bool    &printDebugPrint,  const char *printObjectName, const char *printPhaseText);
     //Error and debug print
     static void    MTD2A_print_pin_error       (const uint8_t &printErrorNumber, const uint8_t &printPinNumber);
     static void    MTD2A_print_error_text      (const uint8_t &printErrorNumber);

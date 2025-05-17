@@ -46,11 +46,11 @@ MTD2A_binary_output::MTD2A_binary_output
     const uint8_t  setPinEndValue
   )
   : outputTimeMS{setOutputTimeMS},   
+    beginDelayMS{setBeginDelayMS},
+    endDelayMS{setEndDelayMS},
     pinOutputMode{setPinOutputMode}, 
     pinBeginValue{setPinBeginValue}, 
-    pinEndValue{setPinEndValue}, 
-    beginDelayMS{setBeginDelayMS},
-    endDelayMS{setEndDelayMS}   
+    pinEndValue{setPinEndValue} 
   {
     objectName = MTD2A_set_object_name(setObjectName);
     if (pinOutputMode == binary) {
@@ -290,7 +290,7 @@ void MTD2A_binary_output::print_conf () {
   Serial.print  (F("  pinBeginValue: ")); MTD2A_print_value_binary (pinOutputMode, pinBeginValue);
   Serial.print  (F("  pinEndValue  : ")); MTD2A_print_value_binary (pinOutputMode, pinEndValue);
   // pin and input setup
-  Serial.print  (F("  pinNumber    : ")); MTD2A_print_pin_number (pinNumber);
+  MTD2A_print_pin_number (pinNumber);
   Serial.print  (F("  pinWrite     : ")); MTD2A_print_enable_disable (pinWrite);
   Serial.print  (F("  startPinValue: ")); MTD2A_print_value_binary (pinOutputMode, startPinValue);
   Serial.print  (F("  setPinValue  : ")); MTD2A_print_value_binary (pinOutputMode, setPinValue);

@@ -28,7 +28,6 @@
  ******************************************************************************
  */
 
- 
 #include "Arduino.h"
 #include "MTD2A_base.h"
 
@@ -185,7 +184,7 @@ void MTD2A::MTD2A_print_debug_error (const uint8_t &printErrorNumber, const bool
 void MTD2A::MTD2A_print_pin_number (const uint8_t &printPinNumber) {
   Serial.print  (F("  pinNumber    : ")); Serial.print(printPinNumber); 
   if (printPinNumber == 255) 
-    Serial.println(F(" (NO output)")); 
+    Serial.println(F(" (NOT defined)")); 
   else 
     Serial.println();
 }

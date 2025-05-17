@@ -74,11 +74,11 @@ class MTD2A_binary_input: public MTD2A
     bool     inputGoLow    {false};        // Falling edge
     bool     inputGoHigh   {false};        // Rising edge
 
-  public: 
+  public:
     // Constructor inittializers
     /*
      * @brief Create object and set configuration parameters or use defaults
-     * @name MTD2A_binary_input object_name
+     * @name MTD2A_binary_input
      * @param ( "Object Name", delayTimeMS, {firstTrigger | lastTrigger}, {timeDelay | monoStable}, pinBlocTimeMS );
      * @param delayTimeMS & pinBlockTimeMS {0 - 4294967295} milliseconds
      * @return none
@@ -86,7 +86,7 @@ class MTD2A_binary_input: public MTD2A
     MTD2A_binary_input (
       const char    *setObjectName  = "Object name", 
       const uint32_t setDelayTimeMS = 0, 
-      const bool     setFirstOrLast = firstTrigger, 
+      const bool     setFirstOrLast = lastTrigger, 
       const bool     setTimeOrMono  = timeDelay, 
       const uint32_t setPinBlockMS  = 0 );
 
@@ -105,12 +105,6 @@ class MTD2A_binary_input: public MTD2A
     }
     bool operator<(const MTD2A_binary_input &obj) const {
       return (processState == pending && obj.processState == active);
-    }
-    bool operator+(const MTD2A_binary_input &obj) const {
-      return (phaseChange == true && phaseNumber == firstTimePhase);
-    }
-    bool operator-(const MTD2A_binary_input &obj) const {
-      return (phaseChange == true && phaseNumber == pendingPhase);
     }
     bool operator>>(const MTD2A_binary_input &obj) const {
       return (lastTimeMS > obj.lastTimeMS);
@@ -192,7 +186,7 @@ class MTD2A_binary_input: public MTD2A
      * @param ( {enable | disable} );
      * @return none
      */    
-    void set_debugPrint (const bool &setEnableOrDisable = disable, const bool &LoopFastOnce = disable);
+    void set_debugPrint (const bool &setEnableOrDisable = enable, const bool &LoopFastOnce = disable);
 
 
     // Getters -----------------------------------------------
