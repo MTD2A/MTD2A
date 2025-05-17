@@ -1,5 +1,7 @@
 # MTD2A
 
+Work in progress
+
 ### Model Train Detection And Action - Arduino library
  * Supporting a vast variety of input sensors and output devices 
  * Simple to use to build complex solutions 
@@ -34,5 +36,16 @@ void loop() {
   delay (10);
 } 
 ```
+# Installation til Arduino IDE
 
-### Work in proggress
+Download hele MTD2A repostitory som ZIP-fil
+
+![](/image/MTD2A-download.png)
+
+Pak ZIP-filen ud og omdøb katalognavnet til MTD2A
+
+Flyt det hele til Ardunios hjeemkatalog under libraries: **Arduino/libraries/MTD2A**
+
+Eksemplerne kan ny vælges fra listen over eksempler i Arduino IDE **Examples**
+
+![](/image/Arduino-examples.png)
