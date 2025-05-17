@@ -1,10 +1,10 @@
 # Arduino examples
 
 ### example_blink_LED.ino
-Blinking LED with 0,5 second interval
+Two blinking LEDs. One with symmetric interval and another with asymetric interval.
 
 ### example_train_direction.ino
-Determining the direction of travel of the train
+Determining the direction of travel of the train (left og right)
 
 ### eksample_stoplight_sound.ino
 Stop light and sound message: The train brakes and temporarily stops at a red light.
