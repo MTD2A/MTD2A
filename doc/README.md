@@ -7,15 +7,17 @@
 
 
 ### MTD2A_binary_input 
+```
 object_name ( "Object Name", delayTimeMS, {firstTrigger | lastTrigger}, {timeDelay | monoStable}, pinBlockTimeMS );
+```
 
 ### Detailed danish documentation
-https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A%20binary%20input.pdf
-
-### Chronological logic overview
-
-![](/image/monostable_timing_and_delay.png)
+[MTD2A_binary_input.pdf](https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_input.pdf)
 
 
-# MTD2A_binary_output
-object_name ( "Object name", outputTimeMS, beginDelayMS, endDelayMS, pinOutputMode, pinBeginValue, pinEndValue );
+### MTD2A_binary_output
+```
+object_name ( "Object name", outputTimeMS, beginDelayMS, endDelayMS, {binary | PWM}, pinBeginValue, pinEndValue );
+```
+### Detailed danish documentation
+[MTD2A_binary_output.pdf](https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_output.pdf)
