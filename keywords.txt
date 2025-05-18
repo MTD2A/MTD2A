@@ -1,0 +1,91 @@
+#######################################
+# Syntax Coloring Map For VL53L4CD
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+set_allDebugPrint	KEYWORD2
+
+MTD2A_binary_input	KEYWORD2
+MTD2A_binary_output	KEYWORD2
+initialize	KEYWORD2
+activate	KEYWORD2
+reset	KEYWORD2
+loop_fast	KEYWORD2
+print_conf	KEYWORD2
+
+set_pinRead	KEYWORD2
+set_pinInput	KEYWORD2
+set_InputState	KEYWORD2
+set_debugPrint	KEYWORD2
+
+get_processtState	KEYWORD2
+get_phaseChange	KEYWORD2
+get_phaseNumber	KEYWORD2
+get_reset_error	KEYWORD2
+
+get_pinState	KEYWORD2
+get_firstTimeMS	KEYWORD2
+get_lastTimeMS	KEYWORD2
+get_endTimeMS	KEYWORD2
+get_inputGoLow	KEYWORD2
+get_inputGoHigh	KEYWORD2
+
+set_pinWrite	KEYWORD2
+set_setPinValue	KEYWORD2
+get_pinWrite	KEYWORD2
+get_setBeginMS	KEYWORD2
+get_setOutputMS	KEYWORD2
+get_setEndMS	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+enable	LITERAL1
+Enable	LITERAL1
+disable	LITERAL1
+Disable	LITERAL1
+active	LITERAL1
+Active	LITERAL1
+pending	LITERAL1
+Pending	LITERAL1
+complete	LITERAL1
+Complete	LITERAL1
+firstTrigger	LITERAL1
+FirstTrigger	LITERAL1
+LastTrigger	LITERAL1
+lastTrigger	LITERAL1
+timeDelay	LITERAL1
+TimeDelay	LITERAL1
+monoStable	LITERAL1
+MonoStable	LITERAL1
+normal	LITERAL1
+Normal	LITERAL1
+inverted	LITERAL1
+Inverted	LITERAL1
+pulse	LITERAL1
+Pulse	LITERAL1 
+fixed	LITERAL1
+Fixed	LITERAL1
+binary	LITERAL1
+Binary	LITERAL1
+pwm	LITERAL1
+PWM	LITERAL1
+
+resetPhase	LITERAL1
+firstTimePhase	LITERAL1
+lastTimePhase	LITERAL1
+blockingPhase	LITERAL1
+pendingPhase	LITERAL1
+beginPhase	LITERAL1
+outputPhase	LITERAL1
+endPhase	LITERAL1
+completePhase	LITERAL1
+
