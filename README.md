@@ -36,16 +36,22 @@ void loop() {
   delay (10);
 } 
 ```
+### documentation
+
+[https://github.com/MTD2A/MTD2A/tree/main/doc](https://github.com/MTD2A/MTD2A/blob/main/doc/README.md)
+
+<br/>
+
 # Installation til Arduino IDE
 
 Download hele MTD2A repostitory som ZIP-fil
 
 ![](/image/MTD2A-download.png)
 
-Pak ZIP-filen ud og omdøb katalognavnet til MTD2A
+Unzip the ZIP file and rename the directory name to MTD2A
 
-Flyt det hele til Ardunios hjeemkatalog under libraries: **Arduino/libraries/MTD2A**
+Move everything to the Arduino home directory under libraries: **Arduino/libraries/MTD2A**
 
-Eksemplerne kan ny vælges fra listen over eksempler i Arduino IDE **Examples**
+The examples can now be selected from the list of examples in the Arduino IDE **Examples**
 
 ![](/image/Arduino-examples.png)
