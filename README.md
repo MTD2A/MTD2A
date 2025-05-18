@@ -44,11 +44,11 @@ void loop() {
 
 # Installation til Arduino IDE
 
-Download hele MTD2A repostitory som ZIP-fil
+Download the entire MTD2A repository as a ZIP file.
 
 ![](/image/MTD2A-download.png)
 
-Unzip the ZIP file and rename the directory name to MTD2A
+Unzip the ZIP file and rename the directory name to MTD2A.
 
 Move everything to the Arduino home directory under libraries: **Arduino/libraries/MTD2A**
 
