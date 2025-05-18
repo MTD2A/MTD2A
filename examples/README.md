@@ -3,6 +3,9 @@
 ### example_blink_LED.ino
 Two blinking LEDs. One with symmetric interval and another with asymetric interval.
 
+### example_read_sensor.ino
+Read sensor and write phase state to Arduino IDE serial monitor
+
 ### example_train_direction.ino
 Determining the direction of travel of the train (left og right)
 
