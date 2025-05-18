@@ -11,7 +11,7 @@ MTD2A_binary_output train_sound ("Sound", 500, 2000);  // Wait 2 seconds and act
 bool trainSoundState = false;
 
 void setup() {
-  Serial.begin(250000);
+  Serial.begin(9600);
   MTD2A::set_allDebugPrint(enable); // Enable debug print for all instantiated classes
   FC_51_stop.initialize   (2);  // input pin 2
   train_sound.initialize  (9);  // Output pin 9 Danish and English speech from https://ttsmaker.com/

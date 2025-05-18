@@ -10,7 +10,7 @@ MTD2A_binary_output red_LED_left    ("Red LED left",    3000);  // 3 seconds
 MTD2A_binary_output green_LED_right ("Green LED right", 3000);  // 3 seconds
 
 void setup() {
-  Serial.begin(250000);
+  Serial.begin(9600);
   MTD2A::set_allDebugPrint   (enable); // Enable debug print for all instantiated classes
   FC_51_left.initialize      (2);  // input pin 2
   FC_51_right.initialize     (3);  // input pin 3

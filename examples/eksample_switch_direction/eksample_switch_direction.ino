@@ -19,7 +19,7 @@ MTD2A_binary_output motor_right    ("Right switch motor", 500);  // 0,5 seconds
 bool trackShiftState = false;
 
 void setup() {
-  Serial.begin(250000);
+  Serial.begin(9600);
   MTD2A::set_allDebugPrint  (enable); // Enable debug print for all instantiated classes
   FC_51_left.initialize     (2);   // Sensor detection moving train left
   FC_51_right.initialize    (3);   // Sensor detection moving train right
