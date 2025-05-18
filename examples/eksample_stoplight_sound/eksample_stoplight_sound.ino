@@ -1,6 +1,6 @@
-// eksample_stoplight_sound.ino  ------------------------------------------------------------------------------- 
 
 // Stop light and sound message: The train brakes and temporarily stops at a red light.
+// Jørgen Bo Madsen / may 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 

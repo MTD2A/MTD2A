@@ -1,6 +1,6 @@
-// example_blink_LED.ino ----------------------------------------------------------------------------- 
 
-// Two blinking LEDs. One with symmetric interval and another with asymetric interval.
+// Read sensor and write phase state information to Arduino IDE serial monitor
+// Jørgen Bo Madsen / may 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 

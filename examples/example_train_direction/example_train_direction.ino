@@ -1,6 +1,6 @@
-// example_train_direction.ino ----------------------------------------------------------------------------- 
 
 // Determining the direction of travel of the train
+// Jørgen Bo Madsen / may 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 

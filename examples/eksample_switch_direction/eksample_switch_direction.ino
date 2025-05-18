@@ -1,8 +1,7 @@
 
-// eksample_switch_direction.ino ------------------------------------------------------------------------ 
-
 // Automatic switch to the direction the train is coming from (to avoid derailment if the switch direction is wrong)
 // Standard LGB switch (turnout) with position switches for feedback is used
+// Jørgen Bo Madsen / may 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 
