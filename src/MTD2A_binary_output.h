@@ -3,7 +3,7 @@
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
  * @version V1.1
- * @date    12. maj 2025
+ * @date    18. maj 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -226,6 +226,33 @@ class MTD2A_binary_output: public MTD2A
      */  
     uint8_t const &get_phaseNumber () const;
   
+
+    /*
+     * @brief Get begin start time
+     * @name object_name.get_setBeginMS ();
+     * @param none
+     * @return uint32_t Milliseconds 
+     */
+    uint32_t const &get_setBeginMS () const;
+
+
+    /*
+     * @brief Get output start time
+     * @name object_name.get_setOutputMS ();
+     * @param none
+     * @return uint32_t Milliseconds
+     */
+    uint32_t const &get_setOutputMS () const;
+
+
+    /*
+     * @brief  Get end start time 
+     * @name object_name.get_setEndMS ();
+     * @param none
+     * @return uint32_t Milliseconds
+     */
+    uint32_t const &get_setEndMS () const;
+
 
     /*
      * @brief  Get and clear error number 

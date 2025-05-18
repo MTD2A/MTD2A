@@ -3,7 +3,7 @@
  * @file    MTD2A_binary_output.cpp
  * @author  Joergen Bo Madsen
  * @version V1.1
- * @date    12. maj 2025
+ * @date    18. maj 2025
  * @brief   functions for MTD2A_binary_output.h (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -166,6 +166,22 @@ bool const &MTD2A_binary_output::get_phaseChange () const {
 uint8_t const &MTD2A_binary_output::get_phaseNumber () const {
   return phaseNumber;
 }
+
+
+uint32_t const &MTD2A_binary_output::get_setBeginMS () const {
+  return setBeginMS;
+}
+
+
+uint32_t const &MTD2A_binary_output::get_setOutputMS () const {
+  return setOutputMS;
+}
+
+
+uint32_t const &MTD2A_binary_output::get_setEndMS () const {
+  return setEndMS;
+}
+
 
 
 uint8_t const &MTD2A_binary_output::get_reset_error () {
