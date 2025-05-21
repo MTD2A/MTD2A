@@ -2,13 +2,14 @@
  ******************************************************************************
  * @file    MTD2A_binary_input.h
  * @author  Joergen Bo Madsen
- * @version V1.1
- * @date    12. maj 2025
+ * @version V1.1.1
+ * @date    21. maj 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
  * Simple to use to build complex solutions 
  * Non blocking, simple, yet efficient event-driven state machine
+ * Comprehensive control, state and debug information
  *
  ******************************************************************************
  * @attention
@@ -32,8 +33,6 @@
 #ifndef _MTD2A_binary_input_H_
 #define _MTD2A_binary_input_H_
 
-
-const uint8_t firstTimePhase {1}, lastTimePhase {2}, blockingPhase {3},  pendingPhase {4};
 
 class MTD2A_binary_input: public MTD2A
 {

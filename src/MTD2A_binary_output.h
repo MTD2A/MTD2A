@@ -2,13 +2,14 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
- * @version V1.1
- * @date    18. maj 2025
+ * @version V1.1.1
+ * @date    21. maj 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
  * Simple to use to build complex solutions 
  * Non blocking, simple, yet efficient event-driven state machine
+ * Comprehensive control, state and debug information
  *
  ******************************************************************************
  * @attention
@@ -32,8 +33,6 @@
 #ifndef _MTD2A_binary_output_H_
 #define _MTD2A_binary_output_H_
 
-
-const uint8_t beginPhase {1}, outputPhase {2}, endPhase {3}, completePhase {4};
 
 class MTD2A_binary_output: public MTD2A
 {
@@ -100,11 +99,11 @@ class MTD2A_binary_output: public MTD2A
     bool operator<(const MTD2A_binary_output &obj) const {
       return (processState == pending && obj.processState == active);
     }
-    bool operator+(const MTD2A_binary_output &obj) const {
-      return (phaseChange == true && phaseNumber == completePhase);
+    bool operator>>(const MTD2A_binary_output &obj) const {
+      return (setOutputMS > obj.setOutputMS);
     }
-    bool operator-(const MTD2A_binary_output &obj) const {
-      return (phaseChange == true && phaseNumber == completePhase);
+    bool operator<<(const MTD2A_binary_output &obj) const {
+      return (setOutputMS < obj.setOutputMS);
     }
 
   public: // Functions
@@ -264,6 +263,7 @@ class MTD2A_binary_output: public MTD2A
 
 
   private: // Functions
+    void set_pin_value       (const uint8_t &setPinValue);
     void loop_fast_begin     ();
     void loop_fast_out_begin ();
     void loop_fast_out_end   ();

@@ -1,14 +1,15 @@
 /*
  ******************************************************************************
- * @file    MTD2A.cpp
+ * @file    MTD2A_base.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1
- * @date    12. maj 2025
+ * @version V1.1.2
+ * @date    21. maj 2025
  * @brief   functions for MTD2A_base.h base class (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
  * Simple to use to build complex solutions 
  * Non blocking, simple, yet efficient event-driven state machine
+ * Comprehensive control, state and debug information
  *
  ******************************************************************************
  * @attention
@@ -41,7 +42,7 @@ bool MTD2A::allDebugPrint {disable};
  * @param ( {enable | disable} );
  * @return none
  */
-void MTD2A::set_allDebugPrint (const bool &setEnableOrDisable = disable) {
+void MTD2A::set_allDebugPrint (const bool &setEnableOrDisable = enable) {
   allDebugPrint = setEnableOrDisable;
 }
 
