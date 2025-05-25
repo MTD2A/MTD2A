@@ -11,6 +11,15 @@ MTD2A_binary_output.h
 ### Functions
 MTD2A_base.cpp
 
-MTD2A_binary_input.cpp
+### To do
+class MTD2A_delay
 
-MTD2A_binary_output.cpp
+class MTD2A_astable
+
+class MTD2A_flip_flop
+
+class MTD2A_sound
+
+class MTD2A_servo
+
+class MTD2A_DCC_input
