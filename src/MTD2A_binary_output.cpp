@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.1
- * @date    21. maj 2025
+ * @version V1.1.2
+ * @date    25. maj 2025
  * @brief   functions for MTD2A_binary_output.h (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -51,13 +51,14 @@ MTD2A_binary_output::MTD2A_binary_output
     endDelayMS{setEndDelayMS},
     pinOutputMode{setPinOutputMode}, 
     pinBeginValue{setPinBeginValue}, 
-    pinEndValue{setPinEndValue} 
+    pinEndValue{setPinEndValue},
+    // Instatiated funtion pointer
+    MTD2A{[](MTD2A* funcPtr) { static_cast<MTD2A_binary_output*>(funcPtr)->loop_fast(); }}
   {
+    MTD2A_add_funtion_pointer_loop_fast(this);
     objectName = MTD2A_set_object_name(setObjectName);
-    if (pinOutputMode == binary) {
-      if (pinBeginValue > 0) pinBeginValue = 1;
-      if (pinEndValue   > 0) pinEndValue   = 1;
-    }
+    pinBeginValue = check_pin_value (pinBeginValue);
+    pinEndValue   = check_pin_value (pinEndValue);
     if ((setPinBeginValue + setPinEndValue) == 0)
       errorNumber = 140;
     if ((setOutputTimeMS + setBeginDelayMS + setEndDelayMS) == 0)
@@ -67,17 +68,13 @@ MTD2A_binary_output::MTD2A_binary_output
 
 
 void MTD2A_binary_output::initialize (const uint8_t &setPinNumber, const uint8_t &setStartPinValue) {
-  errorNumber = MTD2A_reserve_and_check_pin (setPinNumber, digitalFlag_0 + outputFlag_4, debugPrint);
+  errorNumber = MTD2A_reserve_and_check_pin (setPinNumber, digitalFlag_0 | outputFlag_4, debugPrint);
   if (errorNumber == 0) {
     pinWrite = enable;
     pinNumber = setPinNumber;
-    if (pinOutputMode == binary  &&  setStartPinValue > 0)
-      startPinValue = 1;
-    else
-      startPinValue = setStartPinValue;
-    //
+    startPinValue = check_pin_value (setStartPinValue);
     pinMode(pinNumber, OUTPUT);
-    set_pin_value (startPinValue);
+    write_pin_value (startPinValue);
   }
   else {
     pinWrite = disable;
@@ -119,12 +116,8 @@ void MTD2A_binary_output::set_pinWrite (const bool &setPinEnableOrDisable, const
 
 void MTD2A_binary_output::set_setPinValue  (const uint8_t &setSetPinValue, const bool &LoopFastOnce) {
   if (pinWrite == enable) {
-    if (pinOutputMode == binary  &&  setSetPinValue > 0)
-      setPinValue = 1;
-    else
-      setPinValue = setSetPinValue;
-    //
-    set_pin_value (setPinValue);
+    setPinValue = check_pin_value (setSetPinValue);
+    write_pin_value (setPinValue);
     if (LoopFastOnce == enable)
       loop_fast();
   }
@@ -185,14 +178,22 @@ uint8_t const &MTD2A_binary_output::get_reset_error () {
 }
 
 
-void MTD2A_binary_output::set_pin_value (const uint8_t &setPinValue) {
+uint8_t MTD2A_binary_output::check_pin_value (const uint8_t &checkPinValue) {
+    if (pinOutputMode == binary  &&  checkPinValue > 0)
+      return 1;
+    else
+      return checkPinValue;
+} // check_pin_value
+
+
+void MTD2A_binary_output::write_pin_value (const uint8_t &writePinValue) {
   if (pinWrite == enable) {
     if (pinOutputMode == binary)
-      digitalWrite(pinNumber, setPinValue);
+      digitalWrite(pinNumber, writePinValue);
     else
-      analogWrite(pinNumber, setPinValue);
+      analogWrite(pinNumber, writePinValue);
   }
-} // set_pin_value
+} // write_pin_value
 
 
 void MTD2A_binary_output::loop_fast () {
@@ -235,7 +236,7 @@ void MTD2A_binary_output::loop_fast_out_begin () {
   if (phaseChange == true) {
     phaseChange = false;
     setOutputMS = millis();
-    set_pin_value (pinBeginValue);
+    write_pin_value (pinBeginValue);
     MTD2A_print_phase_line (debugPrint, objectName, phaseText[outputPhase]);
   }
 } // loop_fast_out_begin
@@ -243,7 +244,7 @@ void MTD2A_binary_output::loop_fast_out_begin () {
 
 void MTD2A_binary_output::loop_fast_out_end () {   
   if ((millis() - setOutputMS) >= outputTimeMS) {
-    set_pin_value (pinEndValue);    
+    write_pin_value (pinEndValue);    
     phaseChange = true;    
     if (endDelayMS > 0)
       phaseNumber = endPhase;
@@ -283,7 +284,7 @@ void MTD2A_binary_output::reset () {
   errorNumber   = 0;
   phaseChange   = false;
   phaseNumber   = resetPhase; 
-  set_pin_value (startPinValue);
+  write_pin_value (startPinValue);
   MTD2A_print_phase_line (debugPrint, objectName, phaseText[resetPhase]);
 }  // reset
 

@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.h
  * @author  Joergen Bo Madsen
- * @version V1.1.2
- * @date    21. maj 2025
+ * @version V1.1.4
+ * @date    25. maj 2025
  * @brief   Abstract base Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -34,7 +34,7 @@
 #define _MTD2A_base_H_
 
 
-//Easy understanding global definitions
+//Easy understanding global definitions (no enum, constexpr or namespace)
 #define enable  true
 #define Enable  true
 #define disable false
@@ -73,9 +73,9 @@
 #define PWM    false
 
 
-enum phaseNumber {   resetPhase     = 0, 
-/* binary_input  */  beginPhase     = 1, outputPhase   = 2, endPhase      = 3, completePhase = 4,
-/* binary_output */  firstTimePhase = 1, lastTimePhase = 2, blockingPhase = 3, pendingPhase  = 4  };
+enum MTD2AphaseNumber { resetPhase     = 0, 
+  /* binary_input  */   beginPhase     = 1, outputPhase   = 2, endPhase      = 3, completePhase = 4,
+  /* binary_output */   firstTimePhase = 1, lastTimePhase = 2, blockingPhase = 3, pendingPhase  = 4  };
 
 
 class MTD2A  // base class
@@ -93,18 +93,35 @@ class MTD2A  // base class
     friend class MTD2A_servo;
     friend class MTD2A_DCC_input;
 
-    static const uint8_t digitalFlag_0 {1}, analogFlag_1 {2}, inputFlag_2 {4}, pullupFlag_3 {8}, 
-                         outputFlag_4 {16}, PWMFlag_5 {32}, toneFlag_6 {64}, interruptFlag_7 {128};
+    static const uint8_t  digitalFlag_0 {1}, analogFlag_1 {2}, inputFlag_2 {4}, pullupFlag_3 {8}, 
+                          outputFlag_4 {16}, PWMFlag_5 {32}, toneFlag_6 {64}, interruptFlag_7 {128};
 
-    static void    set_allDebugPrint           (const bool    &EnableOrDisable);
+    static const uint32_t MTD2AdelayTime {1};
+
+    static bool  allDebugPrint;
+    static void  set_allDebugPrint (const bool &EnableOrDisable);
     
   private:
-    static bool    allDebugPrint;
+    // Function pointer linket list -----------------------------------------------------------------------------------
+    static void MTD2A_add_funtion_pointer_loop_fast (MTD2A* object);
+    static MTD2A* begin;
+    static MTD2A* end;
+    MTD2A* next = nullptr;
+    using function_type = void (*)(MTD2A*);
+    function_type function_pointer = nullptr;
+   public:
+      MTD2A(const MTD2A&) = delete;
+      MTD2A& operator=(const MTD2A&) = delete;
+      MTD2A(function_type funcPtr) : function_pointer{funcPtr} {}
+      static void loop_execute();
+  // Function pointer linket list -----------------------------------------------------------------------------------
+
+  private:
     // Internal functions
     static char   *MTD2A_set_object_name       (const char    *setObjectName);
     static uint8_t MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber,   const uint8_t &checkPinFlags, const bool &checkDebugPrint);
     static void    MTD2A_print_phase_line      (const bool    &printDebugPrint,  const char *printObjectName, const char *printPhaseText);
-    //Error and debug print
+    // Error and debug print
     static void    MTD2A_print_pin_error       (const uint8_t &printErrorNumber, const uint8_t &printPinNumber);
     static void    MTD2A_print_error_text      (const uint8_t &printErrorNumber);
     static void    MTD2A_print_debug_error     (const uint8_t &printErrorNumber, const bool    &printDebugPrint);

@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_input.h
  * @author  Joergen Bo Madsen
- * @version V1.1.1
- * @date    21. maj 2025
+ * @version V1.1.2
+ * @date    25. maj 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 

@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
- * @version V1.1.1
- * @date    21. maj 2025
+ * @version V1.1.2
+ * @date    25. maj 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -114,10 +114,10 @@ class MTD2A_binary_output: public MTD2A
      * @brief If setPinNumber > NUM_DIGITAL_PINS, pin writing is disabled!
      * @brief If PWM is selected and pin does not support PWM, pin writing is disabled!
      * @name object_name.initialize 
-     * @param ( {0 - NUM_DIGITAL_PINS | 255} );
+     * @param ( {0 - NUM_DIGITAL_PINS | 255}, binary {HIGH | LOW} / PWM {0-255} );
      * @return none
      */
-    void initialize (const uint8_t &setPinNumber = 255, const uint8_t &setStartPinValue = 0);
+    void initialize (const uint8_t &setPinNumber = 255, const uint8_t &setStartPinValue = LOW);
   
 
     /*
@@ -263,12 +263,13 @@ class MTD2A_binary_output: public MTD2A
 
 
   private: // Functions
-    void set_pin_value       (const uint8_t &setPinValue);
-    void loop_fast_begin     ();
-    void loop_fast_out_begin ();
-    void loop_fast_out_end   ();
-    void loop_fast_end       ();
-    void loop_fast_complete  ();
+    uint8_t check_pin_value     (const uint8_t &checkPinValue);
+    void    write_pin_value     (const uint8_t &setPinValue);
+    void    loop_fast_begin     ();
+    void    loop_fast_out_begin ();
+    void    loop_fast_out_end   ();
+    void    loop_fast_end       ();
+    void    loop_fast_complete  ();
     
 }; // class MTD2A_binary_output 
 

@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.2
- * @date    21. maj 2025
+ * @version V1.1.3
+ * @date    25. maj 2025
  * @brief   functions for MTD2A_base.h base class (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -33,8 +33,11 @@
 #include "MTD2A_base.h"
 
 
-// MTD2A initializer
+// MTD2A initializers
 bool MTD2A::allDebugPrint {disable}; 
+// Funtion pointers linket list
+MTD2A* MTD2A::begin {nullptr};
+MTD2A* MTD2A::end   {nullptr};
 
 /*
  * @brief Enable print phase state number and phase state text for all instantiated classes
@@ -45,6 +48,27 @@ bool MTD2A::allDebugPrint {disable};
 void MTD2A::set_allDebugPrint (const bool &setEnableOrDisable = enable) {
   allDebugPrint = setEnableOrDisable;
 }
+
+
+// Function pointer linket list -----------------------------------------------------------------------------------
+void MTD2A::MTD2A_add_funtion_pointer_loop_fast (MTD2A* object) {
+  if (begin == nullptr)
+    begin = object;
+  if (end != nullptr)
+    end->next = object;
+  end = object;
+}
+
+
+void ::MTD2A::loop_execute() {
+  MTD2A* object = begin;
+  while (object != nullptr) {
+    object->function_pointer(object);
+    object = object->next;
+  }
+  delay(MTD2AdelayTime);
+}
+// Function pointer linket list -----------------------------------------------------------------------------------
 
 
 char *MTD2A::MTD2A_set_object_name (const char *setObjectName) {
@@ -77,13 +101,13 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const
   if (checkPinNumber >= NUM_DIGITAL_PINS  &&  checkPinNumber != 255) {
     if (bitRead(checkPinFlags, 0)) 
       checkErrorNumber = 2;
-    if (bitRead(checkPinFlags, 1)  && checkPinNumber < (NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS))
+    if (bitRead(checkPinFlags, 1)  &&  checkPinNumber < (NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS))
         checkErrorNumber = 3;
   } 
   else {
-    if (bitRead(pinFlags[checkPinNumber], 2)  && bitRead(checkPinFlags, 2))
+    if (bitRead(pinFlags[checkPinNumber], 2)  &&  bitRead(checkPinFlags, 2))
       checkErrorNumber = 128;
-    if (bitRead(pinFlags[checkPinNumber], 4)  && bitRead(checkPinFlags, 4))
+    if (bitRead(pinFlags[checkPinNumber], 4)  &&  bitRead(checkPinFlags, 4))
       checkErrorNumber = 4;
   }
   // Use of the tone() function will interfere with PWM output on pins 3 and 11 (not MEGA)    

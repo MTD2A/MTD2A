@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_input.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.2
- * @date    21. maj 2025
+ * @version V1.1.3
+ * @date    25. maj 2025
  * @brief   functions for MTD2A_binary_input.h (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -47,22 +47,24 @@ MTD2A_binary_input::MTD2A_binary_input
   : triggerMode{setFirstOrLast}, 
     delayTimeMS{setDelayTimeMS}, 
     timerMode{setTimeOrMono}, 
-    pinBlockMS{setPinBlockMS}
+    pinBlockMS{setPinBlockMS},
+    // Instatiated funtion pointer
+    MTD2A{[](MTD2A* funcPtr) { static_cast<MTD2A_binary_input*>(funcPtr)->loop_fast(); }}
   {
+    MTD2A_add_funtion_pointer_loop_fast(this);
     objectName = MTD2A_set_object_name(setObjectName);
-    if (delayTimeMS == 0) {
+    if (delayTimeMS == 0)
       errorNumber = 130;  // Warning
-    }
   }
 // MTD2A_binary_input
 
 
 void MTD2A_binary_input::initialize (const uint8_t &setPinNumber, const bool &setPinNomalOrInverted, const uint8_t &setPinPullupOrInput) {
-  errorNumber = MTD2A_reserve_and_check_pin (setPinNumber, digitalFlag_0 + inputFlag_2 + pullupFlag_3, debugPrint);
+  errorNumber = MTD2A_reserve_and_check_pin (setPinNumber, digitalFlag_0 | inputFlag_2 | pullupFlag_3, debugPrint);
   if (errorNumber == 0) {
     pinRead = enable;
     pinNumber = setPinNumber;
-    if (setPinPullupOrInput != 0  &  setPinPullupOrInput != 2) {
+    if (setPinPullupOrInput != 0  &&  setPinPullupOrInput != 2) {
       errorNumber = 8; MTD2A_print_error_text (errorNumber);
       pinType = INPUT_PULLUP;
     }
@@ -343,14 +345,3 @@ void MTD2A_binary_input::print_conf () {
   Serial.print  (F("  inputState   : ")); MTD2A_print_value_binary (binary, inputState);
 } // print_conf 
 
-
-
-/*
-void MTD2A_binary_input::loop_fast_ptr () {
-//    void (MTD2A_binary_input::*loop_pointer) () = &MTD2A_binary_input::loop_fast;
-//    (this->*loop_pointer) ();
-    typedef void (MTD2A_binary_input::*loop_pointer) ();
-//    loop_pointer LP =  &MTD2A_binary_input::loop_fast;
-//    (this->*LP) ();
-}
-*/
