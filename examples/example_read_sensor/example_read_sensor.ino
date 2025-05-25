@@ -1,3 +1,5 @@
+// Read sensor and write phase state information to Arduino IDE serial monitor
+// Jørgen Bo Madsen / may 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 
@@ -13,11 +15,10 @@ void setup () {
   Serial.begin (9600);  // Required and first if status messages are to be displayed
   FC_51_left.initialize (2); // Arduino board pin 2.
   FC_51_left.set_debugPrint ();  // Display status messages
+  // Every time the sensor is activated, the status will be printed on the Arduino Serial Monitor
 }
 
 void loop () {
-  // Every time the sensor is activated, the status will be printed on the Arduino Serial Monitor
-  FC_51_left.loop_fast();  // Update the state (event) system
-  delay (10);  // Update the class object. Typically 1-10 milliseconds
-}
+    MTD2A::loop_execute();  // Update the state (event) system
+} // Read sensor and write phase state information to Arduino IDE serial monitor
 

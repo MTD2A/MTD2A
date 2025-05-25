@@ -1,5 +1,4 @@
-
-// Read sensor and write phase state information to Arduino IDE serial monitor
+// Two blinking LEDs. One with symmetric interval and another with asymetric interval.
 // Jørgen Bo Madsen / may 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
@@ -10,7 +9,7 @@ MTD2A_binary_output green_LED ("Green LED", 300, 700, 0, PWM, 96);  // 0.3 sec l
 void setup() {
   Serial.begin(9600);
 
-  red_LED.initialize (9);     // Output pin 9
+  red_LED.initialize   (9);   // Output pin 9
   green_LED.initialize (10);  // Output pin 10
 
   Serial.println("Two LED blink");
@@ -20,9 +19,6 @@ void loop() {
   if (red_LED.get_processState()   == pending)   red_LED.activate();
   if (green_LED.get_processState() == pending) green_LED.activate();
 
-  red_LED.loop_fast();
-  green_LED.loop_fast();
-  
-  delay (10);
-} 
+  MTD2A::loop_execute();
+} // Two blinking LEDs. One with symmetric interval and another with asymetric interval.
 

@@ -37,9 +37,5 @@ void loop() {
       }
     }
   
-  FC_51_left.loop_fast();
-  FC_51_right.loop_fast();
-  red_LED_left.loop_fast();
-  green_LED_right.loop_fast();
-  delay (10);
+    MTD2A::loop_execute();  // Update the state (event) system
 } // Determining the direction of travel of the train

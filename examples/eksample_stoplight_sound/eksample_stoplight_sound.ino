@@ -24,7 +24,5 @@ void loop() {
       train_sound.activate();
   }
 
-  FC_51_stop.loop_fast();
-  train_sound.loop_fast();
-  delay (10);
+  MTD2A::loop_execute();  // Update the state (event) system
 } // Stop light and sound message: The train brakes and temporarily stops at a red light.

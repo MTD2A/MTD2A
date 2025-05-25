@@ -46,12 +46,5 @@ void loop() {
 
   // Track Switch to the right is identical to Track Switch on the left, just mirrored. Not shown here.
 
-  FC_51_left.loop_fast     ();
-  FC_51_right.loop_fast    ();
-  position_left.loop_fast  ();
-  position_right.loop_fast ();
-  motor_left.loop_fast     ();
-  motor_right.loop_fast    ();
-
-  delay (10);
+  MTD2A::loop_execute();  // Update the state (event) system
 } // Automatic track switch to the direction the train is coming from
