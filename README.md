@@ -6,6 +6,7 @@ Work in progress
  * Supporting a vast variety of input sensors and output devices 
  * Simple to use to build complex solutions 
  * Non blocking, simple, yet efficient event-driven state machine
+ * Comprehensive control, state and debug information
 
 ### Example
 
