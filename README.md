@@ -31,10 +31,7 @@ void loop() {
   if (red_LED.get_processState()   == pending)   red_LED.activate();
   if (green_LED.get_processState() == pending) green_LED.activate();
 
-  red_LED.loop_fast();
-  green_LED.loop_fast();
-  
-  delay (10);
+  MTD2A::loop_execute();
 } 
 ```
 ### documentation
