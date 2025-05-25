@@ -11,6 +11,7 @@
 #######################################
 
 set_allDebugPrint	KEYWORD2
+loop_execute	KEYWORD2
 
 MTD2A_binary_input	KEYWORD2
 MTD2A_binary_output	KEYWORD2
