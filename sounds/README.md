@@ -4,6 +4,6 @@
  
 ### Danish announcements
 
-### English announcement
+### English announcements
 
 ### Announcement intro sounds
