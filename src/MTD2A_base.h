@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.h
  * @author  Joergen Bo Madsen
- * @version V1.1.4
- * @date    25. maj 2025
+ * @version V1.1.5
+ * @date    30. maj 2025
  * @brief   Abstract base Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -30,53 +30,31 @@
  */
 
  
+#ifndef _MTD2A_const_H_
+#define _MTD2A_const_H_
+
+  namespace MTD2A_const {
+  // Easy understanding global definitions
+  constexpr bool ENABLE        = true, DISABLE      = false;
+  constexpr bool ACTIVE        = true, COMPLETE     = false;
+  constexpr bool FIRST_TRIGGER = true, LAST_TRIGGER = false;
+  constexpr bool TIME_DELAY    = true, MONO_STABLE  = false;
+  constexpr bool NORMAL        = true, INVERTED     = false;  
+  constexpr bool PULSE         = true, FIXED        = false;
+  constexpr bool BINARY        = true, PWM          = false;
+
+  constexpr uint8_t RESET_PHASE      = 0; 
+  constexpr uint8_t BEGIN_PHASE      = 1, OUTPUT_PHASE    = 2, END_PHASE      = 3; // binary_input 
+  constexpr uint8_t FIRST_TIME_PHASE = 1, LAST_TIME_PHASE = 2, BLOCKING_PHASE = 3; // binary_output
+  constexpr uint8_t COMPLETE_PHASE   = 4;
+} // namespace _MTD2A_const 
+
+#endif
+
+using namespace MTD2A_const;
+
 #ifndef _MTD2A_base_H_
 #define _MTD2A_base_H_
-
-
-//Easy understanding global definitions (no enum, constexpr or namespace)
-#define enable  true
-#define Enable  true
-#define disable false
-#define Disable false
-//
-#define active   true
-#define Active   true
-#define pending  false
-#define Pending  false
-#define complete false
-#define Complete false
-//
-#define firstTrigger true
-#define FirstTrigger true
-#define LastTrigger  false
-#define lastTrigger  false
-//
-#define timeDelay  true
-#define TimeDelay  true
-#define monoStable false
-#define MonoStable false
-// 
-#define normal   true
-#define Normal   true
-#define inverted false
-#define Inverted false
-//
-#define pulse  true
-#define Pulse  true 
-#define fixed  false
-#define Fixed  false
-//
-#define binary true
-#define Binary true
-#define pwm    false
-#define PWM    false
-
-
-enum MTD2AphaseNumber { resetPhase     = 0, 
-  /* binary_input  */   beginPhase     = 1, outputPhase   = 2, endPhase      = 3, completePhase = 4,
-  /* binary_output */   firstTimePhase = 1, lastTimePhase = 2, blockingPhase = 3, pendingPhase  = 4  };
-
 
 class MTD2A  // base class
 { 
@@ -93,38 +71,43 @@ class MTD2A  // base class
     friend class MTD2A_servo;
     friend class MTD2A_DCC_input;
 
-    static const uint8_t  digitalFlag_0 {1}, analogFlag_1 {2}, inputFlag_2 {4}, pullupFlag_3 {8}, 
-                          outputFlag_4 {16}, PWMFlag_5 {32}, toneFlag_6 {64}, interruptFlag_7 {128};
+    virtual ~MTD2A() = default;
+    // Global functions
+    static void  set_globalDebugPrint (const bool     &setEnableOrDisable = ENABLE);
+    static void  set_delayTimeMS      (const uint32_t &setDelayTimeMS = DELAY_TIME_MS);
 
-    static const uint32_t MTD2AdelayTime {1};
-
-    static bool  allDebugPrint;
-    static void  set_allDebugPrint (const bool &EnableOrDisable);
-    
   private:
-    // Function pointer linket list -----------------------------------------------------------------------------------
-    static void MTD2A_add_funtion_pointer_loop_fast (MTD2A* object);
+    static const uint8_t  PIN_ERR_NO    {255};
+    static const uint32_t DELAY_TIME_MS {10};
+    //
+    static uint32_t delayTimeMS;
+    static bool     globalDebugPrint;
+    //
+    static const uint8_t DIGITAL_FLAG_0 {1}, ANALOG_FLAG_1 {2}, INPUT_FLAG_2 {4}, PULLUP_FLAG_3 {8}, 
+                         OUTPUT_FLAG_4 {16}, PWM_FLAG_5 {32},   TONE_FLAG_6 {64}, INTERRUPT_FLAG_7 {128};
+
+    // Function pointer linked list -----------------------------------------------------------------------------------
+    static void MTD2A_add_function_pointer_loop_fast (MTD2A* object);
     static MTD2A* begin;
     static MTD2A* end;
     MTD2A* next = nullptr;
     using function_type = void (*)(MTD2A*);
     function_type function_pointer = nullptr;
-   public:
-      MTD2A(const MTD2A&) = delete;
-      MTD2A& operator=(const MTD2A&) = delete;
-      MTD2A(function_type funcPtr) : function_pointer{funcPtr} {}
-      static void loop_execute();
-  // Function pointer linket list -----------------------------------------------------------------------------------
+  public:
+    MTD2A(const MTD2A&) = delete;
+    MTD2A& operator=(const MTD2A&) = delete;
+    MTD2A(function_type funcPtr) : function_pointer{funcPtr} {}
+    static void loop_execute();
+  // Function pointer linked list -----------------------------------------------------------------------------------
 
   private:
     // Internal functions
     static char   *MTD2A_set_object_name       (const char    *setObjectName);
-    static uint8_t MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber,   const uint8_t &checkPinFlags, const bool &checkDebugPrint);
-    static void    MTD2A_print_phase_line      (const bool    &printDebugPrint,  const char *printObjectName, const char *printPhaseText);
+    static uint8_t MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber,   const uint8_t &checkPinFlags);
+    static void    MTD2A_print_phase_line      (const bool    &checkDebugPrint,  const char    *printObjectName,   const char *printPhaseText);
     // Error and debug print
-    static void    MTD2A_print_pin_error       (const uint8_t &printErrorNumber, const uint8_t &printPinNumber);
-    static void    MTD2A_print_error_text      (const uint8_t &printErrorNumber);
-    static void    MTD2A_print_debug_error     (const uint8_t &printErrorNumber, const bool    &printDebugPrint);
+    static void    MTD2A_print_error_text      (const bool    &checkDebugPrint,  const uint8_t &printErrorNumber,  const uint8_t &printPinNumber);
+    static void    MTD2A_print_debug_error     (const bool    &printDebugPrint,  const uint8_t &printErrorNumber);
     static void    MTD2A_print_pin_number      (const uint8_t &printPinNumber);
     static void    MTD2A_print_generic_info    (const char    *printObjectName,  const bool    &printProcessState, const char *printPhaseText);
     static void    MTD2A_print_value_binary    (const bool    &binaryOrPWM,      const uint8_t &PrintValue);

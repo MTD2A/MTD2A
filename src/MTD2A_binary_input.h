@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_input.h
  * @author  Joergen Bo Madsen
- * @version V1.1.2
- * @date    25. maj 2025
+ * @version V1.1.3
+ * @date    30. maj 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -33,43 +33,45 @@
 #ifndef _MTD2A_binary_input_H_
 #define _MTD2A_binary_input_H_
 
+using namespace MTD2A_const;
 
 class MTD2A_binary_input: public MTD2A
 {
   public:
     // Debug help text
-    const char *phaseText[5] = {"[0] Reset", "[1] First time", "[2] Last time", "[3] Pin blocking", "[4] Pending"};
+    const char *phaseText[5] = { "[0] Reset", "[1] First time", "[2] Last time", "[3] Pin blocking", "[4] Complete" };
 
   private:
     // Arguments
-    char    *objectName    {nullptr}; // Constructor initialized (User defined name to display identification)
-    uint32_t delayTimeMS   {};  // Constructor default argument (Milliseconds)
-    bool     triggerMode   {};  // Constructor default argument (firstTrigger / lastTrigger)
-    bool     timerMode     {};  // Constructor default argument (monoStable / timeDelay)
-    uint32_t pinBlockMS    {};  // Constructor default argument (Milliseconds)
+    char    *objectName    {nullptr};      // Constructor initialized (User defined name to display identification)
+    uint32_t delayTimeMS   {0};            // Constructor default argument (Milliseconds)
+    bool     triggerMode   {LAST_TRIGGER}; // Constructor default argument (FIRST_TRIGGER / LAST_TRIGGER)
+    bool     timerMode     {TIME_DELAY};   // Constructor default argument (MONO_STABLE / TIME_DELAY)
+    uint32_t pinBlockMS    {0};            // Constructor default argument (Milliseconds)
     // pin and input setup
-    uint8_t  pinNumber     {255};          // initialize () default argument
+    uint8_t  pinNumber     {PIN_ERR_NO};   // initialize () default argument
     uint8_t  pinType       {INPUT_PULLUP}; // initialize () default argument. Open collector or switch to ground (LOW)
-    bool     pinRead       {Disable};      // initialize () default argument / enable
-    bool     pinInput      {normal};       // set_PinInput () default argument / inverted
-    bool     inputMode     {pulse};        // set_InputState () default argument / Fixed
+    bool     pinRead       {DISABLE};      // initialize () default argument / ENABLE
+    bool     pinInput      {NORMAL};       // set_PinInput () default argument / INVERTED
+    bool     inputMode     {PULSE};        // set_InputState () default argument / FIXED
     // Other
-    bool     debugPrint    {disable};      // set_debugPrint () default argument / enable
+    bool     debugPrint    {DISABLE};      // set_debugPrint () default argument / ENABLE
     uint8_t  errorNumber   {0};            // get_reset_error () Error {1-127} and Warning {128-255}
     // Timers    
-    uint32_t firstTimeMS   {0};            // Milliseconds (firstTrigger)
-    uint32_t lastTimeMS    {0};            // Milliseconds (lastTrigger)
+    uint32_t firstTimeMS   {0};            // Milliseconds (FIRST_TRIGGER)
+    uint32_t lastTimeMS    {0};            // Milliseconds (LAST_TRIGGER)
     uint32_t endTimeMS     {0};            // Milliseconds (delay end time)
-    uint32_t BlockTimeMS   {0};            // Milliseconds (pin input bloscking time)
+    uint32_t blockTimeMS   {0};            // Milliseconds (pin input blocking time)
+    uint32_t currentTimeMS {0};            // Handle millis overflow
     // State control
     bool     inputState    {HIGH};         // set_inputState () / LOW (manual program trigger)
     bool     pinState      {HIGH};         // get_pinState () / LOW (trigger)
-    bool     processState  {pending};      // get_processState () / active (input trigger activated)
-    bool     pinBlockState {disable};      // End pin blocking time state
+    bool     processState  {COMPLETE};     // get_processState () / ACTIVE (input trigger activated)
+    bool     pinBlockState {DISABLE};      // End pin blocking time state
     bool     currentState  {HIGH};         // Loop timing states
     bool     lastState     {HIGH};         // Loop timing states
     bool     phaseChange   {false};        // true = change in timing state
-    uint8_t  phaseNumber   {resetPhase};   // initialize and reset= 0, active = 1, Set last time = 2, Pin block = 3, Pending = 4 
+    uint8_t  phaseNumber   {RESET_PHASE};  // initialize and reset= 0, active = 1, Set last time = 2, Pin block = 3, Complete = 4 
     bool     inputGoLow    {false};        // Falling edge
     bool     inputGoHigh   {false};        // Rising edge
 
@@ -78,20 +80,26 @@ class MTD2A_binary_input: public MTD2A
     /*
      * @brief Create object and set configuration parameters or use defaults
      * @name MTD2A_binary_input
-     * @param ( "Object Name", delayTimeMS, {firstTrigger | lastTrigger}, {timeDelay | monoStable}, pinBlocTimeMS );
-     * @param delayTimeMS & pinBlockTimeMS {0 - 4294967295} milliseconds
+     * @param ( "Object Name", delayTimeMS, {FIRST_TRIGGER | LAST_TRIGGER}, {TIME_DELAY | MONO_STABLE}, pinBlocTimeMS );
+     * @param delayTimeMS & pinblockTimeMS {0 - 4294967295} milliseconds
      * @return none
      */
     MTD2A_binary_input (
       const char    *setObjectName  = "Object name", 
       const uint32_t setDelayTimeMS = 0, 
-      const bool     setFirstOrLast = lastTrigger, 
-      const bool     setTimeOrMono  = timeDelay, 
-      const uint32_t setPinBlockMS  = 0 );
+      const bool     setFirstOrLast = LAST_TRIGGER, 
+      const bool     setTimeOrMono  = TIME_DELAY, 
+      const uint32_t setPinBlockMS  = 0
+    );
 
     // Destructor
-    ~MTD2A_binary_input() { delete [] objectName; };
- 
+    ~MTD2A_binary_input () { 
+      if (objectName != nullptr) {
+        delete [] objectName; 
+        objectName = nullptr;
+      }
+    };    
+  
     // Operator oveloading
     bool operator==(const MTD2A_binary_input &obj) const {
       return (processState == obj.processState);
@@ -100,10 +108,10 @@ class MTD2A_binary_input: public MTD2A
       return (processState != obj.processState);
     }
     bool operator>(const MTD2A_binary_input &obj) const {
-      return (processState == active && obj.processState == pending);
+      return (processState == ACTIVE && obj.processState == COMPLETE);
     }
     bool operator<(const MTD2A_binary_input &obj) const {
-      return (processState == pending && obj.processState == active);
+      return (processState == COMPLETE && obj.processState == ACTIVE);
     }
     bool operator>>(const MTD2A_binary_input &obj) const {
       return (lastTimeMS > obj.lastTimeMS);
@@ -114,12 +122,12 @@ class MTD2A_binary_input: public MTD2A
 
   public: // Functions
     /*
-     * @brief Initalize and configure input pin. If illigal pin configuration, pin reading is disabled! 
+     * @brief Initalize and configure pin number, input mode and input type. If illigal pin configuration, pin reading is disabled! 
      * @name object_name.initialize
-     * @param ( {0 - NUM_DIGITAL_PINS | 255}, {normal | inverted}, {INPUT | INPUT_PULLUP} );
+     * @param ( {0 - NUM_DIGITAL_PINS | 255}, {NORMAL | INVERTED}, {INPUT | INPUT_PULLUP} );
      * @return none
      */
-    void initialize (const uint8_t &setPinNumber = 255, const bool &setPinNomalOrInverted = normal, const uint8_t &setPinPullupOrInput = INPUT_PULLUP);
+    void initialize (const uint8_t &setPinNumber = PIN_ERR_NO, const bool &setPinNomalOrInverted = NORMAL, const uint8_t &setPinPullupOrInput = INPUT_PULLUP);
 
 
     /*
@@ -155,37 +163,37 @@ class MTD2A_binary_input: public MTD2A
     /*
      * @brief Enable or disable pin reading. Optional loop update.
      * @name object_name.set_pinRead 
-     * @param ( {enable | disable} );
+     * @param ( {ENABLE | DISABLE} );
      * @return none
      */
-    void set_pinRead (const bool &setPinEnableOrDisable = enable, const bool &LoopFastOnce = disable);
+    void set_pinRead (const bool &setPinEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
 
 
     /*
      * @brief Configure pin input trigger mode = LOW or HIGH (inverted).Optional loop update.
      * @name object_name.set_pinInput
-     * @param ( {normal | inverted} );
+     * @param ( {NORMAL | INVERTED} );
      * @return non
      */
-    void set_pinInput (const bool &setPinNomalOrInverted = normal, const bool &LoopFastOnce = disable);
+    void set_pinInput (const bool &setPinNomalOrInverted = NORMAL, const bool &LoopFastOnce = DISABLE);
 
 
     /*
      * @brief ASet input state and set input mode. Optional loop update.
      * @name object_name.set_inputState
-     * @param ( {HIGH | LOW}, {pulse | fixed} );
+     * @param ( {HIGH | LOW}, {PULSE | FIXED} );
      * @return none
      */
-    void set_inputState (const bool &setInputLowOrHigh = LOW, const bool &setPulseOrFixed = pulse, const bool &LoopFastOnce = disable);
+    void set_inputState (const bool &setInputLowOrHigh = LOW, const bool &setPulseOrFixed = PULSE, const bool &LoopFastOnce = DISABLE);
 
 
     /*
      * @brief Enable print phase state number and phase state text. Optional loop update.
      * @name object_name.set_debugPrint
-     * @param ( {enable | disable} );
+     * @param ( {ENABLE | DISABLE} );
      * @return none
      */    
-    void set_debugPrint (const bool &setEnableOrDisable = enable, const bool &LoopFastOnce = disable);
+    void set_debugPrint (const bool &setEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
 
 
     // Getters -----------------------------------------------
@@ -195,7 +203,7 @@ class MTD2A_binary_input: public MTD2A
      * @brief Get processState  
      * @name object_name.get_processState ();
      * @param none
-     * @return bool {active | pending}
+     * @return bool {ACTIVE | COMPLETE}
      */
     bool const &get_processState () const;
 
@@ -222,7 +230,7 @@ class MTD2A_binary_input: public MTD2A
      * @brief get phase number. 
      * @name object_name.get_phaseNumber ();
      * @param none
-     * @return uint8_t Initialize and reset = 0, first time = 1, last time = 2, Pin block = 3, Pending = 4
+     * @return uint8_t Initialize and reset = 0, first time = 1, last time = 2, Pin block = 3, Complete = 4
      */
     uint8_t const &get_phaseNumber () const;
 
@@ -288,7 +296,7 @@ class MTD2A_binary_input: public MTD2A
     void loop_fast_last   ();
     void begin_state      ();
     void end_state        ();
-    void pending_state    ();
+    void complete_state   ();
     void loop_fast_ptr    ();
 }; // class MTD2A_binary_input
 

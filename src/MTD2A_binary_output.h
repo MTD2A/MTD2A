@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
- * @version V1.1.2
- * @date    25. maj 2025
+ * @version V1.1.3
+ * @date    30. maj 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -33,45 +33,47 @@
 #ifndef _MTD2A_binary_output_H_
 #define _MTD2A_binary_output_H_
 
+using namespace MTD2A_const;
 
 class MTD2A_binary_output: public MTD2A
 {
   public:
     // Debug help text
-    const char *phaseText[5] = {"[0] Reset", "[1] Begin delay", "[2] Output", "[3] End delay", "[4] Complete"};
+    const char *phaseText[5] = { "[0] Reset", "[1] Begin delay", "[2] Output", "[3] End delay", "[4] Complete" };
 
   private:
     // Arguments
-    char    *objectName    {nullptr};    // Constructor default argument (User defined name to display identification)
-    uint32_t outputTimeMS  {};           // Constructor default argument (Milliseconds) 
-    uint32_t beginDelayMS  {};           // Constructor default argument (Milliseconds)  
-    uint32_t endDelayMS    {};           // Constructor default argument (Milliseconds)
-    bool     pinOutputMode {};           // Constructor default argument (binary/PWM)
-    uint8_t  pinBeginValue {};           // Constructor default argument binary {HIGH | LOW} / PWM {0-255} 
-    uint8_t  pinEndValue   {};           // Constructor default argument binary {HIGH | LOW} / PWM {0-255}
+    char    *objectName    {nullptr};     // Constructor default argument (User defined name to display identification)
+    uint32_t outputTimeMS  {0};           // Constructor default argument (Milliseconds) 
+    uint32_t beginDelayMS  {0};           // Constructor default argument (Milliseconds)  
+    uint32_t endDelayMS    {0};           // Constructor default argument (Milliseconds)
+    bool     pinOutputMode {BINARY};      // Constructor default argument (BINARY/PWM)
+    uint8_t  pinBeginValue {HIGH};        // Constructor default argument BINARY {HIGH | LOW} / PWM {0-255} 
+    uint8_t  pinEndValue   {LOW};         // Constructor default argument BINARY {HIGH | LOW} / PWM {0-255}
     // pin and input setup
-    uint8_t  pinNumber     {255};        // initialize () default argument
-    bool     pinWrite      {disable};    // initialize () MTD2A_reserve_and_check_pin ()
-    uint8_t  startPinValue {0};          // initialize () default argument binary {HIGH | LOW} / PWM {0-255}
-    uint8_t  setPinValue   {0};          // set_pinValue () default argument binary {HIGH | LOW} / PWM {0-255}
-    bool     processState  {complete};   // process state / active
+    uint8_t  pinNumber     {PIN_ERR_NO};  // initialize () default argument
+    bool     pinWrite      {DISABLE};     // initialize () MTD2A_reserve_and_check_pin ()
+    uint8_t  startPinValue {LOW};         // initialize () default argument BINARY {HIGH | LOW} / PWM {0-255}
+    uint8_t  setPinValue   {LOW};         // set_pinValue () default argument BINARY {HIGH | LOW} / PWM {0-255}
+    bool     processState  {COMPLETE};    // process state / ACTIVE
     // Timers    
-    uint32_t setBeginMS    {0};          // Milliseconds (begin start time)
-    uint32_t setOutputMS   {0};          // Milliseconds (output start time)
-    uint32_t setEndMS      {0};          // Milliseconds (end start time)
+    uint32_t setBeginMS    {0};           // Milliseconds (begin start time)
+    uint32_t setOutputMS   {0};           // Milliseconds (output start time)
+    uint32_t setEndMS      {0};           // Milliseconds (end start time)
+    uint32_t currentTimeMS {0};           // Handle millis overflow
     // Other
-    bool     debugPrint    {disable};    // set_debugPrint () default argument / on
-    uint8_t  errorNumber   {0};          // get_reset_error () Error {1-127} and Warning {128-255}
+    bool     debugPrint    {DISABLE};     // set_debugPrint () default argument / on
+    uint8_t  errorNumber   {0};           // get_reset_error () Error {1-127} and Warning {128-255}
     // state control
-    bool     phaseChange   {false};      // true = change in timing state
-    uint8_t  phaseNumber   {resetPhase}; // Initialize and reset= 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4 
+    bool     phaseChange   {false};       // true = change in timing state
+    uint8_t  phaseNumber   {RESET_PHASE}; // Initialize and reset= 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4 
 
   public:
     // Constructor inittializers
     /*
      * @brief Create object and set configuration parameters or use defaults
-     * @name MTD2A_binary_output
-     * @param ( "Object Name", outputTimeMS, beginDelayMS, endDelayMS, {binary | PWM}, pinBeginValueMS, pinEndValue );
+     * @name MTD2A_BINARY_output
+     * @param ( "Object Name", outputTimeMS, beginDelayMS, endDelayMS, {BINARY | PWM}, pinBeginValueMS, pinEndValue );
      * @param outputTimeMS, beginDelayMS, endDelayMSd {0 - 4294967295} milliseconds. pinValue {0 - 255}
      * @return none
      */
@@ -80,11 +82,17 @@ class MTD2A_binary_output: public MTD2A
       const uint32_t setOutputTimeMS  = 0,
       const uint32_t setBeginDelayMS  = 0,
       const uint32_t setEndDelayMS    = 0,
-      const bool     setPinOutputMode = binary,
-      const uint8_t  setPinBeginValue = 255, 
-      const uint8_t  setPinEndValue   = 0 );
+      const bool     setPinOutputMode = BINARY,
+      const uint8_t  setPinBeginValue = HIGH, 
+      const uint8_t  setPinEndValue   = LOW
+    );
     // Destructor
-    ~MTD2A_binary_output () { delete [] objectName; };
+    ~MTD2A_binary_output () { 
+      if (objectName != nullptr) {
+        delete [] objectName; 
+        objectName = nullptr;
+      }
+    };
 
     // Operator oveloading
     bool operator==(const MTD2A_binary_output &obj) const {
@@ -94,10 +102,10 @@ class MTD2A_binary_output: public MTD2A
       return (processState != obj.processState);
     }
     bool operator>(const MTD2A_binary_output &obj) const {
-      return (processState == active && obj.processState == pending);
+      return (processState == ACTIVE && obj.processState == COMPLETE);
     }
     bool operator<(const MTD2A_binary_output &obj) const {
-      return (processState == pending && obj.processState == active);
+      return (processState == COMPLETE && obj.processState == ACTIVE);
     }
     bool operator>>(const MTD2A_binary_output &obj) const {
       return (setOutputMS > obj.setOutputMS);
@@ -114,19 +122,19 @@ class MTD2A_binary_output: public MTD2A
      * @brief If setPinNumber > NUM_DIGITAL_PINS, pin writing is disabled!
      * @brief If PWM is selected and pin does not support PWM, pin writing is disabled!
      * @name object_name.initialize 
-     * @param ( {0 - NUM_DIGITAL_PINS | 255}, binary {HIGH | LOW} / PWM {0-255} );
+     * @param ( {0 - NUM_DIGITAL_PINS | 255}, BINARY {HIGH | LOW} / PWM {0-255} );
      * @return none
      */
-    void initialize (const uint8_t &setPinNumber = 255, const uint8_t &setStartPinValue = LOW);
+    void initialize (const uint8_t &setPinNumber = PIN_ERR_NO, const uint8_t &setStartPinValue = LOW);
   
 
     /*
      * @brief Activate process. Optional process update.
      * @name object_name.activate
-     * @param ( {pulse | fixed} );
+     * @param ( {PULSE | fixed} );
      * @return none
      */  
-    void activate (const bool &LoopFastOnce = disable);
+    void activate (const bool &LoopFastOnce = DISABLE);
   
 
 
@@ -161,30 +169,30 @@ class MTD2A_binary_output: public MTD2A
   
   
     /*
-     * @brief Enable or disable write to pin (binary and analog PWM)
+     * @brief Enable or disable write to pin (BINARY and analog PWM)
      * @name object_name.set_pinWrite
-     * @param ( {enable | disable} );
+     * @param ( {ENABLE | DISABLE} );
      * @return none
      */ 
-    void set_pinWrite (const bool &setPinEnableOrDisable = disable, const bool &LoopFastOnce = disable);
+    void set_pinWrite (const bool &setPinEnableOrDisable = DISABLE, const bool &LoopFastOnce = DISABLE);
   
 
     /*
      * @brief write binary or PWM value directly to pin
      * @name object_name.set_setPinValue
-     * @param (binary {HIGH | LOW} / PWM {0-255} );
+     * @param (BINARY {HIGH | LOW} / PWM {0-255} );
      * @return none
      */  
-    void set_setPinValue (const uint8_t &setSetPinValue = 0, const bool &LoopFastOnce = disable);
+    void set_setPinValue (const uint8_t &setSetPinValue = LOW, const bool &LoopFastOnce = DISABLE);
   
 
     /*
      * @brief Enable print phase state number and phase state text
      * @name object_name.set_debugPrint
-     * @param ( {enable | disable} );
+     * @param ( {ENABLE | DISABLE} );
      * @return none
      */  
-    void set_debugPrint (const bool &setEnableOrDisable = disable, const bool &LoopFastOnce = disable);
+    void set_debugPrint (const bool &setEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
     
     
     // Getters -----------------------------------------------
@@ -194,7 +202,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Get pinWrite status
      * @name object_name.get_pinWrite (); 
      * @param none
-     * @return bool {enable | disable} );
+     * @return bool {ENABLE | DISABLE} );
      */  
     bool const &get_pinWrite () const;
   
@@ -203,7 +211,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Get processState  
      * @name object_name.get_processState ();
      * @param none
-     * @return bool {active | finnish}
+     * @return bool {ACTIVE | finnish}
      */  
     bool const &get_processState () const;
   
