@@ -10,7 +10,7 @@
 
 ### MTD2A_binary_input 
 ```
-object_name ( "Object Name", delayTimeMS, {firstTrigger | lastTrigger}, {timeDelay | monoStable}, pinBlockTimeMS );
+object_name ( "Object Name", delayTimeMS, {FIRST_TIGGER | LAST_TRIGGER}, {TIME_DELAY | MONO_STABLE}, pinBlockTimeMS );
 ```
 
 Detailed danish documentation: [MTD2A_binary_input.pdf](https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_input.pdf)<br/>
@@ -19,7 +19,7 @@ Detailed danish documentation: [MTD2A_binary_input.pdf](https://github.com/MTD2A
 
 ### MTD2A_binary_output
 ```
-object_name ( "Object name", outputTimeMS, beginDelayMS, endDelayMS, {binary | PWM}, pinBeginValue, pinEndValue );
+object_name ( "Object name", outputTimeMS, beginDelayMS, endDelayMS, {BINARY | PWM}, pinBeginValue, pinEndValue );
 ```
 
 Detailed danish documentation: [MTD2A_binary_output.pdf](https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_output.pdf)
