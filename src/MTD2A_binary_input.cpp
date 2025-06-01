@@ -69,6 +69,7 @@ void MTD2A_binary_input::initialize (const uint8_t &setPinNumber, const bool &se
   if (errorNumber == 0) {
     pinRead = ENABLE;
     pinNumber = setPinNumber;
+    pinInput = setPinNomalOrInverted;
     if (setPinPullupOrInput == INPUT  ||  setPinPullupOrInput == INPUT_PULLUP) 
       pinType = setPinPullupOrInput;
     else {
@@ -315,9 +316,7 @@ void MTD2A_binary_input::reset () {
   blockTimeMS   = 0;
   errorNumber   = 0;
   pinState      = HIGH;
-  pinRead       = ENABLE;
-  pinInput      = NORMAL;
-  inputState    = LOW;
+  inputState    = HIGH;
   inputMode     = PULSE;
   processState  = COMPLETE;
   currentState  = HIGH;
@@ -327,6 +326,10 @@ void MTD2A_binary_input::reset () {
   phaseNumber   = RESET_PHASE; 
   inputGoLow    = false;
   inputGoHigh   = false;
+  if (pinNumber == PIN_ERR_NO)
+    pinRead = DISABLE;
+  else
+    pinRead = ENABLE;
   MTD2A_print_phase_line (debugPrint, objectName, phaseText[RESET_PHASE]);
 }  // reset
 
@@ -341,9 +344,9 @@ void MTD2A_binary_input::print_conf () {
   // Setup
   MTD2A_print_pin_number (pinNumber);
   Serial.print  (F("  pinType      : ")); if (pinType == INPUT_PULLUP) Serial.println(F("INPUT_PULLUP")); else Serial.println(F("INPUT"));
-  Serial.print  (F("  pinRead      : ")); MTD2A_print_enable_disable (pinRead);
-  Serial.print  (F("  pinInput     : ")); if (pinInput == NORMAL)      Serial.println(F("NORMAL"));       else Serial.println(F("INVERTED"));
-  Serial.print  (F("  inputMode    : ")); MTD2A_print_pulse_fixed (inputMode);
+  Serial.print  (F("  pinRead      : ")); MTD2A_print_enable_disable  (pinRead);
+  Serial.print  (F("  pinInput     : ")); MTD2A_print_normal_inverted (pinInput);
+  Serial.print  (F("  inputMode    : ")); MTD2A_print_pulse_fixed     (inputMode);
   // timers
   Serial.print  (F("  delayTimeMS  : ")); Serial.println(delayTimeMS);
   Serial.print  (F("  firstTimeMS  : ")); Serial.println(firstTimeMS);

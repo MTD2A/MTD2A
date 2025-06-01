@@ -53,6 +53,7 @@ class MTD2A_binary_output: public MTD2A
     // pin and input setup
     uint8_t  pinNumber     {PIN_ERR_NO};  // initialize () default argument
     bool     pinWrite      {DISABLE};     // initialize () MTD2A_reserve_and_check_pin ()
+    bool     pinOutput     {NORMAL};      // initialize () and set_PinOutput () default argument / INVERTED
     uint8_t  startPinValue {LOW};         // initialize () default argument BINARY {HIGH | LOW} / PWM {0-255}
     uint8_t  setPinValue   {LOW};         // set_pinValue () default argument BINARY {HIGH | LOW} / PWM {0-255}
     bool     processState  {COMPLETE};    // process state / ACTIVE
@@ -125,7 +126,7 @@ class MTD2A_binary_output: public MTD2A
      * @param ( {0 - NUM_DIGITAL_PINS | 255}, BINARY {HIGH | LOW} / PWM {0-255} );
      * @return none
      */
-    void initialize (const uint8_t &setPinNumber = PIN_ERR_NO, const uint8_t &setStartPinValue = LOW);
+    void initialize (const uint8_t &setPinNumber = PIN_ERR_NO, const bool &setPinNomalOrInverted = NORMAL, const uint8_t &setStartPinValue = LOW);
   
 
     /*
@@ -174,8 +175,17 @@ class MTD2A_binary_output: public MTD2A
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */ 
-    void set_pinWrite (const bool &setPinEnableOrDisable = DISABLE, const bool &LoopFastOnce = DISABLE);
+    void set_pinWrite (const bool &setPinEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
   
+
+    /*
+     * @brief Configure pin output mode = NORMAL or INVERTED. Optional loop update.
+     * @name object_name.set_pinOutput
+     * @param ( {NORMAL | INVERTED} );
+     * @return non
+     */
+    void set_pinOutput (const bool &setPinNomalOrInverted = NORMAL, const bool &LoopFastOnce = DISABLE);
+
 
     /*
      * @brief write binary or PWM value directly to pin

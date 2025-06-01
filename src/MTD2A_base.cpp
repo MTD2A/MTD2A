@@ -221,7 +221,7 @@ void MTD2A::MTD2A_print_error_text (const bool &checkDebugPrint, const uint8_t &
 void MTD2A::MTD2A_print_generic_info (const char *printObjectName, const bool &printProcessState, const char *printPhaseText) {
   for (size_t i {1}; i < 20; i++) Serial.print(F("-")); Serial.println();
   Serial.print  (F("  objectName   : ")); Serial.println(printObjectName);
-  Serial.print  (F("  processState : ")); if (printProcessState == ACTIVE) Serial.println(F("ACTIVE")); else Serial.println(F("PENDING"));
+  Serial.print  (F("  processState : ")); if (printProcessState == ACTIVE) Serial.println(F("ACTIVE")); else Serial.println(F("COMPLETE"));
   Serial.print  (F("  phaseText    : ")); Serial.println(printPhaseText);
 }; // MTD2A_print_phase_info
 
@@ -271,5 +271,13 @@ void MTD2A::MTD2A_print_pulse_fixed (const bool &pulseOrFixed) {
   else
     Serial.println(F("FIXED"));
 } // MTD2A_print_puls_fixed
+
+
+void MTD2A::MTD2A_print_normal_inverted (const bool &normalOrInverted) {
+  if (normalOrInverted == NORMAL) 
+    Serial.println(F("NORMAL"));
+  else 
+    Serial.println(F("INVERTED"));
+}
 
 #endif

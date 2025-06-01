@@ -34,24 +34,24 @@
 #define _MTD2A_const_H_
 
   namespace MTD2A_const {
-  // Easy understanding global definitions
-  constexpr bool ENABLE        = true, DISABLE      = false;
-  constexpr bool ACTIVE        = true, COMPLETE     = false;
-  constexpr bool FIRST_TRIGGER = true, LAST_TRIGGER = false;
-  constexpr bool TIME_DELAY    = true, MONO_STABLE  = false;
-  constexpr bool NORMAL        = true, INVERTED     = false;  
-  constexpr bool PULSE         = true, FIXED        = false;
-  constexpr bool BINARY        = true, PWM          = false;
-
-  constexpr uint8_t RESET_PHASE      = 0; 
-  constexpr uint8_t BEGIN_PHASE      = 1, OUTPUT_PHASE    = 2, END_PHASE      = 3; // binary_input 
-  constexpr uint8_t FIRST_TIME_PHASE = 1, LAST_TIME_PHASE = 2, BLOCKING_PHASE = 3; // binary_output
-  constexpr uint8_t COMPLETE_PHASE   = 4;
-} // namespace _MTD2A_const 
+    // Easy understanding global definitions
+    constexpr bool    ENABLE        = true,  DISABLE      = false;
+    constexpr bool    ACTIVE        = true,  COMPLETE     = false;
+    constexpr bool    FIRST_TRIGGER = true,  LAST_TRIGGER = false;
+    constexpr bool    TIME_DELAY    = true,  MONO_STABLE  = false;
+    constexpr bool    NORMAL        = true,  INVERTED     = false;  
+    constexpr bool    PULSE         = true,  FIXED        = false;
+    constexpr bool    BINARY        = true,  PWM          = false;
+    // Process phaseses
+    constexpr uint8_t RESET_PHASE      = 0; 
+    constexpr uint8_t BEGIN_PHASE      = 1, OUTPUT_PHASE    = 2, END_PHASE      = 3; // binary_input 
+    constexpr uint8_t FIRST_TIME_PHASE = 1, LAST_TIME_PHASE = 2, BLOCKING_PHASE = 3; // binary_output
+    constexpr uint8_t COMPLETE_PHASE   = 4;
+  } // namespace _MTD2A_const 
+  using namespace MTD2A_const;
 
 #endif
 
-using namespace MTD2A_const;
 
 #ifndef _MTD2A_base_H_
 #define _MTD2A_base_H_
@@ -59,7 +59,6 @@ using namespace MTD2A_const;
 class MTD2A  // base class
 { 
   // Static class that makes the attributes or method belong to the class itself instead of to instances of the class. 
-  // synchronization and cadance control and common functions
   public:
 
     friend class MTD2A_binary_output;
@@ -67,8 +66,14 @@ class MTD2A  // base class
     friend class MTD2A_delay; 
     friend class MTD2A_astable;
     friend class MTD2A_flip_flop;
+    friend class MTD2A_tone;
     friend class MTD2A_sound;
     friend class MTD2A_servo;
+    friend class MTD2A_stepper;
+    friend class MTD2A_display;
+    friend class MTD2A_ultrasonic;
+    friend class MTD2A_laser;
+    friend class MTD2A_IR_ranging;
     friend class MTD2A_DCC_input;
 
     virtual ~MTD2A() = default;
@@ -112,6 +117,7 @@ class MTD2A  // base class
     static void    MTD2A_print_generic_info    (const char    *printObjectName,  const bool    &printProcessState, const char *printPhaseText);
     static void    MTD2A_print_value_binary    (const bool    &binaryOrPWM,      const uint8_t &PrintValue);
     static void    MTD2A_print_enable_disable  (const bool    &enableOrDisable);
+    static void    MTD2A_print_normal_inverted (const bool    &normalOrInverted);
     static void    MTD2A_print_pulse_fixed     (const bool    &pulseOrFixed);
 
 };  // MTD2A

@@ -52,7 +52,7 @@ class MTD2A_binary_input: public MTD2A
     uint8_t  pinNumber     {PIN_ERR_NO};   // initialize () default argument
     uint8_t  pinType       {INPUT_PULLUP}; // initialize () default argument. Open collector or switch to ground (LOW)
     bool     pinRead       {DISABLE};      // initialize () default argument / ENABLE
-    bool     pinInput      {NORMAL};       // set_PinInput () default argument / INVERTED
+    bool     pinInput      {NORMAL};       // initialize () and set_PinInput () default argument / INVERTED
     bool     inputMode     {PULSE};        // set_InputState () default argument / FIXED
     // Other
     bool     debugPrint    {DISABLE};      // set_debugPrint () default argument / ENABLE
@@ -170,7 +170,7 @@ class MTD2A_binary_input: public MTD2A
 
 
     /*
-     * @brief Configure pin input trigger mode = LOW or HIGH (inverted).Optional loop update.
+     * @brief Configure pin input trigger mode = NORMAL og INVERTED. Optional loop update.
      * @name object_name.set_pinInput
      * @param ( {NORMAL | INVERTED} );
      * @return non
