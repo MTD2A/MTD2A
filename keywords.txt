@@ -41,6 +41,7 @@ get_inputGoLow	KEYWORD2
 get_inputGoHigh	KEYWORD2
 
 set_pinWrite	KEYWORD2
+set_pinOutput	KEYWORD2
 set_setPinValue	KEYWORD2
 get_pinWrite	KEYWORD2
 get_setBeginMS	KEYWORD2
