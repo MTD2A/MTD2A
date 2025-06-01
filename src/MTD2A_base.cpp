@@ -41,7 +41,8 @@ using namespace MTD2A_const;
 
 // MTD2A initializers
 bool     MTD2A::globalDebugPrint = DISABLE;
-uint32_t MTD2A::delayTimeMS = DELAY_TIME_MS;
+uint32_t MTD2A::delayTimeMS = DELAY_10MS;
+uint8_t  MTD2A::ObjectCount = 0;
 // Funtion pointer linked list
 MTD2A   *MTD2A::begin = nullptr;
 MTD2A   *MTD2A::end   = nullptr;
@@ -61,14 +62,14 @@ void MTD2A::set_globalDebugPrint (const bool &setEnableOrDisable) {
 /*
  * @brief Set main loop delay in milliseconds in function loop_execute();
  * @name object_name.set_delayTimeMS
- * @param ( {1-100} );
- * @return Errormessage if input is out of range
+ * @param ( {DELAY_10MS | DELAY_1MS} );
+ * @return none
  */
-void MTD2A::set_delayTimeMS (const uint32_t &setDelayTimeMS) {
-  if (setDelayTimeMS > 0  || setDelayTimeMS <= 100) 
-    delayTimeMS = setDelayTimeMS;
-  else if (globalDebugPrint == ENABLE)
-     Serial.println (F("ERROR: DelayTimeMS must be 1-100 ms"));
+void MTD2A::set_delayTimeMS (const bool &setDelayTimeMS) {
+  if (setDelayTimeMS == DELAY_10MS) 
+    delayTimeMS = DELAY_10MS;
+  else 
+    delayTimeMS = DELAY_1MS;
 }
 
 
@@ -76,12 +77,20 @@ void MTD2A::set_delayTimeMS (const uint32_t &setDelayTimeMS) {
 void MTD2A::MTD2A_add_function_pointer_loop_fast (MTD2A* object) {
   if (begin == nullptr)
     begin = object;
-  if (end != nullptr)
+  if (end != nullptr) {
     end->next = object;
+    ObjectCount++;
+  }
   end = object;
 }
 
 
+/*
+ * @brief Update state mashine for all instantiated classes
+ * @name MTD2A::loop_execute();
+ * @param none
+ * @return none
+ */
 void MTD2A::loop_execute() {
   MTD2A* object = begin;
   while (object != nullptr) {

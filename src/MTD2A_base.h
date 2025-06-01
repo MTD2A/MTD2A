@@ -78,15 +78,17 @@ class MTD2A  // base class
 
     virtual ~MTD2A() = default;
     // Global functions
-    static void  set_globalDebugPrint (const bool     &setEnableOrDisable = ENABLE);
-    static void  set_delayTimeMS      (const uint32_t &setDelayTimeMS = DELAY_TIME_MS);
+    static void  set_globalDebugPrint (const bool &setEnableOrDisable = ENABLE);
+    static void  set_delayTimeMS      (const bool &setDelayTimeMS = DELAY_10MS);
 
   private:
-    static const uint8_t  PIN_ERR_NO    {255};
-    static const uint32_t DELAY_TIME_MS {10};
+    static const uint8_t  PIN_ERR_NO {255};
+    static const uint32_t DELAY_10MS {10};
+    static const uint32_t DELAY_1MS  {1};
     //
     static uint32_t delayTimeMS;
     static bool     globalDebugPrint;
+    static uint8_t  ObjectCount;
     //
     static const uint8_t DIGITAL_FLAG_0 {1}, ANALOG_FLAG_1 {2}, INPUT_FLAG_2 {4}, PULLUP_FLAG_3 {8}, 
                          OUTPUT_FLAG_4 {16}, PWM_FLAG_5 {32},   TONE_FLAG_6 {64}, INTERRUPT_FLAG_7 {128};
