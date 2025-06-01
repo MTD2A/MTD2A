@@ -1,10 +1,8 @@
 # Documentation
 
-### Mobile Train Detection And Action - Arduino library
- * Supporting a vast variety of input sensors and output devices 
- * Simple to use to build complex solutions 
- * Non blocking, simple, yet efficient event-driven state machine
- * Comprehensive control, state and debug information
+### MMTD2A
+
+Detailed danish documentation: [MTD2A_base.pdf](https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A.pdf)
 
 <br/>
 
@@ -13,7 +11,7 @@
 object_name ( "Object Name", delayTimeMS, {FIRST_TIGGER | LAST_TRIGGER}, {TIME_DELAY | MONO_STABLE}, pinBlockTimeMS );
 ```
 
-Detailed danish documentation: [MTD2A_binary_input.pdf](https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_input.pdf)<br/>
+Detailed danish documentation: [MTD2A_binary_input.pdf](https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_input.pdf)
 
 <br/>
 
