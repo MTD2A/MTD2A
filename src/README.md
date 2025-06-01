@@ -2,6 +2,7 @@
 MTD2A.h
 
 ### Base class and common functions
+MTD2A_base.h
 MTD2A_base.cpp
 
 ### Classes and documentation
