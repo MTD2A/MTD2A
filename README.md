@@ -14,29 +14,33 @@ MTD2A is a collection of advanced and functional C++ classes - building blocks -
 ### Example
 
 ```
-// Two blinking LEDs. One with symmetric interval and another with asymetric interval.
-
 #include <MTD2A.h>
 using namespace MTD2A_const;
 
-MTD2A_binary_output red_LED   ("Red LED",   400, 400);              // 0.4 sec light, 0.4 sec no light
-MTD2A_binary_output green_LED ("Green LED", 300, 700, 0, PWM, 96);  // 0.3 sec light, 0.7 sec no light, PWM dimmed
+MTD2A_binary_input  FC_51_stop  ("Stop",  10000);   // continous active time (no reactivation)
+MTD2A_binary_output train_sound ("Sound", 100, 3000);  // Wait 3 seconds and activate 0,1 second
+// Trigger sound board 2 seconds after train detection for duraten of 0,1 seconds
 
 void setup() {
   Serial.begin(9600);
+  MTD2A::set_globalDebugPrint(); // Enable debug print for all instantiated classes
 
-  red_LED.initialize (9);     // Output pin 9
-  green_LED.initialize (10);  // Output pin 10
-
-  Serial.println("Two LED blink");
+  byte FC_51_STOP_PIN  = 2;  // Arduino board input pin 2
+  byte TRAIN_SOUND_PIN = 9;  // Arduino board Output pin 9 
+  FC_51_stop.initialize  (FC_51_STOP_PIN);
+  train_sound.initialize (TRAIN_SOUND_PIN);
+  // Danish and English speech from https://ttsmaker.com/
 }
 
 void loop() {
-  if (red_LED.get_processState()   == PENDING)   red_LED.activate();
-  if (green_LED.get_processState() == PENDING) green_LED.activate();
+  if (FC_51_stop.get_processState() == ACTIVE ) { // Continous activation (no drop outs)
+    if (FC_51_stop.get_phaseChange() == true &&  FC_51_stop.get_phaseNumber() == FIRST_TIME_PHASE)
+    // Equivalent of: if (FC_51_stop + FC_51_stop)
+      train_sound.activate();
+  }
 
-  MTD2A::loop_execute();
-}
+  MTD2A::loop_execute();  // Update the state (event) system
+} // Stop light and sound message: The train brakes and temporarily stops at a red light.
 ```
 ### To do
 * class MTD2A_delay
