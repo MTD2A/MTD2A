@@ -2,7 +2,7 @@
 
 Work in progress
 
-MTD2A is a collection of advanced and functional C++ classes - building blocks - for time-controlled handling of input and output. The library is intended for Arduino enthusiasts without much programming experience, who are interested in electronics control and automation, and model trains as a hobby.
+MTD2A is a collection of user friendly advanced and functional C++ classes - building blocks - for time-controlled handling of input and output. The library is intended for Arduino enthusiasts without much programming experience, who are interested in electronics control and automation, and model trains as a hobby.
 
 ### Common to all building blocks are:
 • They support a wide range of input sensors and output devices <br/>
