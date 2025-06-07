@@ -34,8 +34,6 @@
 #include "MTD2A_base.h"
 #include "MTD2A_binary_input.h"
 
-using namespace MTD2A_const;
-
 
 // Constructor
 MTD2A_binary_input::MTD2A_binary_input
@@ -80,14 +78,14 @@ void MTD2A_binary_input::initialize (const uint8_t &setPinNumber, const bool &se
   }
   else {
     pinRead = DISABLE;
-    pinNumber = PIN_ERR_NO;
+    pinNumber = PIN_ERROR_NO;
     MTD2A_print_error_text (debugPrint, errorNumber, pinNumber);
   }
 } // initialize
 
 
 void MTD2A_binary_input::set_pinRead (const bool &setPinEnableOrDisable, const bool &LoopFastOnce) {
-  if (setPinEnableOrDisable == ENABLE  &&  pinNumber == PIN_ERR_NO) {
+  if (setPinEnableOrDisable == ENABLE  &&  pinNumber == PIN_ERROR_NO) {
     errorNumber = 1; MTD2A_print_error_text (debugPrint, errorNumber, pinNumber);  
   }
   else {
@@ -99,7 +97,7 @@ void MTD2A_binary_input::set_pinRead (const bool &setPinEnableOrDisable, const b
 
 
 void MTD2A_binary_input::set_pinInput (const bool &setPinNomalOrInverted, const bool &LoopFastOnce) {
-  if (pinNumber != PIN_ERR_NO) {
+  if (pinNumber != PIN_ERROR_NO) {
     pinInput = setPinNomalOrInverted;
     if (LoopFastOnce == ENABLE)
       loop_fast();
@@ -107,7 +105,7 @@ void MTD2A_binary_input::set_pinInput (const bool &setPinNomalOrInverted, const 
   else {
     errorNumber = 1; MTD2A_print_error_text (debugPrint, errorNumber, pinNumber);
   }
-}
+} // set_pinInput
 
 
 void MTD2A_binary_input::set_inputState (const bool &setInputLowOrHigh, const bool &setPulseOrFixed, const bool &LoopFastOnce) {
@@ -115,14 +113,28 @@ void MTD2A_binary_input::set_inputState (const bool &setInputLowOrHigh, const bo
   inputMode = setPulseOrFixed;
   if (LoopFastOnce == ENABLE)
     loop_fast();
-}
+} // set_inputState
+
+
+void MTD2A_binary_input::set_stopDelayTimer (const bool &LoopFastOnce) {
+  stopDelayTM = ENABLE;
+  if (LoopFastOnce == ENABLE)
+    loop_fast();
+} // et_stopDelayTimer
+
+
+void MTD2A_binary_input::set_stopBlockTimer (const bool &LoopFastOnce) {
+  stopBlockTM = ENABLE;
+  if (LoopFastOnce == ENABLE)
+    loop_fast();
+} // set_stopBlockTimer
 
 
 void MTD2A_binary_input::set_debugPrint (const bool &setENABLEOrDisable, const bool &LoopFastOnce) {
   debugPrint = setENABLEOrDisable;
   if (LoopFastOnce == ENABLE)
     loop_fast();
-}
+} // set_debugPrint 
 
 
 bool const &MTD2A_binary_input::get_processState () const {
@@ -175,7 +187,7 @@ uint8_t const &MTD2A_binary_input::get_reset_error () {
   tempErrorNumber = errorNumber;
   errorNumber = 0;
   return tempErrorNumber;
-}
+} // get_reset_error
 
 
 void MTD2A_binary_input::loop_fast () {
@@ -185,11 +197,11 @@ void MTD2A_binary_input::loop_fast () {
     loop_fast_binary ();
   }
   else {
-    if (triggerMode == FIRST_TRIGGER) {
-      loop_fast_first ();
-    }
-    else { // lastTrigger
+    if (triggerMode == LAST_TRIGGER) {
       loop_fast_last ();
+    }
+    else { // FirstTrigger
+      loop_fast_first ();
     }
   }
   lastState = currentState;
@@ -229,7 +241,8 @@ void MTD2A_binary_input::loop_fast_first () {
   //
   if (processState == ACTIVE) {
     currentTimeMS = millis();
-    if ((currentTimeMS - firstTimeMS) >= delayTimeMS) {
+    if ((currentTimeMS - firstTimeMS) >= delayTimeMS  ||  stopDelayTM == ENABLE) {
+      stopDelayTM = DISABLE;
       if (timerMode == MONO_STABLE) 
         end_state ();
       else {
@@ -256,7 +269,8 @@ void MTD2A_binary_input::loop_fast_last () {
     }
     //
     currentTimeMS = millis();
-    if ((currentTimeMS - lastTimeMS) >= delayTimeMS) {
+    if ((currentTimeMS - lastTimeMS) >= delayTimeMS  ||  stopDelayTM == ENABLE) {
+      stopDelayTM = DISABLE;
       if (timerMode == MONO_STABLE) 
         end_state ();
       else {
@@ -289,7 +303,8 @@ void MTD2A_binary_input::end_state () {
       MTD2A_print_phase_line (debugPrint, objectName, phaseText[BLOCKING_PHASE]); 
     }
     currentTimeMS = millis();
-    if ((currentTimeMS - blockTimeMS) >= pinBlockMS) {
+    if ((currentTimeMS - blockTimeMS) >= pinBlockMS  ||  stopBlockTM == ENABLE) {
+      stopBlockTM = DISABLE;
       pinBlockState = DISABLE;
       pinRead = ENABLE;
       complete_state ();
@@ -315,6 +330,8 @@ void MTD2A_binary_input::reset () {
   endTimeMS     = 0;
   blockTimeMS   = 0;
   errorNumber   = 0;
+  stopDelayTM   = DISABLE;
+  stopBlockTM   = DISABLE;  
   pinState      = HIGH;
   inputState    = HIGH;
   inputMode     = PULSE;
@@ -326,7 +343,7 @@ void MTD2A_binary_input::reset () {
   phaseNumber   = RESET_PHASE; 
   inputGoLow    = false;
   inputGoHigh   = false;
-  if (pinNumber == PIN_ERR_NO)
+  if (pinNumber == PIN_ERROR_NO)
     pinRead = DISABLE;
   else
     pinRead = ENABLE;
@@ -339,8 +356,8 @@ void MTD2A_binary_input::print_conf () {
   MTD2A_print_generic_info (objectName, phaseChange, phaseText[phaseNumber]);
   MTD2A_print_debug_error (debugPrint, errorNumber);
   //
-  Serial.print  (F("  triggerMode  : ")); if (triggerMode == FIRST_TRIGGER) Serial.println(F("FIRST_TRIGGER")); else Serial.println(F("LAST_TRIGGER"));
-  Serial.print  (F("  timerMode    : ")); if (timerMode == TIME_DELAY)      Serial.println(F("TIME_DELAY")); else Serial.println(F("MONO_STABLE"));
+  Serial.print  (F("  triggerMode  : ")); if (triggerMode == LAST_TRIGGER) Serial.println(F("LAST_TRIGGER")); else Serial.println(F("FIRST_TRIGGER"));
+  Serial.print  (F("  timerMode    : ")); if (timerMode == TIME_DELAY)     Serial.println(F("TIME_DELAY"));   else Serial.println(F("MONO_STABLE"));
   // Setup
   MTD2A_print_pin_number (pinNumber);
   Serial.print  (F("  pinType      : ")); if (pinType == INPUT_PULLUP) Serial.println(F("INPUT_PULLUP")); else Serial.println(F("INPUT"));

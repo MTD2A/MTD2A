@@ -33,7 +33,6 @@
 #ifndef _MTD2A_binary_input_H_
 #define _MTD2A_binary_input_H_
 
-using namespace MTD2A_const;
 
 class MTD2A_binary_input: public MTD2A
 {
@@ -42,6 +41,11 @@ class MTD2A_binary_input: public MTD2A
     const char *phaseText[5] = { "[0] Reset", "[1] First time", "[2] Last time", "[3] Pin blocking", "[4] Complete" };
 
   private:
+    static constexpr uint8_t RESET_PHASE      = MTD2A_const::RESET_PHASE; 
+    static constexpr uint8_t FIRST_TIME_PHASE = MTD2A_const::FIRST_TIME_PHASE;
+    static constexpr uint8_t LAST_TIME_PHASE  = MTD2A_const::LAST_TIME_PHASE; 
+    static constexpr uint8_t BLOCKING_PHASE   = MTD2A_const::BLOCKING_PHASE;
+    static constexpr uint8_t COMPLETE_PHASE   = MTD2A_const::COMPLETE_PHASE;
     // Arguments
     char    *objectName    {nullptr};      // Constructor initialized (User defined name to display identification)
     uint32_t delayTimeMS   {0};            // Constructor default argument (Milliseconds)
@@ -49,7 +53,7 @@ class MTD2A_binary_input: public MTD2A
     bool     timerMode     {TIME_DELAY};   // Constructor default argument (MONO_STABLE / TIME_DELAY)
     uint32_t pinBlockMS    {0};            // Constructor default argument (Milliseconds)
     // pin and input setup
-    uint8_t  pinNumber     {PIN_ERR_NO};   // initialize () default argument
+    uint8_t  pinNumber     {PIN_ERROR_NO}; // initialize () default argument
     uint8_t  pinType       {INPUT_PULLUP}; // initialize () default argument. Open collector or switch to ground (LOW)
     bool     pinRead       {DISABLE};      // initialize () default argument / ENABLE
     bool     pinInput      {NORMAL};       // initialize () and set_PinInput () default argument / INVERTED
@@ -63,6 +67,9 @@ class MTD2A_binary_input: public MTD2A
     uint32_t endTimeMS     {0};            // Milliseconds (delay end time)
     uint32_t blockTimeMS   {0};            // Milliseconds (pin input blocking time)
     uint32_t currentTimeMS {0};            // Handle millis overflow
+    // Timer process stop
+    bool     stopDelayTM   {DISABLE};      // stop first or last timer proces and go to next phase
+    bool     stopBlockTM   {DISABLE};      // stop blocking timer procesand go to next phase
     // State control
     bool     inputState    {HIGH};         // set_inputState () / LOW (manual program trigger)
     bool     pinState      {HIGH};         // get_pinState () / LOW (trigger)
@@ -127,7 +134,7 @@ class MTD2A_binary_input: public MTD2A
      * @param ( {0 - NUM_DIGITAL_PINS | 255}, {NORMAL | INVERTED}, {INPUT | INPUT_PULLUP} );
      * @return none
      */
-    void initialize (const uint8_t &setPinNumber = PIN_ERR_NO, const bool &setPinNomalOrInverted = NORMAL, const uint8_t &setPinPullupOrInput = INPUT_PULLUP);
+    void initialize (const uint8_t &setPinNumber = PIN_ERROR_NO, const bool &setPinNomalOrInverted = NORMAL, const uint8_t &setPinPullupOrInput = INPUT_PULLUP);
 
 
     /*
@@ -185,6 +192,23 @@ class MTD2A_binary_input: public MTD2A
      * @return none
      */
     void set_inputState (const bool &setInputLowOrHigh = LOW, const bool &setPulseOrFixed = PULSE, const bool &LoopFastOnce = DISABLE);
+
+
+    /*
+     * @brief stop first og last timer process immediately and continue to next phase. Optional loop update.
+     * @name object_name.set_stopDelayTimer
+     * @param none
+     * @return none
+     */
+    void set_stopDelayTimer (const bool &LoopFastOnce = DISABLE);
+
+    /*
+     * @brief stop blocking timer process immediately and continue to next phase. Optional loop update.
+     * @name object_name.set_stopBlockTimer
+     * @param none
+     * @return none
+     */
+    void set_stopBlockTimer (const bool &LoopFastOnce = DISABLE);
 
 
     /*

@@ -33,7 +33,6 @@
 #ifndef _MTD2A_binary_output_H_
 #define _MTD2A_binary_output_H_
 
-using namespace MTD2A_const;
 
 class MTD2A_binary_output: public MTD2A
 {
@@ -42,32 +41,42 @@ class MTD2A_binary_output: public MTD2A
     const char *phaseText[5] = { "[0] Reset", "[1] Begin delay", "[2] Output", "[3] End delay", "[4] Complete" };
 
   private:
+    // Global phases
+    static constexpr uint8_t RESET_PHASE    = MTD2A_const::RESET_PHASE; 
+    static constexpr uint8_t BEGIN_PHASE    = MTD2A_const::BEGIN_PHASE;
+    static constexpr uint8_t OUTPUT_PHASE   = MTD2A_const::OUTPUT_PHASE; 
+    static constexpr uint8_t END_PHASE      = MTD2A_const::END_PHASE;
+    static constexpr uint8_t COMPLETE_PHASE = MTD2A_const::COMPLETE_PHASE;
     // Arguments
-    char    *objectName    {nullptr};     // Constructor default argument (User defined name to display identification)
-    uint32_t outputTimeMS  {0};           // Constructor default argument (Milliseconds) 
-    uint32_t beginDelayMS  {0};           // Constructor default argument (Milliseconds)  
-    uint32_t endDelayMS    {0};           // Constructor default argument (Milliseconds)
-    bool     pinOutputMode {BINARY};      // Constructor default argument (BINARY/PWM)
-    uint8_t  pinBeginValue {HIGH};        // Constructor default argument BINARY {HIGH | LOW} / PWM {0-255} 
-    uint8_t  pinEndValue   {LOW};         // Constructor default argument BINARY {HIGH | LOW} / PWM {0-255}
+    char    *objectName    {nullptr};      // Constructor default argument (User defined name to display identification)
+    uint32_t outputTimeMS  {0};            // Constructor default argument (Milliseconds) 
+    uint32_t beginDelayMS  {0};            // Constructor default argument (Milliseconds)  
+    uint32_t endDelayMS    {0};            // Constructor default argument (Milliseconds)
+    bool     pinOutputMode {BINARY};       // Constructor default argument (BINARY/PWM)
+    uint8_t  pinBeginValue {HIGH};         // Constructor default argument BINARY {HIGH | LOW} / PWM {0-255} 
+    uint8_t  pinEndValue   {LOW};          // Constructor default argument BINARY {HIGH | LOW} / PWM {0-255}
     // pin and input setup
-    uint8_t  pinNumber     {PIN_ERR_NO};  // initialize () default argument
-    bool     pinWrite      {DISABLE};     // initialize () MTD2A_reserve_and_check_pin ()
-    bool     pinOutput     {NORMAL};      // initialize () and set_PinOutput () default argument / INVERTED
-    uint8_t  startPinValue {LOW};         // initialize () default argument BINARY {HIGH | LOW} / PWM {0-255}
-    uint8_t  setPinValue   {LOW};         // set_pinValue () default argument BINARY {HIGH | LOW} / PWM {0-255}
-    bool     processState  {COMPLETE};    // process state / ACTIVE
-    // Timers    
-    uint32_t setBeginMS    {0};           // Milliseconds (begin start time)
-    uint32_t setOutputMS   {0};           // Milliseconds (output start time)
-    uint32_t setEndMS      {0};           // Milliseconds (end start time)
-    uint32_t currentTimeMS {0};           // Handle millis overflow
+    uint8_t  pinNumber     {PIN_ERROR_NO}; // initialize () default argument
+    bool     pinWrite      {DISABLE};      // initialize () MTD2A_reserve_and_check_pin ()
+    bool     pinOutput     {NORMAL};       // initialize () and set_PinOutput () default argument / INVERTED
+    uint8_t  startPinValue {LOW};          // initialize () default argument BINARY {HIGH | LOW} / PWM {0-255}
+    uint8_t  setPinValue   {LOW};          // set_pinValue () default argument BINARY {HIGH | LOW} / PWM {0-255}
+    bool     processState  {COMPLETE};     // process state / ACTIVE
+    // Timers
+    uint32_t setOutputMS   {0};            // Milliseconds (output start time)
+    uint32_t setBeginMS    {0};            // Milliseconds (begin start time)
+    uint32_t setEndMS      {0};            // Milliseconds (end start time)
+    uint32_t currentTimeMS {0};            // Handle millis overflow
+    // Change timing
+    bool     stopOutputTM  {DISABLE};      // stop output timer process
+    bool     stopBeginTM   {DISABLE};      // stop begin delay timer proces
+    bool     stopEndTM     {DISABLE};      // stop end delay timer proces
     // Other
-    bool     debugPrint    {DISABLE};     // set_debugPrint () default argument / on
-    uint8_t  errorNumber   {0};           // get_reset_error () Error {1-127} and Warning {128-255}
+    bool     debugPrint    {DISABLE};      // set_debugPrint () default argument / on
+    uint8_t  errorNumber   {0};            // get_reset_error () Error {1-127} and Warning {128-255}
     // state control
-    bool     phaseChange   {false};       // true = change in timing state
-    uint8_t  phaseNumber   {RESET_PHASE}; // Initialize and reset= 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4 
+    bool     phaseChange   {false};        // true = change in timing state
+    uint8_t  phaseNumber   {RESET_PHASE};  // Initialize and reset= 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4 
 
   public:
     // Constructor inittializers
@@ -126,7 +135,7 @@ class MTD2A_binary_output: public MTD2A
      * @param ( {0 - NUM_DIGITAL_PINS | 255}, BINARY {HIGH | LOW} / PWM {0-255} );
      * @return none
      */
-    void initialize (const uint8_t &setPinNumber = PIN_ERR_NO, const bool &setPinNomalOrInverted = NORMAL, const uint8_t &setStartPinValue = LOW);
+    void initialize (const uint8_t &setPinNumber = PIN_ERROR_NO, const bool &setPinNomalOrInverted = NORMAL, const uint8_t &setStartPinValue = LOW);
   
 
     /*
@@ -195,6 +204,33 @@ class MTD2A_binary_output: public MTD2A
      */  
     void set_setPinValue (const uint8_t &setSetPinValue = LOW, const bool &LoopFastOnce = DISABLE);
   
+
+    /*
+     * @brief stop output timer process immediately and continue to next phase, or restart timer process
+     * @name object_name.set_outputTimer
+     * @param ( STOP_TIMER | RESTART_TIMER );
+     * @return none
+     */
+    void set_outputTimer (const bool &changeOutputTimer = STOP_TIMER, const bool &LoopFastOnce = DISABLE);
+  
+
+    /*
+     * @brief stop output timer process immediately and continue to next phase, or restart timer process
+     * @name object_name.set_beginTimer
+     * @param ( STOP_TIMER | RESTART_TIMER );
+     * @return none
+     */
+    void set_beginTimer (const bool &changeBeginTimer = STOP_TIMER, const bool &LoopFastOnce = DISABLE);
+  
+
+    /*
+     * @brief stop begin timer process immediately and continue to next phase, or restart timer process
+     * @name object_name.set_endTimer
+     * @param ( STOP_TIMER | RESTART_TIMER );
+     * @return none
+     */
+    void set_endTimer (const bool &changeEndTimer = STOP_TIMER, const bool &LoopFastOnce = DISABLE);
+
 
     /*
      * @brief Enable print phase state number and phase state text

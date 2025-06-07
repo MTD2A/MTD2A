@@ -33,16 +33,23 @@
 #define _MTD2A_H_
 
 #include "Arduino.h"
+#include "MTD2A_const.h"
 #include "MTD2A_base.h"
 #include "MTD2A_binary_input.h"
 #include "MTD2A_binary_output.h"
 
-// planned classes
-class MTD2A_delay     {}; // milliseconds (delayTmeMS, {normal | pulse} )
-class MTD2A_astable   {}; // highMS, LowMS, [(highFreq, lowFfreq) if != 0 -> PWM], numCycles, NumSubCycles, {pulse | fixed}
-class MTD2A_sound     {}; // ptr frq list, ptr timer list}
-class MTD2A_servo     {};
-class MTD2A_DCC_input {};
-// More to come
+// User friendly alias
+inline void MTD2A_loop_execute() {
+  MTD2A::loop_execute();
+}
+
+inline void MTD2A_globalDebugPrint (const bool &setEnableOrDisable = MTD2A_const::ENABLE) {
+  MTD2A::set_globalDebugPrint (setEnableOrDisable);
+}
+
+inline void MTD2A_delayTimeMS (const bool &setDelayTimeMS = MTD2A_const::DELAY_10MS) {
+  MTD2A::set_delayTimeMS(setDelayTimeMS); 
+}
+
 
 #endif

@@ -34,7 +34,6 @@
 #include "MTD2A_base.h"
 #include "MTD2A_binary_output.h"
 
-using namespace MTD2A_const;
 
 // Constructor
 MTD2A_binary_output::MTD2A_binary_output
@@ -61,9 +60,9 @@ MTD2A_binary_output::MTD2A_binary_output
     objectName = MTD2A_set_object_name(setObjectName);
     pinBeginValue = check_pin_value (pinBeginValue);
     pinEndValue   = check_pin_value (pinEndValue);
-    if (setPinBeginValue == 0 && setPinEndValue == 0)
+    if (outputTimeMS == 0)
       errorNumber = 140;
-    if (setOutputTimeMS == 0 && setBeginDelayMS == 0 && setEndDelayMS == 0)
+    if (outputTimeMS == 0 && beginDelayMS == 0 && endDelayMS == 0)
       errorNumber = 141; // No timing configured
   }
 // MTD2A_binary_output
@@ -75,15 +74,16 @@ void MTD2A_binary_output::initialize (const uint8_t &setPinNumber, const bool &s
     MTD2A_print_error_text (debugPrint, errorNumber, pinNumber);
   errorNumber = MTD2A_reserve_and_check_pin (setPinNumber, DIGITAL_FLAG_0 | OUTPUT_FLAG_4);
   if (errorNumber == 0) {
-    pinWrite = ENABLE;
+    pinWrite  = ENABLE;
     pinNumber = setPinNumber;
+    pinOutput = setPinNomalOrInverted;
     startPinValue = check_pin_value (setStartPinValue);
     pinMode(pinNumber, OUTPUT);
     write_pin_value (startPinValue);
   }
   else {
     pinWrite = DISABLE;
-    pinNumber = PIN_ERR_NO;
+    pinNumber = PIN_ERROR_NO;
     MTD2A_print_error_text (debugPrint, errorNumber, pinNumber); 
   }
 } // initialize
@@ -109,7 +109,7 @@ void MTD2A_binary_output::activate (const bool &LoopFastOnce) {
 
 
 void MTD2A_binary_output::set_pinWrite (const bool &setPinEnableOrDisable, const bool &LoopFastOnce) {
-  if (setPinEnableOrDisable == ENABLE  &&  pinNumber == PIN_ERR_NO) {
+  if (setPinEnableOrDisable == ENABLE  &&  pinNumber == PIN_ERROR_NO) {
     errorNumber = 1; MTD2A_print_error_text (debugPrint, errorNumber, pinNumber);  
   }
   else {
@@ -122,7 +122,7 @@ void MTD2A_binary_output::set_pinWrite (const bool &setPinEnableOrDisable, const
 
 
 void MTD2A_binary_output::set_pinOutput (const bool &setPinNomalOrInverted, const bool &LoopFastOnce) {
-  if (pinNumber != PIN_ERR_NO) {
+  if (pinNumber != PIN_ERROR_NO) {
     pinOutput = setPinNomalOrInverted;
     if (LoopFastOnce == ENABLE)
       loop_fast();
@@ -145,6 +145,42 @@ void MTD2A_binary_output::set_setPinValue  (const uint8_t &setSetPinValue, const
     errorNumber = 11; MTD2A_print_error_text (debugPrint, errorNumber, pinNumber);
   }
 } // set_setPinValue
+
+
+void MTD2A_binary_output::set_outputTimer (const bool &changeOutputTimer, const bool &LoopFastOnce) {
+  if (changeOutputTimer == STOP_TIMER) 
+    stopOutputTM = ENABLE;
+  else { // Restart timer
+    MTD2A_print_phase_line (debugPrint, objectName, phaseText[OUTPUT_PHASE], RESTART_TIMER);
+    setOutputMS = millis();
+  }
+  if (LoopFastOnce == ENABLE)
+    loop_fast();
+} // set_outputTimer
+
+
+void MTD2A_binary_output::set_beginTimer (const bool &changeBeginTimer, const bool &LoopFastOnce) {
+  if (changeBeginTimer == STOP_TIMER) 
+    stopBeginTM = ENABLE;
+  else { // Restart timer
+    MTD2A_print_phase_line (debugPrint, objectName, phaseText[BEGIN_PHASE], RESTART_TIMER);
+    setBeginMS = millis();
+  }
+  if (LoopFastOnce == ENABLE)
+    loop_fast();
+} // set_beginTimer
+
+
+void MTD2A_binary_output::set_endTimer (const bool &changeEndTimer, const bool &LoopFastOnce) {
+  if (changeEndTimer == STOP_TIMER) 
+    stopEndTM = ENABLE;
+  else { // Restart timer
+    MTD2A_print_phase_line (debugPrint, objectName, phaseText[END_PHASE], RESTART_TIMER);
+    setEndMS = millis();
+  }
+  if (LoopFastOnce == ENABLE)
+    loop_fast();
+} // set_endTimer
 
 
 void MTD2A_binary_output::set_debugPrint (const bool &setEnableOrDisable, const bool &LoopFastOnce) {
@@ -207,7 +243,7 @@ uint8_t MTD2A_binary_output::check_pin_value (const uint8_t &checkPinValue) {
 
 
 void MTD2A_binary_output::write_pin_value (const uint8_t &writePinValue) {
-  if (pinWrite == ENABLE  && pinNumber != PIN_ERR_NO) {
+  if (pinWrite == ENABLE  && pinNumber != PIN_ERROR_NO) {
     if (pinOutputMode == BINARY) {
       if (pinOutput == NORMAL)
         digitalWrite(pinNumber, writePinValue);
@@ -218,7 +254,7 @@ void MTD2A_binary_output::write_pin_value (const uint8_t &writePinValue) {
       if (pinOutput == NORMAL)
         analogWrite(pinNumber, writePinValue);
       else
-        analogWrite(pinNumber, 255 - writePinValue);
+        analogWrite(pinNumber, MAX_BYTE_VALUE - writePinValue);
     }
   }
 } // write_pin_value
@@ -248,8 +284,9 @@ void MTD2A_binary_output::loop_fast_begin () {
     MTD2A_print_phase_line (debugPrint, objectName, phaseText[BEGIN_PHASE]);
   }
   currentTimeMS = millis();
-  if ((currentTimeMS - setBeginMS) >= beginDelayMS) {
+  if ((currentTimeMS - setBeginMS) >= beginDelayMS  ||  stopBeginTM == ENABLE) {
     phaseChange = true;
+    stopBeginTM = DISABLE;
     if (outputTimeMS > 0)
       phaseNumber = OUTPUT_PHASE;
     else if (endDelayMS > 0)
@@ -272,11 +309,12 @@ void MTD2A_binary_output::loop_fast_out_begin () {
 
 void MTD2A_binary_output::loop_fast_out_end () {
   currentTimeMS = millis();
-  if ((currentTimeMS - setOutputMS) >= outputTimeMS) {
+  if ((currentTimeMS - setOutputMS) >= outputTimeMS  ||  stopOutputTM == ENABLE) {
+    phaseChange = true;
+    stopOutputTM = DISABLE;
     // Do not write the same value twice
     if (pinBeginValue != pinEndValue) 
       write_pin_value (pinEndValue);    
-    phaseChange = true;    
     if (endDelayMS > 0)
       phaseNumber = END_PHASE;
     else
@@ -292,9 +330,10 @@ void MTD2A_binary_output::loop_fast_end () {
       MTD2A_print_phase_line (debugPrint, objectName, phaseText[END_PHASE]);
     }
     currentTimeMS = millis();
-    if ((currentTimeMS - setEndMS) >= endDelayMS) {
+    if ((currentTimeMS - setEndMS) >= endDelayMS  ||  stopEndTM == ENABLE) {
       phaseNumber = COMPLETE_PHASE;
       phaseChange = true;
+      stopEndTM = DISABLE;
     }
 } // loop_fast_end
 
@@ -314,8 +353,11 @@ void MTD2A_binary_output::reset () {
   setEndMS      = 0;
   errorNumber   = 0;
   phaseChange   = false;
-  phaseNumber   = RESET_PHASE; 
-  if (pinNumber == PIN_ERR_NO)
+  phaseNumber   = RESET_PHASE;
+  stopOutputTM  = DISABLE;
+  stopBeginTM   = DISABLE;
+  stopEndTM     = DISABLE;
+  if (pinNumber == PIN_ERROR_NO)
     pinWrite = DISABLE;
   else {
     pinWrite = ENABLE;

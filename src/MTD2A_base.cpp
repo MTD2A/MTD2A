@@ -33,16 +33,18 @@
 #ifndef _MTD2A_base_CPP_
 #define _MTD2A_base_CPP_
 
+
 #include "Arduino.h"
+#include "MTD2A_const.h"
 #include "MTD2A_base.h"
 
-using namespace MTD2A_const;
-
-
-// MTD2A initializers
+// MTD2A static initializers (c++11 thus not inline)
 bool     MTD2A::globalDebugPrint = DISABLE;
-uint32_t MTD2A::delayTimeMS = DELAY_10MS;
-uint8_t  MTD2A::ObjectCount = 0;
+uint32_t MTD2A::delayTimeMS      = DELAY_10MS;
+uint8_t  MTD2A::ObjectCount      = 0;
+uint32_t MTD2A::currentTimeMS    = 0;
+uint32_t MTD2A::lastTimeMS       = 0;
+uint32_t MTD2A::deltaTimeMS      = 0;
 // Funtion pointer linked list
 MTD2A   *MTD2A::begin = nullptr;
 MTD2A   *MTD2A::end   = nullptr;
@@ -79,9 +81,9 @@ void MTD2A::MTD2A_add_function_pointer_loop_fast (MTD2A* object) {
     begin = object;
   if (end != nullptr) {
     end->next = object;
-    ObjectCount++;
   }
   end = object;
+  ObjectCount++;
 }
 
 
@@ -97,7 +99,18 @@ void MTD2A::loop_execute() {
     object->function_pointer(object);
     object = object->next;
   }
-  delay(delayTimeMS);
+  // Cadence precision correction
+  if (delayTimeMS == DELAY_10MS) {
+    currentTimeMS = millis();
+    deltaTimeMS = currentTimeMS - lastTimeMS;
+    if (deltaTimeMS > DELAY_10MS)
+      ; // Serial.println(F("Warning: User coding delay is above threshold"));
+    else 
+      delay(DELAY_10MS - deltaTimeMS);
+    lastTimeMS = millis();
+  }
+  else
+    delay(delayTimeMS);
 }
 // ========== Function pointer linked list of the function "loop_fast" instantiated object
 
@@ -118,7 +131,7 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const
   static uint8_t pinFlags[NUM_DIGITAL_PINS] = {0};
   uint8_t checkErrorNumber = 0;
   // errorNumber {1-127} Error {128-255} Warning
-  if (checkPinNumber == PIN_ERR_NO) {
+  if (checkPinNumber == PIN_ERROR_NO) {
     checkErrorNumber = 1;
     return checkErrorNumber;
   }
@@ -170,26 +183,29 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const
   } // checkPinFlags & PWM_FLAG_5
 
   #ifndef NOT_AN_INTERRUPT // Interrupt capability check
-  #define NOT_AN_INTERRUPT = 255; // Fallback for older Arduino versions
+  #define NOT_AN_INTERRUPT MAX_BYTE_VALUE; // Fallback for older Arduino versions
   #endif
-  if ((checkPinFlags & INTERRUPT_FLAG_7)  &&  !digitalPinToInterrupt(checkPinNumber)  == NOT_AN_INTERRUPT) {
+
+  if ((checkPinFlags & INTERRUPT_FLAG_7)  &&  (digitalPinToInterrupt(checkPinNumber)  == NOT_AN_INTERRUPT)) {
     checkErrorNumber = 7;
     return checkErrorNumber;
   }
 
-  if (checkErrorNumber == 0  || checkErrorNumber >= 128) 
+  if (checkErrorNumber == 0  ||  checkErrorNumber >= WARNING_START) 
     pinFlags[checkPinNumber] |= checkPinFlags;
   return checkErrorNumber;
 } // MTD2A_reserve_and_check_pin
 
 
-void MTD2A::MTD2A_print_phase_line (const bool &checkDebugPrint, const char *printObjectName, const char *printPhaseText) {
+void MTD2A::MTD2A_print_phase_line (const bool &checkDebugPrint, const char *printObjectName, const char *printPhaseText, const bool &printRestartTimer) {
   if (checkDebugPrint == ENABLE  ||  globalDebugPrint == ENABLE) {
     Serial.print(millis()); Serial.print(F("\t ")); 
     if (printObjectName != nullptr)
       Serial.print(printObjectName);
     else
       Serial.print("Unnamed");
+    if (printRestartTimer == RESTART_TIMER)
+      Serial.print(": Restart timer ");
     Serial.print(F(": ")); Serial.println(printPhaseText);
   }
 } // MTD2A_print_phase_line 
@@ -197,7 +213,7 @@ void MTD2A::MTD2A_print_phase_line (const bool &checkDebugPrint, const char *pri
 
 void MTD2A::MTD2A_print_error_text (const bool &checkDebugPrint, const uint8_t &printErrorNumber, const uint8_t &printPinNumber) {
   if (checkDebugPrint == ENABLE || globalDebugPrint == ENABLE) {
-    if (printErrorNumber < 128) 
+    if (printErrorNumber < WARNING_START) 
       Serial.print (F("ERROR")); 
     else 
       Serial.print (F("Warning"));
@@ -218,7 +234,7 @@ void MTD2A::MTD2A_print_error_text (const bool &checkDebugPrint, const uint8_t &
       case  12: Serial.println (F("")); break;
       case 128: Serial.println (F("Pin used more than once"));         break;
       case 130: Serial.println (F("Timer value is zero"));             break;
-      case 140: Serial.println (F("Begin and end value is zero"));     break;
+      case 140: Serial.println (F("Output value is zero"));            break;
       case 141: Serial.println (F("All three timers are zero"));       break;
       default:
         Serial.println(F("Unknown error"));
@@ -246,7 +262,7 @@ void MTD2A::MTD2A_print_debug_error (const bool &printDebugPrint, const uint8_t 
 
 void MTD2A::MTD2A_print_pin_number (const uint8_t &printPinNumber) {
   Serial.print  (F("  pinNumber    : ")); Serial.print(printPinNumber); 
-  if (printPinNumber == PIN_ERR_NO) 
+  if (printPinNumber == PIN_ERROR_NO) 
     Serial.println(F(" (NOT defined)")); 
   else 
     Serial.println();

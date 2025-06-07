@@ -29,32 +29,13 @@
  ******************************************************************************
  */
 
- 
-#ifndef _MTD2A_const_H_
-#define _MTD2A_const_H_
-
-  namespace MTD2A_const {
-    // Easy understanding global definitions
-    constexpr bool    ENABLE        = true,  DISABLE      = false;
-    constexpr bool    ACTIVE        = true,  COMPLETE     = false;
-    constexpr bool    FIRST_TRIGGER = true,  LAST_TRIGGER = false;
-    constexpr bool    TIME_DELAY    = true,  MONO_STABLE  = false;
-    constexpr bool    NORMAL        = true,  INVERTED     = false;  
-    constexpr bool    PULSE         = true,  FIXED        = false;
-    constexpr bool    BINARY        = true,  PWM          = false;
-    // Process phaseses
-    constexpr uint8_t RESET_PHASE      = 0; 
-    constexpr uint8_t BEGIN_PHASE      = 1, OUTPUT_PHASE    = 2, END_PHASE      = 3; // binary_input 
-    constexpr uint8_t FIRST_TIME_PHASE = 1, LAST_TIME_PHASE = 2, BLOCKING_PHASE = 3; // binary_output
-    constexpr uint8_t COMPLETE_PHASE   = 4;
-  } // namespace _MTD2A_const 
-  using namespace MTD2A_const;
-
-#endif
-
 
 #ifndef _MTD2A_base_H_
 #define _MTD2A_base_H_
+
+#include "Arduino.h"
+#include "MTD2A_const.h"
+
 
 class MTD2A  // base class
 { 
@@ -76,23 +57,48 @@ class MTD2A  // base class
     friend class MTD2A_IR_ranging;
     friend class MTD2A_DCC_input;
 
-    virtual ~MTD2A() = default;
-    // Global functions
-    static void  set_globalDebugPrint (const bool &setEnableOrDisable = ENABLE);
-    static void  set_delayTimeMS      (const bool &setDelayTimeMS = DELAY_10MS);
-
   private:
-    static const uint8_t  PIN_ERR_NO {255};
-    static const uint32_t DELAY_10MS {10};
-    static const uint32_t DELAY_1MS  {1};
-    //
-    static uint32_t delayTimeMS;
-    static bool     globalDebugPrint;
-    static uint8_t  ObjectCount;
+    static constexpr uint8_t  MAX_BYTE_VALUE {255};
+    static constexpr uint8_t  PIN_ERROR_NO   {255};
+    static constexpr uint8_t  WARNING_START  {128};
+    // Global constants
+    static constexpr bool ENABLE         = MTD2A_const::ENABLE;
+    static constexpr bool DISABLE        = MTD2A_const::DISABLE;
+    static constexpr bool ACTIVE         = MTD2A_const::ACTIVE;
+    static constexpr bool COMPLETE       = MTD2A_const::COMPLETE;
+    static constexpr bool BINARY         = MTD2A_const::BINARY;
+    static constexpr bool NORMAL         = MTD2A_const::NORMAL;
+    static constexpr bool INVERTED       = MTD2A_const::INVERTED;
+    static constexpr bool PULSE          = MTD2A_const::PULSE;
+    static constexpr bool MONO_STABLE    = MTD2A_const::MONO_STABLE;
+    static constexpr bool LAST_TRIGGER   = MTD2A_const::LAST_TRIGGER;
+    static constexpr bool TIME_DELAY     = MTD2A_const::TIME_DELAY;
+    static constexpr bool PWM            = MTD2A_const::PWM;
+    static constexpr bool STOP_TIMER     = MTD2A_const::STOP_TIMER;
+    static constexpr bool RESTART_TIMER  = MTD2A_const::RESTART_TIMER;
+    static constexpr uint32_t DELAY_10MS = MTD2A_const::DELAY_10MS;
+    static constexpr uint32_t DELAY_1MS  = MTD2A_const::DELAY_1MS;
     //
     static const uint8_t DIGITAL_FLAG_0 {1}, ANALOG_FLAG_1 {2}, INPUT_FLAG_2 {4}, PULLUP_FLAG_3 {8}, 
                          OUTPUT_FLAG_4 {16}, PWM_FLAG_5 {32},   TONE_FLAG_6 {64}, INTERRUPT_FLAG_7 {128};
+    // 
+    static uint32_t delayTimeMS;
+    static bool     globalDebugPrint;
+    static uint8_t  ObjectCount;
+    static uint32_t currentTimeMS;
+    static uint32_t lastTimeMS;
+    static uint32_t deltaTimeMS;
 
+
+  public:
+    virtual ~MTD2A() = default;
+    // Global functions
+    static void    set_globalDebugPrint (const bool &setEnableOrDisable = ENABLE);
+    static void    set_delayTimeMS      (const bool &setDelayTimeMS = DELAY_10MS);
+    static bool    get_MaxDelayMS       ();
+    static uint8_t get_ObjectCount      ();
+
+  private:
     // Function pointer linked list -----------------------------------------------------------------------------------
     static void MTD2A_add_function_pointer_loop_fast (MTD2A* object);
     static MTD2A* begin;
@@ -111,7 +117,8 @@ class MTD2A  // base class
     // Internal functions
     static char   *MTD2A_set_object_name       (const char    *setObjectName);
     static uint8_t MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber,   const uint8_t &checkPinFlags);
-    static void    MTD2A_print_phase_line      (const bool    &checkDebugPrint,  const char    *printObjectName,   const char *printPhaseText);
+    static void    MTD2A_print_phase_line      (const bool    &checkDebugPrint,  const char    *printObjectName,   
+                                                const char    *printPhaseText,   const bool    &printRestartTimer = false);
     // Error and debug print
     static void    MTD2A_print_error_text      (const bool    &checkDebugPrint,  const uint8_t &printErrorNumber,  const uint8_t &printPinNumber);
     static void    MTD2A_print_debug_error     (const bool    &printDebugPrint,  const uint8_t &printErrorNumber);
@@ -121,7 +128,7 @@ class MTD2A  // base class
     static void    MTD2A_print_enable_disable  (const bool    &enableOrDisable);
     static void    MTD2A_print_normal_inverted (const bool    &normalOrInverted);
     static void    MTD2A_print_pulse_fixed     (const bool    &pulseOrFixed);
-
+    
 };  // MTD2A
 
 
