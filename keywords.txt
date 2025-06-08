@@ -10,14 +10,20 @@
 # Methods and Functions (KEYWORD2)
 #######################################
 
+MTD2A_const	KEYWORD2
+
+loop_execute	KEYWORD2
 set_globalDebugPrint	KEYWORD2
 set_delayTimeMS	KEYWORD2
-loop_execute	KEYWORD2
+get_maxExecTimeMS	KEYWORD2
+et_objectCount	KEYWORD2
+
 MTD2A_loop_execute	KEYWORD2
 MTD2A_globalDebugPrint	KEYWORD2
 MTD2A_delayTimeMS	KEYWORD2
+MTD2A_maxExecTimeMS	KEYWORD2
+MTD2A_objectCount	KEYWORD2
 
-MTD2A_const	KEYWORD2
 
 MTD2A_binary_input	KEYWORD2
 MTD2A_binary_output	KEYWORD2
