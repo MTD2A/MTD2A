@@ -5,18 +5,19 @@
 #include <MTD2A.h>
 using namespace MTD2A_const;
 
-MTD2A_binary_input  FC_51_stop  ("Stop",  10000);   // continous active time (no reactivation)
-MTD2A_binary_output train_sound ("Sound", 100, 3000);  // Wait 3 seconds and activate 0,1 second
-// Trigger sound board 2 seconds after train detection for duraten of 0,1 seconds
+MTD2A_binary_input  FC_51_stop  ("Stop train",  10000);   
+// continuous active time. No incorrect reactivation due to gaps between the wagons.
+MTD2A_binary_output train_sound ("Sound", 100, 5000);  // Wait 5 seconds and activate 0,1 second
+// Trigger sound board - non-blocking - 5 seconds after train detection for duraten of 0,1 seconds
 
 void setup() {
   Serial.begin(9600);
   MTD2A_globalDebugPrint(); // Enable debug print for all instantiated classes
 
-  byte FC_51_STOP_PIN  = 2;  // Arduino board input pin 2
-  byte TRAIN_SOUND_PIN = 9;  // Arduino board Output pin 9 
+  byte FC_51_STOP_PIN  = 2;   // Arduino board input pin 2
+  byte TRAIN_SOUND_PIN = A0;  // Arduino board Output pin Analog and digtal pin A0 
   FC_51_stop.initialize  (FC_51_STOP_PIN);
-  train_sound.initialize (TRAIN_SOUND_PIN);
+  train_sound.initialize (TRAIN_SOUND_PIN, INVERTED);
   // Danish and English speech from https://ttsmaker.com/
 }
 
