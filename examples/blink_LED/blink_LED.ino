@@ -1,4 +1,4 @@
-// Two blinking LEDs. One with symmetric interval and another with asymetric interval.
+// Two blinking LEDs. One with symmetric interval and another with asymmetric interval.
 // Jørgen Bo Madsen / may 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
