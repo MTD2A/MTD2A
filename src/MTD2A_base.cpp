@@ -41,32 +41,21 @@
 // MTD2A static initializers (c++11 thus not inline)
 bool     MTD2A::globalDebugPrint = DISABLE;
 uint32_t MTD2A::delayTimeMS      = DELAY_10MS;
-uint8_t  MTD2A::ObjectCount      = 0;
+uint8_t  MTD2A::objectCount      = 0;
 uint32_t MTD2A::currentTimeMS    = 0;
 uint32_t MTD2A::lastTimeMS       = 0;
-uint32_t MTD2A::deltaTimeMS      = 0;
+uint32_t MTD2A::execTimeMS       = 0;
+uint32_t MTD2A::maxExecTimeMS    = 0;
 // Funtion pointer linked list
 MTD2A   *MTD2A::begin = nullptr;
 MTD2A   *MTD2A::end   = nullptr;
 
 
-/*
- * @brief Enable print phase state number and phase state text for all instantiated classes
- * @name object_name.set_globalDebugPrint
- * @param ( {ENABLE | DISABLE} );
- * @return none
- */
 void MTD2A::set_globalDebugPrint (const bool &setEnableOrDisable) {
   globalDebugPrint = setEnableOrDisable;
 }
 
 
-/*
- * @brief Set main loop delay in milliseconds in function loop_execute();
- * @name object_name.set_delayTimeMS
- * @param ( {DELAY_10MS | DELAY_1MS} );
- * @return none
- */
 void MTD2A::set_delayTimeMS (const bool &setDelayTimeMS) {
   if (setDelayTimeMS == DELAY_10MS) 
     delayTimeMS = DELAY_10MS;
@@ -83,16 +72,10 @@ void MTD2A::MTD2A_add_function_pointer_loop_fast (MTD2A* object) {
     end->next = object;
   }
   end = object;
-  ObjectCount++;
+  objectCount++;
 }
 
 
-/*
- * @brief Update state mashine for all instantiated classes
- * @name MTD2A::loop_execute();
- * @param none
- * @return none
- */
 void MTD2A::loop_execute() {
   MTD2A* object = begin;
   while (object != nullptr) {
@@ -100,19 +83,31 @@ void MTD2A::loop_execute() {
     object = object->next;
   }
   // Cadence precision correction
+  currentTimeMS = millis();
+  execTimeMS = currentTimeMS - lastTimeMS;
+  if (execTimeMS > maxExecTimeMS)
+    maxExecTimeMS = execTimeMS;
   if (delayTimeMS == DELAY_10MS) {
-    currentTimeMS = millis();
-    deltaTimeMS = currentTimeMS - lastTimeMS;
-    if (deltaTimeMS > DELAY_10MS)
-      ; // Serial.println(F("Warning: User coding delay is above threshold"));
+    if (execTimeMS > DELAY_10MS)
+      ; // Serial.println(F("Warning: User coding executing delay is above threshold"));
     else 
-      delay(DELAY_10MS - deltaTimeMS);
-    lastTimeMS = millis();
+      delay(DELAY_10MS - execTimeMS);
   }
   else
     delay(delayTimeMS);
+  lastTimeMS = millis();
 }
 // ========== Function pointer linked list of the function "loop_fast" instantiated object
+
+
+uint32_t MTD2A::get_maxExecTimeMS () {
+   return maxExecTimeMS;
+}
+
+
+uint8_t MTD2A::get_objectCount () {
+  return objectCount;
+}
 
 
 char *MTD2A::MTD2A_set_object_name (const char *setObjectName) {

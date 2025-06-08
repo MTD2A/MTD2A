@@ -84,19 +84,20 @@ class MTD2A  // base class
     // 
     static uint32_t delayTimeMS;
     static bool     globalDebugPrint;
-    static uint8_t  ObjectCount;
+    static uint8_t  objectCount;
     static uint32_t currentTimeMS;
     static uint32_t lastTimeMS;
-    static uint32_t deltaTimeMS;
+    static uint32_t execTimeMS;
+    static uint32_t maxExecTimeMS;
 
 
   public:
     virtual ~MTD2A() = default;
     // Global functions
-    static void    set_globalDebugPrint (const bool &setEnableOrDisable = ENABLE);
-    static void    set_delayTimeMS      (const bool &setDelayTimeMS = DELAY_10MS);
-    static bool    get_MaxDelayMS       ();
-    static uint8_t get_ObjectCount      ();
+    static void     set_globalDebugPrint (const bool &setEnableOrDisable = ENABLE);
+    static void     set_delayTimeMS      (const bool &setDelayTimeMS = DELAY_10MS);
+    static uint32_t get_maxExecTimeMS    ();
+    static uint8_t  get_objectCount      ();
 
   private:
     // Function pointer linked list -----------------------------------------------------------------------------------
@@ -130,6 +131,61 @@ class MTD2A  // base class
     static void    MTD2A_print_pulse_fixed     (const bool    &pulseOrFixed);
     
 };  // MTD2A
+
+
+// User friendly alias and consistent naming ------------------------------------------------------------------------------------
+
+/*
+ * @brief Update state mashine for all instantiated classes
+ * @name MTD2A_loop_execute();
+ * @param none
+ * @return none
+ */
+inline void MTD2A_loop_execute() {
+  MTD2A::loop_execute();
+}
+
+/*
+ * @brief Enable print phase state number and phase state text for all instantiated classes
+ * @name MTD2A_globalDebugPrint
+ * @param ( {ENABLE | DISABLE} );
+ * @return none
+ */
+inline void MTD2A_globalDebugPrint (const bool &setEnableOrDisable = MTD2A_const::ENABLE) {
+  MTD2A::set_globalDebugPrint (setEnableOrDisable);
+}
+
+
+/*
+ * @brief Set main loop delay in milliseconds in function MTD2A_loop_execute();
+ * @name MTD2A_delayTimeMS
+ * @param ( {DELAY_10MS | DELAY_1MS} );
+ * @return none
+ */
+inline void MTD2A_delayTimeMS (const bool &setDelayTimeMS = MTD2A_const::DELAY_10MS) {
+  MTD2A::set_delayTimeMS(setDelayTimeMS); 
+}
+
+/*
+ * @brief Max MTD2A code and user code loop execution time delay 
+ * @name MTD2A_maxExecTimeMS();
+ * @param none
+ * @return unit32_t milliseconds
+ */
+inline uint32_t MTD2A_maxExecTimeMS () {
+  return MTD2A::get_maxExecTimeMS ();
+}
+
+
+/*
+ * @brief number of instatiated MTD2A objects 
+ * @name MTD2A_objectCount();
+ * @param none
+ * @return unit8_t count
+ */
+inline uint8_t MTD2A_objectCount () {
+  return MTD2A::get_objectCount ();
+}
 
 
 #endif
