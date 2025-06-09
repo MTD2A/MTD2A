@@ -9,7 +9,7 @@ Read sensor and write phase state information to Arduino IDE serial monitor http
 ### example_train_direction.ino
 Determining the direction of travel of the train (left / right)
 
-### eksample_stoplight_sound.ino (under development)
+### eksample_stoplight_sound.ino
 Stop light and sound message: The train brakes and temporarily stops at a red light.
 
 ### eksample_switch_direction.ino (under development)
