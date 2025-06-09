@@ -44,8 +44,8 @@ uint32_t MTD2A::delayTimeMS      = DELAY_10MS;
 uint8_t  MTD2A::objectCount      = 0;
 uint32_t MTD2A::currentTimeMS    = 0;
 uint32_t MTD2A::lastTimeMS       = 0;
-uint32_t MTD2A::execTimeMS       = 0;
-uint32_t MTD2A::maxExecTimeMS    = 0;
+uint32_t MTD2A::loopTimeMS       = 0;
+uint32_t MTD2A::maxLoopTimeMS    = 0;
 // Funtion pointer linked list
 MTD2A   *MTD2A::begin = nullptr;
 MTD2A   *MTD2A::end   = nullptr;
@@ -84,14 +84,14 @@ void MTD2A::loop_execute() {
   }
   // Cadence precision correction
   currentTimeMS = millis();
-  execTimeMS = currentTimeMS - lastTimeMS;
-  if (execTimeMS > maxExecTimeMS)
-    maxExecTimeMS = execTimeMS;
+  loopTimeMS = currentTimeMS - lastTimeMS;
+  if (loopTimeMS > maxLoopTimeMS)
+    maxLoopTimeMS = loopTimeMS;
   if (delayTimeMS == DELAY_10MS) {
-    if (execTimeMS > DELAY_10MS)
+    if (loopTimeMS > DELAY_10MS)
       ; // Serial.println(F("Warning: User coding executing delay is above threshold"));
     else 
-      delay(DELAY_10MS - execTimeMS);
+      delay(DELAY_10MS - loopTimeMS);
   }
   else
     delay(delayTimeMS);
@@ -100,8 +100,11 @@ void MTD2A::loop_execute() {
 // ========== Function pointer linked list of the function "loop_fast" instantiated object
 
 
-uint32_t MTD2A::get_maxExecTimeMS () {
-   return maxExecTimeMS;
+uint32_t MTD2A::get_reset_maxLoopMS () {
+  uint32_t tempLoopMS;
+  tempLoopMS = maxLoopTimeMS;
+  maxLoopTimeMS = 0;
+  return tempLoopMS;
 }
 
 

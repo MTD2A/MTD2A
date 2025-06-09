@@ -87,8 +87,8 @@ class MTD2A  // base class
     static uint8_t  objectCount;
     static uint32_t currentTimeMS;
     static uint32_t lastTimeMS;
-    static uint32_t execTimeMS;
-    static uint32_t maxExecTimeMS;
+    static uint32_t loopTimeMS;
+    static uint32_t maxLoopTimeMS;
 
 
   public:
@@ -96,8 +96,8 @@ class MTD2A  // base class
     // Global functions
     static void     set_globalDebugPrint (const bool &setEnableOrDisable = ENABLE);
     static void     set_delayTimeMS      (const bool &setDelayTimeMS = DELAY_10MS);
-    static uint32_t get_maxExecTimeMS    ();
     static uint8_t  get_objectCount      ();
+    static uint32_t get_reset_maxLoopMS  ();
 
   private:
     // Function pointer linked list -----------------------------------------------------------------------------------
@@ -167,13 +167,13 @@ inline void MTD2A_delayTimeMS (const bool &setDelayTimeMS = MTD2A_const::DELAY_1
 }
 
 /*
- * @brief Max MTD2A code and user code loop execution time delay 
- * @name MTD2A_maxExecTimeMS();
+ * @brief Max MTD2A code, user code and other library loop execution time 
+ * @name MTD2A_maxLoopMS();
  * @param none
  * @return unit32_t milliseconds
  */
-inline uint32_t MTD2A_maxExecTimeMS () {
-  return MTD2A::get_maxExecTimeMS ();
+inline uint32_t MTD2A_maxLoopMS () {
+  return MTD2A::get_reset_maxLoopMS ();
 }
 
 
