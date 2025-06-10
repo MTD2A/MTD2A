@@ -6,7 +6,7 @@ MTD2A.h
 * MTD2A_base.h
 * MTD2A_base.cpp
 
-### Classes and documentation
+### Classes and doxygen documentation
 * MTD2A_binary_input.h
 * MTD2A_binary_input.cpp
 * MTD2A_binary_output.h
