@@ -39,16 +39,16 @@
 #include "MTD2A_base.h"
 
 // MTD2A static initializers (c++11 thus not inline)
-bool     MTD2A::globalDebugPrint = DISABLE;
-uint32_t MTD2A::delayTimeMS      = DELAY_10MS;
-uint8_t  MTD2A::objectCount      = 0;
-uint32_t MTD2A::currentTimeMS    = 0;
-uint32_t MTD2A::lastTimeMS       = 0;
-uint32_t MTD2A::loopTimeMS       = 0;
-uint32_t MTD2A::maxLoopTimeMS    = 0;
+bool     MTD2A::globalDebugPrint {DISABLE};
+uint32_t MTD2A::delayTimeMS      {DELAY_10MS};
+uint8_t  MTD2A::objectCount      {0};
+uint32_t MTD2A::currentTimeMS    {0};
+uint32_t MTD2A::lastTimeMS       {0};
+uint32_t MTD2A::loopTimeMS       {0};
+uint32_t MTD2A::maxLoopTimeMS    {0};
 // Funtion pointer linked list
-MTD2A   *MTD2A::begin = nullptr;
-MTD2A   *MTD2A::end   = nullptr;
+MTD2A   *MTD2A::begin {nullptr};
+MTD2A   *MTD2A::end   {nullptr};
 
 
 void MTD2A::set_globalDebugPrint (const bool &setEnableOrDisable) {
@@ -85,8 +85,7 @@ void MTD2A::loop_execute() {
   // Cadence precision correction
   currentTimeMS = millis();
   loopTimeMS = currentTimeMS - lastTimeMS;
-  if (loopTimeMS > maxLoopTimeMS)
-    maxLoopTimeMS = loopTimeMS;
+  maxLoopTimeMS = max(loopTimeMS, maxLoopTimeMS);
   if (delayTimeMS == DELAY_10MS) {
     if (loopTimeMS > DELAY_10MS)
       ; // Serial.println(F("Warning: User coding executing delay is above threshold"));

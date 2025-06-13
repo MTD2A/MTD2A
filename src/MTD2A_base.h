@@ -44,7 +44,7 @@ class MTD2A  // base class
 
     friend class MTD2A_binary_output;
     friend class MTD2A_binary_input;
-    friend class MTD2A_delay; 
+    friend class MTD2A_timer; 
     friend class MTD2A_astable;
     friend class MTD2A_flip_flop;
     friend class MTD2A_tone;
@@ -62,22 +62,22 @@ class MTD2A  // base class
     static constexpr uint8_t  PIN_ERROR_NO   {255};
     static constexpr uint8_t  WARNING_START  {128};
     // Global constants
-    static constexpr bool ENABLE         = MTD2A_const::ENABLE;
-    static constexpr bool DISABLE        = MTD2A_const::DISABLE;
-    static constexpr bool ACTIVE         = MTD2A_const::ACTIVE;
-    static constexpr bool COMPLETE       = MTD2A_const::COMPLETE;
-    static constexpr bool BINARY         = MTD2A_const::BINARY;
-    static constexpr bool NORMAL         = MTD2A_const::NORMAL;
-    static constexpr bool INVERTED       = MTD2A_const::INVERTED;
-    static constexpr bool PULSE          = MTD2A_const::PULSE;
-    static constexpr bool MONO_STABLE    = MTD2A_const::MONO_STABLE;
-    static constexpr bool LAST_TRIGGER   = MTD2A_const::LAST_TRIGGER;
-    static constexpr bool TIME_DELAY     = MTD2A_const::TIME_DELAY;
-    static constexpr bool PWM            = MTD2A_const::PWM;
-    static constexpr bool STOP_TIMER     = MTD2A_const::STOP_TIMER;
-    static constexpr bool RESTART_TIMER  = MTD2A_const::RESTART_TIMER;
-    static constexpr uint32_t DELAY_10MS = MTD2A_const::DELAY_10MS;
-    static constexpr uint32_t DELAY_1MS  = MTD2A_const::DELAY_1MS;
+    static constexpr bool ENABLE         {MTD2A_const::ENABLE};
+    static constexpr bool DISABLE        {MTD2A_const::DISABLE};
+    static constexpr bool ACTIVE         {MTD2A_const::ACTIVE};
+    static constexpr bool COMPLETE       {MTD2A_const::COMPLETE};
+    static constexpr bool BINARY         {MTD2A_const::BINARY};
+    static constexpr bool NORMAL         {MTD2A_const::NORMAL};
+    static constexpr bool INVERTED       {MTD2A_const::INVERTED};
+    static constexpr bool PULSE          {MTD2A_const::PULSE};
+    static constexpr bool MONO_STABLE    {MTD2A_const::MONO_STABLE};
+    static constexpr bool LAST_TRIGGER   {MTD2A_const::LAST_TRIGGER};
+    static constexpr bool TIME_DELAY     {MTD2A_const::TIME_DELAY};
+    static constexpr bool PWM            {MTD2A_const::PWM};
+    static constexpr bool STOP_TIMER     {MTD2A_const::STOP_TIMER};
+    static constexpr bool RESTART_TIMER  {MTD2A_const::RESTART_TIMER};
+    static constexpr uint32_t DELAY_10MS {MTD2A_const::DELAY_10MS};
+    static constexpr uint32_t DELAY_1MS  {MTD2A_const::DELAY_1MS};
     //
     static const uint8_t DIGITAL_FLAG_0 {1}, ANALOG_FLAG_1 {2}, INPUT_FLAG_2 {4}, PULLUP_FLAG_3 {8}, 
                          OUTPUT_FLAG_4 {16}, PWM_FLAG_5 {32},   TONE_FLAG_6 {64}, INTERRUPT_FLAG_7 {128};
@@ -141,9 +141,13 @@ class MTD2A  // base class
  * @param none
  * @return none
  */
-inline void MTD2A_loop_execute() {
+//inline void MTD2A_loop_execute() {
+//  MTD2A::loop_execute();
+// }
+auto MTD2A_loop_execute = []() {
   MTD2A::loop_execute();
-}
+};
+
 
 /*
  * @brief Enable print phase state number and phase state text for all instantiated classes
@@ -151,9 +155,12 @@ inline void MTD2A_loop_execute() {
  * @param ( {ENABLE | DISABLE} );
  * @return none
  */
-inline void MTD2A_globalDebugPrint (const bool &setEnableOrDisable = MTD2A_const::ENABLE) {
-  MTD2A::set_globalDebugPrint (setEnableOrDisable);
-}
+//inline void MTD2A_globalDebugPrint (const bool &setEnableOrDisable = MTD2A_const::ENABLE) {
+//  MTD2A::set_globalDebugPrint (setEnableOrDisable);
+//}
+auto MTD2A_globalDebugPrint = [](const bool &setEnableOrDisable = MTD2A_const::ENABLE) {
+    MTD2A::set_globalDebugPrint(setEnableOrDisable);
+};
 
 
 /*
@@ -162,9 +169,13 @@ inline void MTD2A_globalDebugPrint (const bool &setEnableOrDisable = MTD2A_const
  * @param ( {DELAY_10MS | DELAY_1MS} );
  * @return none
  */
-inline void MTD2A_delayTimeMS (const bool &setDelayTimeMS = MTD2A_const::DELAY_10MS) {
+//inline void MTD2A_delayTimeMS (const bool &setDelayTimeMS = MTD2A_const::DELAY_10MS) {
+//  MTD2A::set_delayTimeMS(setDelayTimeMS); 
+//}
+
+auto MTD2A_delayTimeMS = [](const bool &setDelayTimeMS = MTD2A_const::DELAY_10MS) {
   MTD2A::set_delayTimeMS(setDelayTimeMS); 
-}
+};
 
 /*
  * @brief Max MTD2A code, user code and other library loop execution time 
@@ -172,9 +183,13 @@ inline void MTD2A_delayTimeMS (const bool &setDelayTimeMS = MTD2A_const::DELAY_1
  * @param none
  * @return unit32_t milliseconds
  */
-inline uint32_t MTD2A_maxLoopMS () {
+//inline uint32_t MTD2A_maxLoopMS () {
+//  return MTD2A::get_reset_maxLoopMS ();
+//}
+auto MTD2A_maxLoopMS = []() {
   return MTD2A::get_reset_maxLoopMS ();
-}
+};
+
 
 
 /*
@@ -183,9 +198,11 @@ inline uint32_t MTD2A_maxLoopMS () {
  * @param none
  * @return unit8_t count
  */
-inline uint8_t MTD2A_objectCount () {
+//inline uint8_t MTD2A_objectCount () {
+//  return MTD2A::get_objectCount ();
+//}
+auto MTD2A_objectCount = []() {
   return MTD2A::get_objectCount ();
-}
-
+};
 
 #endif
