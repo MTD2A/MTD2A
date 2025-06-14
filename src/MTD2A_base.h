@@ -61,7 +61,7 @@ class MTD2A  // base class
     static constexpr uint8_t  MAX_BYTE_VALUE {255};
     static constexpr uint8_t  PIN_ERROR_NO   {255};
     static constexpr uint8_t  WARNING_START  {128};
-    // Global constants
+    // Global constants from MTD2A_const.h
     static constexpr bool ENABLE         {MTD2A_const::ENABLE};
     static constexpr bool DISABLE        {MTD2A_const::DISABLE};
     static constexpr bool ACTIVE         {MTD2A_const::ACTIVE};
@@ -141,9 +141,6 @@ class MTD2A  // base class
  * @param none
  * @return none
  */
-//inline void MTD2A_loop_execute() {
-//  MTD2A::loop_execute();
-// }
 auto MTD2A_loop_execute = []() {
   MTD2A::loop_execute();
 };
@@ -155,9 +152,6 @@ auto MTD2A_loop_execute = []() {
  * @param ( {ENABLE | DISABLE} );
  * @return none
  */
-//inline void MTD2A_globalDebugPrint (const bool &setEnableOrDisable = MTD2A_const::ENABLE) {
-//  MTD2A::set_globalDebugPrint (setEnableOrDisable);
-//}
 auto MTD2A_globalDebugPrint = [](const bool &setEnableOrDisable = MTD2A_const::ENABLE) {
     MTD2A::set_globalDebugPrint(setEnableOrDisable);
 };
@@ -169,10 +163,6 @@ auto MTD2A_globalDebugPrint = [](const bool &setEnableOrDisable = MTD2A_const::E
  * @param ( {DELAY_10MS | DELAY_1MS} );
  * @return none
  */
-//inline void MTD2A_delayTimeMS (const bool &setDelayTimeMS = MTD2A_const::DELAY_10MS) {
-//  MTD2A::set_delayTimeMS(setDelayTimeMS); 
-//}
-
 auto MTD2A_delayTimeMS = [](const bool &setDelayTimeMS = MTD2A_const::DELAY_10MS) {
   MTD2A::set_delayTimeMS(setDelayTimeMS); 
 };
@@ -183,9 +173,6 @@ auto MTD2A_delayTimeMS = [](const bool &setDelayTimeMS = MTD2A_const::DELAY_10MS
  * @param none
  * @return unit32_t milliseconds
  */
-//inline uint32_t MTD2A_maxLoopMS () {
-//  return MTD2A::get_reset_maxLoopMS ();
-//}
 auto MTD2A_maxLoopMS = []() {
   return MTD2A::get_reset_maxLoopMS ();
 };
@@ -198,9 +185,6 @@ auto MTD2A_maxLoopMS = []() {
  * @param none
  * @return unit8_t count
  */
-//inline uint8_t MTD2A_objectCount () {
-//  return MTD2A::get_objectCount ();
-//}
 auto MTD2A_objectCount = []() {
   return MTD2A::get_objectCount ();
 };
