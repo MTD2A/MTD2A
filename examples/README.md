@@ -1,7 +1,7 @@
 # Arduino examples
 
 ### blink_LED.ino
-Two blinking LEDs. One with symmetric interval and another with asymetric interval https://youtu.be/vLySY92JdAM
+Two blinking LEDs. One with symmetric interval and another with asymetric interval https://youtu.be/eyGRazX9Bko
 
 ### read_sensor.ino
 Read sensor and write phase state information to Arduino IDE serial monitor https://youtu.be/RDFgEbhYUzE
