@@ -10,7 +10,7 @@ Read sensor and write phase state information to Arduino IDE serial monitor http
 Determining the direction of travel of the train (left / right) https://youtu.be/BqwTf03yEwQ
 
 ### stoplight_sound.ino
-Stop light and sound message: The train brakes and temporarily stops at a red light.
+Stop light and sound message: The train brakes and temporarily stops at a red light. https://youtu.be/I5TYpuBB0eI
 
 # To do
 
