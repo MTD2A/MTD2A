@@ -11,6 +11,7 @@ Determining the direction of travel of the train (left / right) https://youtu.be
 
 ### stoplight_sound.ino
 Stop light and sound message: The train brakes and temporarily stops at a red light. https://youtu.be/I5TYpuBB0eI
+Speaker announcement is broadcast to the passengers. If the train is passing by, no announcement is broadcast.
 
 # To do
 
