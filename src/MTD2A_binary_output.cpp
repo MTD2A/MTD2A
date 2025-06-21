@@ -72,7 +72,10 @@ void MTD2A_binary_output::initialize (const uint8_t &setPinNumber, const bool &s
   // Check for instantiate object error
   if (errorNumber > 0)
     MTD2A_print_error_text (debugPrint, errorNumber, pinNumber);
-  errorNumber = MTD2A_reserve_and_check_pin (setPinNumber, DIGITAL_FLAG_0 | OUTPUT_FLAG_4);
+  uint8_t initPinFlags {DIGITAL_FLAG_0 | OUTPUT_FLAG_4};
+  if (pinOutputMode == PWM)
+     initPinFlags = initPinFlags | PWM_FLAG_5;
+  errorNumber = MTD2A_reserve_and_check_pin (setPinNumber, initPinFlags);
   if (errorNumber == 0) {
     pinWrite  = ENABLE;
     pinNumber = setPinNumber;

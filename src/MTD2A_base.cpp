@@ -254,6 +254,8 @@ void MTD2A::MTD2A_print_debug_error (const bool &printDebugPrint, const uint8_t 
   if (printErrorNumber == 0) {
      Serial.print(printErrorNumber); Serial.println (F(" OK")); 
   }
+  else
+    Serial.println(printErrorNumber);
 }; // MTD2A_print_debug_error 
 
 
