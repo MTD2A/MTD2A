@@ -14,12 +14,12 @@ Determining the direction of travel of the train (left / right) https://youtu.be
 
 ### stoplight_sound.ino
 Stop light and sound message: The train brakes and temporarily stops at a red light. https://youtu.be/I5TYpuBB0eI
-Speaker announcement is broadcast to the passengers. If the train is passing by, no announcement is broadcast.
+<br/> Speaker announcement is broadcast to the passengers. If the train is passing by, no announcement is broadcast.
 <br/> Diagram drawing: [Stoplight sound](/image/stoplight_sound.png)
 
 ### switch_direction.ino
 Automatic switch to the direction the train is coming from (to avoid derailment if the switch direction is wrong).
-Using standard LGB switch (turnout) with position switches for feedback.
+Using standard LGB switch (turnout) with position switches for feedback. https://youtu.be/oMeD3e_oXEI
 <br/> Diagram drawing: [Switch (turnout) direction](/main/image/switch_direction.png)
 
 # To do
