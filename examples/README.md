@@ -20,6 +20,7 @@ Speaker announcement is broadcast to the passengers. If the train is passing by,
 ### switch_direction.ino
 Automatic switch to the direction the train is coming from (to avoid derailment if the switch direction is wrong).
 Using standard LGB switch (turnout) with position switches for feedback.
+<br/> Diagram drawing: [Switch (turnout) direction](/main/image/switch_direction.png)
 
 # To do
 
