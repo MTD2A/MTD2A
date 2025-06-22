@@ -19,7 +19,7 @@ Stop light and sound message: The train brakes and temporarily stops at a red li
 
 ### switch_direction.ino
 Automatic switch to the direction the train is coming from (to avoid derailment if the switch direction is wrong).
-Using standard LGB switch (turnout) with position switches for feedback. https://youtu.be/oMeD3e_oXEI
+<br/> Using standard LGB switch (turnout) with position switches for feedback. https://youtu.be/oMeD3e_oXEI
 <br/> Diagram drawing: [Switch (turnout) direction](/image/switch_direction.png)
 
 # To do
