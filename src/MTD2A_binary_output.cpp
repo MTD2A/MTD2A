@@ -47,12 +47,12 @@ MTD2A_binary_output::MTD2A_binary_output
     const uint8_t  setPinEndValue
   )
   : 
-    outputTimeMS{setOutputTimeMS},
-    beginDelayMS{setBeginDelayMS},
-    endDelayMS{setEndDelayMS},
+    outputTimeMS {setOutputTimeMS},
+    beginDelayMS {setBeginDelayMS},
+    endDelayMS   {setEndDelayMS},
     pinOutputMode{setPinOutputMode}, 
     pinBeginValue{setPinBeginValue}, 
-    pinEndValue{setPinEndValue},
+    pinEndValue  {setPinEndValue},
     // Instatiated funtion pointer
     MTD2A{[](MTD2A* funcPtr) { static_cast<MTD2A_binary_output*>(funcPtr)->loop_fast(); }}
   {
@@ -92,23 +92,61 @@ void MTD2A_binary_output::initialize (const uint8_t &setPinNumber, const bool &s
 } // initialize
 
 
-void MTD2A_binary_output::activate (const bool &LoopFastOnce) {
+
+void MTD2A_binary_output::activate () {
+  if (processState == COMPLETE)
+    activate_process ();
+} 
+
+void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue) {
   if (processState == COMPLETE) {
-    processState = ACTIVE;
-    phaseChange  = true;
-    // Determine starting phase based on configured delays
-    if (beginDelayMS > 0)
-        phaseNumber = BEGIN_PHASE; 
-    else if (outputTimeMS > 0)
-      phaseNumber = OUTPUT_PHASE;
-    else if (endDelayMS > 0)
-      phaseNumber = END_PHASE;
-    else
-       phaseNumber = COMPLETE_PHASE;
+    pinBeginValue = check_pin_value (setPinBeginValue);
+    activate_process ();
+  }
+}  
+
+void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue) {
+  if (processState == COMPLETE) {
+    pinBeginValue = check_pin_value (setPinBeginValue);
+    pinEndValue   = check_pin_value (setPinEndValue);
+    activate_process ();
+  }
+}
+
+void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType) {
+  if (processState == COMPLETE) {
+    pinBeginValue = check_pin_value (setPinBeginValue);
+    pinEndValue   = check_pin_value (setPinEndValue);
+    PWMcurveType = setPWMcurveType;
+    activate_process ();
+  }
+}
+
+void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType, const bool &LoopFastOnce) {
+  if (processState == COMPLETE) {
+    pinBeginValue = check_pin_value (setPinBeginValue);
+    pinEndValue   = check_pin_value (setPinEndValue);
+    PWMcurveType = setPWMcurveType;
+    activate_process ();
     if (LoopFastOnce == ENABLE)
       loop_fast();
   }
-} // activate
+}
+
+void MTD2A_binary_output::activate_process () {
+  processState = ACTIVE;
+  phaseChange  = true;
+  // Determine starting phase based on configured delays
+  if (beginDelayMS > 0)
+      phaseNumber = BEGIN_PHASE; 
+  else if (outputTimeMS > 0)
+    phaseNumber = OUTPUT_PHASE;
+  else if (endDelayMS > 0)
+    phaseNumber = END_PHASE;
+  else
+    phaseNumber = COMPLETE_PHASE;
+} // activate_process
+
 
 
 void MTD2A_binary_output::set_pinWrite (const bool &setPinEnableOrDisable, const bool &LoopFastOnce) {
@@ -123,7 +161,6 @@ void MTD2A_binary_output::set_pinWrite (const bool &setPinEnableOrDisable, const
 }  // set_pinWrite
 
 
-
 void MTD2A_binary_output::set_pinOutput (const bool &setPinNomalOrInverted, const bool &LoopFastOnce) {
   if (pinNumber != PIN_ERROR_NO) {
     pinOutput = setPinNomalOrInverted;
@@ -134,7 +171,6 @@ void MTD2A_binary_output::set_pinOutput (const bool &setPinNomalOrInverted, cons
     errorNumber = 1; MTD2A_print_error_text (debugPrint, errorNumber, pinNumber);
   }
 }
-
 
 
 void MTD2A_binary_output::set_setPinValue  (const uint8_t &setSetPinValue, const bool &LoopFastOnce) {

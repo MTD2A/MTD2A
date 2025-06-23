@@ -38,7 +38,8 @@ class MTD2A_binary_input: public MTD2A
 {
   public:
     // Debug help text
-    const char *phaseText[5] = { "[0] Reset", "[1] First time", "[2] Last time", "[3] Pin blocking", "[4] Complete" };
+    static constexpr const char* phaseText[5] = { "[0] Reset", "[1] First time", "[2] Last time", "[3] Pin blocking", "[4] Complete" };
+
 
   private:
     static constexpr uint8_t RESET_PHASE      = MTD2A_const::RESET_PHASE; 

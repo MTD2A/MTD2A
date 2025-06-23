@@ -38,15 +38,29 @@ class MTD2A_binary_output: public MTD2A
 {
   public:
     // Debug help text
-    const char *phaseText[5] = { "[0] Reset", "[1] Begin delay", "[2] Output", "[3] End delay", "[4] Complete" };
+    static constexpr const char* phaseText[5] = { "[0] Reset", "[1] Begin delay", "[2] Output", "[3] End delay", "[4] Complete" };
+
+//    static const char *phaseText[5];
 
   private:
-    // Global phases
+    // Global parameter constants
     static constexpr uint8_t RESET_PHASE    = MTD2A_const::RESET_PHASE; 
     static constexpr uint8_t BEGIN_PHASE    = MTD2A_const::BEGIN_PHASE;
     static constexpr uint8_t OUTPUT_PHASE   = MTD2A_const::OUTPUT_PHASE; 
     static constexpr uint8_t END_PHASE      = MTD2A_const::END_PHASE;
     static constexpr uint8_t COMPLETE_PHASE = MTD2A_const::COMPLETE_PHASE;
+    // PWM curves
+    static constexpr uint8_t NO_CURVE       = MTD2A_const::NO_CURVE;
+    static constexpr uint8_t RISING_XY      = MTD2A_const::RISING_XY;
+    static constexpr uint8_t FALLING_XY     = MTD2A_const::FALLING_XY;
+    static constexpr uint8_t RISING_B05     = MTD2A_const::RISING_B05;
+    static constexpr uint8_t RISING_B025    = MTD2A_const::RISING_B025;
+    static constexpr uint8_t RISING_E05     = MTD2A_const::RISING_E05;
+    static constexpr uint8_t RISING_E025    = MTD2A_const::RISING_E025;
+    static constexpr uint8_t FALLING_B05    = MTD2A_const::FALLING_B05;
+    static constexpr uint8_t FALLING_B025   = MTD2A_const::FALLING_E025;
+    static constexpr uint8_t FALLING_E05    = MTD2A_const::FALLING_E05;
+    static constexpr uint8_t FALLING_E025   = MTD2A_const::FALLING_E025;
     // Arguments
     char    *objectName    {nullptr};      // Constructor default argument (User defined name to display identification)
     uint32_t outputTimeMS  {0};            // Constructor default argument (Milliseconds) 
@@ -76,7 +90,11 @@ class MTD2A_binary_output: public MTD2A
     uint8_t  errorNumber   {0};            // get_reset_error () Error {1-127} and Warning {128-255}
     // state control
     bool     phaseChange   {false};        // true = change in timing state
-    uint8_t  phaseNumber   {RESET_PHASE};  // Initialize and reset= 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4 
+    uint8_t  phaseNumber   {RESET_PHASE};  // Initialize and reset= 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4
+    // PWMcurves
+    uint8_t  PWMcurveType  {NO_CURVE};     // PWM curve selection   
+    //const uint32_t PWM_ARRAY_SIZE {256};   // 255 steps
+    //uint8_t  PWMcurveArray [255] {0};
 
   public:
     // Constructor inittializers
@@ -132,7 +150,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief If setPinNumber > NUM_DIGITAL_PINS, pin writing is disabled!
      * @brief If PWM is selected and pin does not support PWM, pin writing is disabled!
      * @name object_name.initialize 
-     * @param ( {0 - NUM_DIGITAL_PINS | 255}, BINARY {HIGH | LOW} / PWM {0-255} );
+     * @param ( {0 - NUM_DIGITAL_PINS | 255}, {NORMAL| INVERTED}, BINARY {HIGH | LOW} / PWM {0-255} );
      * @return none
      */
     void initialize (const uint8_t &setPinNumber = PIN_ERROR_NO, const bool &setPinNomalOrInverted = NORMAL, const uint8_t &setStartPinValue = LOW);
@@ -141,11 +159,14 @@ class MTD2A_binary_output: public MTD2A
     /*
      * @brief Activate process. Optional process update.
      * @name object_name.activate
-     * @param ( {PULSE | fixed} );
+     * @param ( pinBeginValueMS, pinEndValue, PWMcurve ));
      * @return none
      */  
-    void activate (const bool &LoopFastOnce = DISABLE);
-  
+    void activate ();
+    void activate (const uint8_t &setPinBeginValue);
+    void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue);
+    void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType);
+    void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType, const bool &LoopFastOnce);
 
 
     /*
@@ -317,6 +338,7 @@ class MTD2A_binary_output: public MTD2A
 
 
   private: // Functions
+    void    activate_process    ();
     uint8_t check_pin_value     (const uint8_t &checkPinValue);
     void    write_pin_value     (const uint8_t &setPinValue);
     void    loop_fast_begin     ();

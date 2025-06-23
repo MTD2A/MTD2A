@@ -147,10 +147,18 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const
     checkErrorNumber = 2;
     return checkErrorNumber;
   }
-  if ((checkPinFlags & ANALOG_FLAG_1)  &&  (analogInputToDigitalPin(NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS - checkPinNumber))) {
-    checkErrorNumber = 3;
-    return checkErrorNumber;
-  } 
+  // Analog
+  #ifdef analogInputToDigitalPin
+    if ((checkPinFlags & ANALOG_FLAG_1)  &&  (analogInputToDigitalPin(NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS - checkPinNumber))) {
+      checkErrorNumber = 3;
+      return checkErrorNumber;
+    } 
+  #else
+    if ((checkPinFlags & ANALOG_FLAG_1)  &&  (NUM_DIGITAL_PINS - checkPinNumber >= NUM_ANALOG_INPUTS)) {
+      checkErrorNumber = 3;
+      return checkErrorNumber;
+    }
+  #endif
   // Double pin binding
   if ((pinFlags[checkPinNumber] & INPUT_FLAG_2)  &&  (checkPinFlags & INPUT_FLAG_2)) {
     checkErrorNumber = 128;  // Warning, but continue processing
@@ -223,7 +231,7 @@ void MTD2A::MTD2A_print_error_text (const bool &checkDebugPrint, const uint8_t &
       case   4: Serial.println (F("Output pin already in use"));       break;
       case   5: Serial.println (F("Pin does not support PWM"));        break;
       case   6: Serial.println (F("tone() conflicts with PWM pin"));   break;
-      case   7: Serial.println (F("Pin does not support interrupt"));  break;    
+      case   7: Serial.println (F("Pin does not support interrupt"));  break;
       case   8: Serial.println (F("Must be INPUT or INPUT_PULLUP"));   break;
       case   9: Serial.println (F("Pin number not set (255)"));        break;
       case  10: Serial.println (F("")); break;
