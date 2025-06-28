@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.h
  * @author  Joergen Bo Madsen
- * @version V1.1.5
- * @date    30. maj 2025
+ * @version V1.1.6
+ * @date    28. june 2025
  * @brief   Abstract base Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -73,7 +73,7 @@ class MTD2A  // base class
     static constexpr bool MONO_STABLE    {MTD2A_const::MONO_STABLE};
     static constexpr bool LAST_TRIGGER   {MTD2A_const::LAST_TRIGGER};
     static constexpr bool TIME_DELAY     {MTD2A_const::TIME_DELAY};
-    static constexpr bool PWM            {MTD2A_const::PWM};
+    static constexpr bool P_W_M          {MTD2A_const::P_W_M};
     static constexpr bool STOP_TIMER     {MTD2A_const::STOP_TIMER};
     static constexpr bool RESTART_TIMER  {MTD2A_const::RESTART_TIMER};
     static constexpr uint32_t DELAY_10MS {MTD2A_const::DELAY_10MS};
@@ -82,22 +82,29 @@ class MTD2A  // base class
     static const uint8_t DIGITAL_FLAG_0 {1}, ANALOG_FLAG_1 {2}, INPUT_FLAG_2 {4}, PULLUP_FLAG_3 {8}, 
                          OUTPUT_FLAG_4 {16}, PWM_FLAG_5 {32},   TONE_FLAG_6 {64}, INTERRUPT_FLAG_7 {128};
     // 
-    static uint32_t delayTimeMS;
+   
     static bool     globalDebugPrint;
-    static uint8_t  objectCount;
-    static uint32_t currentTimeMS;
+    static bool     globalErrorPrint;
+    static uint32_t globalSyncTimeMS;
+    static uint32_t delayTimeMS;
     static uint32_t lastTimeMS;
     static uint32_t loopTimeMS;
     static uint32_t maxLoopTimeMS;
+    static uint8_t  objectCount;
 
 
   public:
     virtual ~MTD2A() = default;
-    // Global functions
+    // setters
     static void     set_globalDebugPrint (const bool &setEnableOrDisable = ENABLE);
+    static void     set_globalErrorPrint (const bool &setEnableOrDisable = DISABLE);
     static void     set_delayTimeMS      (const bool &setDelayTimeMS = DELAY_10MS);
-    static uint8_t  get_objectCount      ();
+    // getters
+    static uint32_t get_globalSyncTimeMS ();
     static uint32_t get_reset_maxLoopMS  ();
+    static uint8_t  get_objectCount      ();
+    
+    static void     print_conf           ();
 
   private:
     // Function pointer linked list -----------------------------------------------------------------------------------
@@ -117,15 +124,14 @@ class MTD2A  // base class
   private:
     // Internal functions
     static char   *MTD2A_set_object_name       (const char    *setObjectName);
-    static uint8_t MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber,   const uint8_t &checkPinFlags);
-    static void    MTD2A_print_phase_line      (const bool    &checkDebugPrint,  const char    *printObjectName,   
-                                                const char    *printPhaseText,   const bool    &printRestartTimer = false);
+    static uint8_t MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber,    const uint8_t &checkPinFlags);
+    static void    MTD2A_print_object_name     (const char    *printObjectName);
     // Error and debug print
-    static void    MTD2A_print_error_text      (const bool    &checkDebugPrint,  const uint8_t &printErrorNumber,  const uint8_t &printPinNumber);
-    static void    MTD2A_print_debug_error     (const bool    &printDebugPrint,  const uint8_t &printErrorNumber);
+    static void    MTD2A_print_error_text      (const bool    &DebugOrErrorPrint, const uint8_t &printErrorNumber, const uint8_t &printPinNumber);
+    static void    MTD2A_print_debug_error     (const bool    &printDebugPrint,   const bool    &printErrorPrint,  const uint8_t &printErrorNumber);
     static void    MTD2A_print_pin_number      (const uint8_t &printPinNumber);
-    static void    MTD2A_print_generic_info    (const char    *printObjectName,  const bool    &printProcessState, const char *printPhaseText);
-    static void    MTD2A_print_value_binary    (const bool    &binaryOrPWM,      const uint8_t &PrintValue);
+    static void    MTD2A_print_name_state      (const char    *printObjectName,   const bool    &printProcessState);
+    static void    MTD2A_print_value_binary    (const bool    &binaryOrP_W_M,     const uint8_t &PrintValue);
     static void    MTD2A_print_enable_disable  (const bool    &enableOrDisable);
     static void    MTD2A_print_normal_inverted (const bool    &normalOrInverted);
     static void    MTD2A_print_pulse_fixed     (const bool    &pulseOrFixed);
@@ -158,14 +164,37 @@ auto MTD2A_globalDebugPrint = [](const bool &setEnableOrDisable = MTD2A_const::E
 
 
 /*
+ * @brief Enable print error and warning text for all instantiated classes
+ * @name MTD2A_globalErrorPrint
+ * @param ( {ENABLE | DISABLE} );
+ * @return none
+ */
+auto MTD2A_globalErrorPrint = [](const bool &setEnableOrDisable  = MTD2A_const::DISABLE) {
+  MTD2A::set_globalErrorPrint (setEnableOrDisable);
+};
+
+
+/*
  * @brief Set main loop delay in milliseconds in function MTD2A_loop_execute();
  * @name MTD2A_delayTimeMS
  * @param ( {DELAY_10MS | DELAY_1MS} );
  * @return none
  */
 auto MTD2A_delayTimeMS = [](const bool &setDelayTimeMS = MTD2A_const::DELAY_10MS) {
-  MTD2A::set_delayTimeMS(setDelayTimeMS); 
+  MTD2A::set_delayTimeMS (setDelayTimeMS); 
 };
+
+
+/*
+ * @brief Current common time set for alle instantiated objects
+ * @name MTD2A_globalSyncTimeMS();
+ * @param none
+ * @return unit32_t milliseconds
+ */
+auto MTD2A_globalSyncTimeMS = []() {
+  MTD2A::get_globalSyncTimeMS ();
+};
+
 
 /*
  * @brief Max MTD2A code, user code and other library loop execution time 
@@ -178,7 +207,6 @@ auto MTD2A_maxLoopMS = []() {
 };
 
 
-
 /*
  * @brief number of instatiated MTD2A objects 
  * @name MTD2A_objectCount();
@@ -187,6 +215,17 @@ auto MTD2A_maxLoopMS = []() {
  */
 auto MTD2A_objectCount = []() {
   return MTD2A::get_objectCount ();
+};
+
+
+/*
+ * @brief print configuration parameters, timers and state logic.
+ * @name MTD2A_print_conf ();
+ * @param none
+ * @return none
+ */
+auto MTD2A_print_conf = []() {
+  return MTD2A::print_conf ();
 };
 
 #endif

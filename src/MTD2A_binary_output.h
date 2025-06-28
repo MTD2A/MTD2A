@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
- * @version V1.1.3
- * @date    30. maj 2025
+ * @version V1.1.4
+ * @date    28. june 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -36,57 +36,50 @@
 
 class MTD2A_binary_output: public MTD2A
 {
-  public:
-    // Debug help text
-    static constexpr const char* phaseText[5] = { "[0] Reset", "[1] Begin delay", "[2] Output", "[3] End delay", "[4] Complete" };
-
-//    static const char *phaseText[5];
-
   private:
-    // Global parameter constants
-    static constexpr uint8_t RESET_PHASE    = MTD2A_const::RESET_PHASE; 
-    static constexpr uint8_t BEGIN_PHASE    = MTD2A_const::BEGIN_PHASE;
-    static constexpr uint8_t OUTPUT_PHASE   = MTD2A_const::OUTPUT_PHASE; 
-    static constexpr uint8_t END_PHASE      = MTD2A_const::END_PHASE;
-    static constexpr uint8_t COMPLETE_PHASE = MTD2A_const::COMPLETE_PHASE;
+    static constexpr uint8_t RESET_PHASE    {MTD2A_const::RESET_PHASE}; 
+    static constexpr uint8_t BEGIN_PHASE    {MTD2A_const::BEGIN_PHASE};
+    static constexpr uint8_t OUTPUT_PHASE   {MTD2A_const::OUTPUT_PHASE}; 
+    static constexpr uint8_t END_PHASE      {MTD2A_const::END_PHASE};
+    static constexpr uint8_t COMPLETE_PHASE {MTD2A_const::COMPLETE_PHASE};
     // PWM curves
-    static constexpr uint8_t NO_CURVE       = MTD2A_const::NO_CURVE;
-    static constexpr uint8_t RISING_XY      = MTD2A_const::RISING_XY;
-    static constexpr uint8_t FALLING_XY     = MTD2A_const::FALLING_XY;
-    static constexpr uint8_t RISING_B05     = MTD2A_const::RISING_B05;
-    static constexpr uint8_t RISING_B025    = MTD2A_const::RISING_B025;
-    static constexpr uint8_t RISING_E05     = MTD2A_const::RISING_E05;
-    static constexpr uint8_t RISING_E025    = MTD2A_const::RISING_E025;
-    static constexpr uint8_t FALLING_B05    = MTD2A_const::FALLING_B05;
-    static constexpr uint8_t FALLING_B025   = MTD2A_const::FALLING_E025;
-    static constexpr uint8_t FALLING_E05    = MTD2A_const::FALLING_E05;
-    static constexpr uint8_t FALLING_E025   = MTD2A_const::FALLING_E025;
+    static constexpr uint8_t NO_CURVE       {MTD2A_const::NO_CURVE};
+    static constexpr uint8_t RISING_XY      {MTD2A_const::RISING_XY};
+    static constexpr uint8_t FALLING_XY     {MTD2A_const::FALLING_XY};
+    static constexpr uint8_t RISING_B05     {MTD2A_const::RISING_B05};
+    static constexpr uint8_t RISING_B025    {MTD2A_const::RISING_B025};
+    static constexpr uint8_t RISING_E05     {MTD2A_const::RISING_E05};
+    static constexpr uint8_t RISING_E025    {MTD2A_const::RISING_E025};
+    static constexpr uint8_t FALLING_B05    {MTD2A_const::FALLING_B05};
+    static constexpr uint8_t FALLING_B025   {MTD2A_const::FALLING_E025};
+    static constexpr uint8_t FALLING_E05    {MTD2A_const::FALLING_E05};
+    static constexpr uint8_t FALLING_E025   {MTD2A_const::FALLING_E025};
     // Arguments
     char    *objectName    {nullptr};      // Constructor default argument (User defined name to display identification)
     uint32_t outputTimeMS  {0};            // Constructor default argument (Milliseconds) 
     uint32_t beginDelayMS  {0};            // Constructor default argument (Milliseconds)  
     uint32_t endDelayMS    {0};            // Constructor default argument (Milliseconds)
-    bool     pinOutputMode {BINARY};       // Constructor default argument (BINARY/PWM)
-    uint8_t  pinBeginValue {HIGH};         // Constructor default argument BINARY {HIGH | LOW} / PWM {0-255} 
-    uint8_t  pinEndValue   {LOW};          // Constructor default argument BINARY {HIGH | LOW} / PWM {0-255}
+    bool     pinOutputMode {BINARY};       // Constructor default argument (BINARY/P_W_M)
+    uint8_t  pinBeginValue {HIGH};         // Constructor default argument BINARY {HIGH | LOW} / P_W_M {0-255} 
+    uint8_t  pinEndValue   {LOW};          // Constructor default argument BINARY {HIGH | LOW} / P_W_M {0-255}
     // pin and input setup
     uint8_t  pinNumber     {PIN_ERROR_NO}; // initialize () default argument
     bool     pinWrite      {DISABLE};      // initialize () MTD2A_reserve_and_check_pin ()
     bool     pinOutput     {NORMAL};       // initialize () and set_PinOutput () default argument / INVERTED
-    uint8_t  startPinValue {LOW};          // initialize () default argument BINARY {HIGH | LOW} / PWM {0-255}
-    uint8_t  setPinValue   {LOW};          // set_pinValue () default argument BINARY {HIGH | LOW} / PWM {0-255}
+    uint8_t  startPinValue {LOW};          // initialize () default argument BINARY {HIGH | LOW} / P_W_M {0-255}
+    uint8_t  setPinValue   {LOW};          // set_pinValue () default argument BINARY {HIGH | LOW} / P_W_M {0-255}
     bool     processState  {COMPLETE};     // process state / ACTIVE
     // Timers
     uint32_t setOutputMS   {0};            // Milliseconds (output start time)
     uint32_t setBeginMS    {0};            // Milliseconds (begin start time)
     uint32_t setEndMS      {0};            // Milliseconds (end start time)
-    uint32_t currentTimeMS {0};            // Handle millis overflow
     // Change timing
     bool     stopOutputTM  {DISABLE};      // stop output timer process
     bool     stopBeginTM   {DISABLE};      // stop begin delay timer proces
     bool     stopEndTM     {DISABLE};      // stop end delay timer proces
     // Other
-    bool     debugPrint    {DISABLE};      // set_debugPrint () default argument / on
+    bool     errorPrint    {DISABLE};      // set_errorPrint () default argument ENABLE
+    bool     debugPrint    {DISABLE};      // set_debugPrint () print debug & error. default argument ENABLE
     uint8_t  errorNumber   {0};            // get_reset_error () Error {1-127} and Warning {128-255}
     // state control
     bool     phaseChange   {false};        // true = change in timing state
@@ -101,7 +94,7 @@ class MTD2A_binary_output: public MTD2A
     /*
      * @brief Create object and set configuration parameters or use defaults
      * @name MTD2A_BINARY_output
-     * @param ( "Object Name", outputTimeMS, beginDelayMS, endDelayMS, {BINARY | PWM}, pinBeginValueMS, pinEndValue );
+     * @param ( "Object Name", outputTimeMS, beginDelayMS, endDelayMS, {BINARY | P_W_M}, pinBeginValueMS, pinEndValue );
      * @param outputTimeMS, beginDelayMS, endDelayMSd {0 - 4294967295} milliseconds. pinValue {0 - 255}
      * @return none
      */
@@ -148,9 +141,9 @@ class MTD2A_binary_output: public MTD2A
     /*
      * @brief Initalize and configure output pin. Optional loop update.
      * @brief If setPinNumber > NUM_DIGITAL_PINS, pin writing is disabled!
-     * @brief If PWM is selected and pin does not support PWM, pin writing is disabled!
+     * @brief If P_W_M is selected and pin does not support PWM, pin writing is disabled!
      * @name object_name.initialize 
-     * @param ( {0 - NUM_DIGITAL_PINS | 255}, {NORMAL| INVERTED}, BINARY {HIGH | LOW} / PWM {0-255} );
+     * @param ( {0 - NUM_DIGITAL_PINS | 255}, {NORMAL| INVERTED}, BINARY {HIGH | LOW} / P_W_M {0-255} );
      * @return none
      */
     void initialize (const uint8_t &setPinNumber = PIN_ERROR_NO, const bool &setPinNomalOrInverted = NORMAL, const uint8_t &setStartPinValue = LOW);
@@ -159,7 +152,7 @@ class MTD2A_binary_output: public MTD2A
     /*
      * @brief Activate process. Optional process update.
      * @name object_name.activate
-     * @param ( pinBeginValueMS, pinEndValue, PWMcurve ));
+     * @param ( pinBeginValueMS, pinEndValue, PWMcurveType ));
      * @return none
      */  
     void activate ();
@@ -200,7 +193,7 @@ class MTD2A_binary_output: public MTD2A
   
   
     /*
-     * @brief Enable or disable write to pin (BINARY and analog PWM)
+     * @brief Enable or disable write to pin (BINARY and analog P_W_M).Optional loop update.
      * @name object_name.set_pinWrite
      * @param ( {ENABLE | DISABLE} );
      * @return none
@@ -218,16 +211,16 @@ class MTD2A_binary_output: public MTD2A
 
 
     /*
-     * @brief write binary or PWM value directly to pin
+     * @brief write binary or PWM value directly to pin.Optional loop update.
      * @name object_name.set_setPinValue
-     * @param (BINARY {HIGH | LOW} / PWM {0-255} );
+     * @param (BINARY {HIGH | LOW} / P_W_M {0-255} );
      * @return none
      */  
     void set_setPinValue (const uint8_t &setSetPinValue = LOW, const bool &LoopFastOnce = DISABLE);
   
 
     /*
-     * @brief stop output timer process immediately and continue to next phase, or restart timer process
+     * @brief stop output timer process immediately and continue to next phase, or restart timer process. Optional loop update.
      * @name object_name.set_outputTimer
      * @param ( STOP_TIMER | RESTART_TIMER );
      * @return none
@@ -236,7 +229,7 @@ class MTD2A_binary_output: public MTD2A
   
 
     /*
-     * @brief stop output timer process immediately and continue to next phase, or restart timer process
+     * @brief stop begin timer process immediately and continue to next phase, or restart timer process. Optional loop update.
      * @name object_name.set_beginTimer
      * @param ( STOP_TIMER | RESTART_TIMER );
      * @return none
@@ -245,21 +238,30 @@ class MTD2A_binary_output: public MTD2A
   
 
     /*
-     * @brief stop begin timer process immediately and continue to next phase, or restart timer process
+     * @brief stop end timer process immediately and continue to next phase, or restart timer process. Optional loop update.
      * @name object_name.set_endTimer
      * @param ( STOP_TIMER | RESTART_TIMER );
      * @return none
      */
     void set_endTimer (const bool &changeEndTimer = STOP_TIMER, const bool &LoopFastOnce = DISABLE);
-
+    
 
     /*
-     * @brief Enable print phase state number and phase state text
+     * @brief Enable print phase state number, phase state text and error text. Optional loop update.
      * @name object_name.set_debugPrint
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */  
     void set_debugPrint (const bool &setEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
+    
+    
+    /*
+     * @brief Enable error print text. Optional loop update.
+     * @name object_name.set_debugPrint
+     * @param ( {ENABLE | DISABLE} );
+     * @return none
+     */  
+    void set_errorPrint (const bool &setEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
     
     
     // Getters -----------------------------------------------
@@ -346,7 +348,8 @@ class MTD2A_binary_output: public MTD2A
     void    loop_fast_out_end   ();
     void    loop_fast_end       ();
     void    loop_fast_complete  ();
-    
+    void    print_phase_text    ();
+    void    print_phase_line    (const bool &printRestartTimer = false);   
 }; // class MTD2A_binary_output 
 
 

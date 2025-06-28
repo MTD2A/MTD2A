@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.4
- * @date    30. maj 2025
+ * @version V1.1.5
+ * @date    28. june 2025
  * @brief   functions for MTD2A_base.h base class (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -38,14 +38,16 @@
 #include "MTD2A_const.h"
 #include "MTD2A_base.h"
 
-// MTD2A static initializers (c++11 thus not inline)
+
+// MTD2A static initializers (c++11 thus not class inline)
 bool     MTD2A::globalDebugPrint {DISABLE};
+bool     MTD2A::globalErrorPrint {ENABLE};
 uint32_t MTD2A::delayTimeMS      {DELAY_10MS};
-uint8_t  MTD2A::objectCount      {0};
-uint32_t MTD2A::currentTimeMS    {0};
+uint32_t MTD2A::globalSyncTimeMS {0};
 uint32_t MTD2A::lastTimeMS       {0};
 uint32_t MTD2A::loopTimeMS       {0};
 uint32_t MTD2A::maxLoopTimeMS    {0};
+uint8_t  MTD2A::objectCount      {0};
 // Funtion pointer linked list
 MTD2A   *MTD2A::begin {nullptr};
 MTD2A   *MTD2A::end   {nullptr};
@@ -56,11 +58,34 @@ void MTD2A::set_globalDebugPrint (const bool &setEnableOrDisable) {
 }
 
 
+void MTD2A::set_globalErrorPrint (const bool &setEnableOrDisable) {
+  globalErrorPrint = setEnableOrDisable;
+}
+
+
 void MTD2A::set_delayTimeMS (const bool &setDelayTimeMS) {
   if (setDelayTimeMS == DELAY_10MS) 
     delayTimeMS = DELAY_10MS;
   else 
     delayTimeMS = DELAY_1MS;
+}
+
+
+uint32_t MTD2A::get_globalSyncTimeMS () {
+  return globalSyncTimeMS;
+}
+
+
+uint32_t MTD2A::get_reset_maxLoopMS () {
+  uint32_t tempLoopMS;
+  tempLoopMS = maxLoopTimeMS;
+  maxLoopTimeMS = 0;
+  return tempLoopMS;
+}
+
+
+uint8_t MTD2A::get_objectCount () {
+  return objectCount;
 }
 
 
@@ -83,12 +108,12 @@ void MTD2A::loop_execute() {
     object = object->next;
   }
   // Cadence precision correction
-  currentTimeMS = millis();
-  loopTimeMS = currentTimeMS - lastTimeMS;
+  globalSyncTimeMS = millis();
+  loopTimeMS = globalSyncTimeMS - lastTimeMS;
   maxLoopTimeMS = max(loopTimeMS, maxLoopTimeMS);
   if (delayTimeMS == DELAY_10MS) {
     if (loopTimeMS > DELAY_10MS)
-      ; // Serial.println(F("Warning: User coding executing delay is above threshold"));
+      ; // Serial.println(F("Warning: User code executing delay is above threshold"));
     else 
       delay(DELAY_10MS - loopTimeMS);
   }
@@ -97,19 +122,6 @@ void MTD2A::loop_execute() {
   lastTimeMS = millis();
 }
 // ========== Function pointer linked list of the function "loop_fast" instantiated object
-
-
-uint32_t MTD2A::get_reset_maxLoopMS () {
-  uint32_t tempLoopMS;
-  tempLoopMS = maxLoopTimeMS;
-  maxLoopTimeMS = 0;
-  return tempLoopMS;
-}
-
-
-uint8_t MTD2A::get_objectCount () {
-  return objectCount;
-}
 
 
 char *MTD2A::MTD2A_set_object_name (const char *setObjectName) {
@@ -202,22 +214,17 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const
 } // MTD2A_reserve_and_check_pin
 
 
-void MTD2A::MTD2A_print_phase_line (const bool &checkDebugPrint, const char *printObjectName, const char *printPhaseText, const bool &printRestartTimer) {
-  if (checkDebugPrint == ENABLE  ||  globalDebugPrint == ENABLE) {
-    Serial.print(millis()); Serial.print(F("\t ")); 
-    if (printObjectName != nullptr)
-      Serial.print(printObjectName);
-    else
-      Serial.print("Unnamed");
-    if (printRestartTimer == RESTART_TIMER)
-      Serial.print(": Restart timer ");
-    Serial.print(F(": ")); Serial.println(printPhaseText);
-  }
-} // MTD2A_print_phase_line 
+void MTD2A::MTD2A_print_object_name (const char *printObjectName) {
+  Serial.print(millis()); Serial.print(F("\t ")); 
+  if (printObjectName != nullptr)
+    Serial.print(printObjectName);
+  else
+    Serial.print(F("Unnamed"));
+} // MTD2A_print_object_name
 
 
-void MTD2A::MTD2A_print_error_text (const bool &checkDebugPrint, const uint8_t &printErrorNumber, const uint8_t &printPinNumber) {
-  if (checkDebugPrint == ENABLE || globalDebugPrint == ENABLE) {
+void MTD2A::MTD2A_print_error_text (const bool &DebugOrErrorPrint, const uint8_t &printErrorNumber, const uint8_t &printPinNumber) {
+  if (DebugOrErrorPrint == ENABLE || globalDebugPrint == ENABLE ||  globalErrorPrint == ENABLE) {
     if (printErrorNumber < WARNING_START) 
       Serial.print (F("ERROR")); 
     else 
@@ -225,7 +232,7 @@ void MTD2A::MTD2A_print_error_text (const bool &checkDebugPrint, const uint8_t &
     Serial.print (F(" ["));     Serial.print (printErrorNumber); Serial.print (F("]: "));
     Serial.print (F(" Pin: ")); Serial.print (printPinNumber);   Serial.print (F(" - "));
     switch (printErrorNumber) {
-      case   1: Serial.println (F("Pin not defined"));                 break;
+      case   1: Serial.println (F("Pin number not set (255)"));        break;
       case   2: Serial.println (F("Digital pin number out of range")); break;
       case   3: Serial.println (F("Analog pin number out of range"));  break;
       case   4: Serial.println (F("Output pin already in use"));       break;
@@ -233,31 +240,30 @@ void MTD2A::MTD2A_print_error_text (const bool &checkDebugPrint, const uint8_t &
       case   6: Serial.println (F("tone() conflicts with PWM pin"));   break;
       case   7: Serial.println (F("Pin does not support interrupt"));  break;
       case   8: Serial.println (F("Must be INPUT or INPUT_PULLUP"));   break;
-      case   9: Serial.println (F("Pin number not set (255)"));        break;
-      case  10: Serial.println (F("")); break;
       case  11: Serial.println (F("Pin write is disabled"));           break;
-      case  12: Serial.println (F("")); break;
       case 128: Serial.println (F("Pin used more than once"));         break;
       case 130: Serial.println (F("Timer value is zero"));             break;
       case 140: Serial.println (F("Output value is zero"));            break;
       case 141: Serial.println (F("All three timers are zero"));       break;
       default:
-        Serial.println(F("Unknown error"));
+        Serial.println(F("Unknown error. Please report"));
     }
   }
 } // MTD2A_print_error_text
 
 
-void MTD2A::MTD2A_print_generic_info (const char *printObjectName, const bool &printProcessState, const char *printPhaseText) {
+void MTD2A::MTD2A_print_name_state (const char *printObjectName, const bool &printProcessState) {
   for (size_t i {1}; i < 20; i++) Serial.print(F("-")); Serial.println();
   Serial.print  (F("  objectName   : ")); Serial.println(printObjectName);
   Serial.print  (F("  processState : ")); if (printProcessState == ACTIVE) Serial.println(F("ACTIVE")); else Serial.println(F("COMPLETE"));
-  Serial.print  (F("  phaseText    : ")); Serial.println(printPhaseText);
 }; // MTD2A_print_phase_info
 
 
-void MTD2A::MTD2A_print_debug_error (const bool &printDebugPrint, const uint8_t &printErrorNumber) {
+void MTD2A::MTD2A_print_debug_error (const bool &printDebugPrint, const bool &printErrorPrint, const uint8_t &printErrorNumber) {
   Serial.print  (F("  debugPrint   : "));  MTD2A_print_enable_disable(printDebugPrint);
+  Serial.print  (F("  globalDebugPr: "));  MTD2A_print_enable_disable(globalDebugPrint);
+  Serial.print  (F("  errorPrint   : "));  MTD2A_print_enable_disable(printErrorPrint);
+  Serial.print  (F("  globalErrorPr: "));  MTD2A_print_enable_disable(globalErrorPrint);
   Serial.print  (F("  errorNumber  : "));
   if (printErrorNumber == 0) {
      Serial.print(printErrorNumber); Serial.println (F(" OK")); 
@@ -277,8 +283,8 @@ void MTD2A::MTD2A_print_pin_number (const uint8_t &printPinNumber) {
 // MTD2A_print_pin_number
 
 
-void MTD2A::MTD2A_print_value_binary (const bool &binaryOrPWM, const uint8_t &PrintValue) {
-  if (binaryOrPWM == PWM)
+void MTD2A::MTD2A_print_value_binary (const bool &binaryOrP_W_M, const uint8_t &PrintValue) {
+  if (binaryOrP_W_M == P_W_M)
     Serial.println(PrintValue);
   else {
     if (PrintValue == HIGH) 
@@ -310,6 +316,20 @@ void MTD2A::MTD2A_print_normal_inverted (const bool &normalOrInverted) {
     Serial.println(F("NORMAL"));
   else 
     Serial.println(F("INVERTED"));
+}
+
+void MTD2A::print_conf () {
+  Serial.println(F("MTD2A_base:"));
+  Serial.println(F("----------------"));
+  Serial.print(F(" globalDebugPrint: ")); MTD2A_print_enable_disable(globalDebugPrint);
+  Serial.print(F(" globalErrorPrint: ")); MTD2A_print_enable_disable(globalErrorPrint);
+  Serial.print(F(" globalSyncTimeMS: ")); Serial.println(globalSyncTimeMS);
+  Serial.print(F(" delayTimeMS     : ")); if (delayTimeMS == DELAY_1MS) Serial.println(F("DELAY_1MS")); 
+                                          else Serial.println(F("DELAY_10MS"));
+  Serial.print(F(" lastTimeMS      : ")); Serial.println(lastTimeMS);
+  Serial.print(F(" loopTimeMS      : ")); Serial.println(loopTimeMS);
+  Serial.print(F(" maxLoopTimeMS   : ")); Serial.println(maxLoopTimeMS);
+  Serial.print(F(" objectCount     : ")); Serial.println(objectCount);
 }
 
 #endif

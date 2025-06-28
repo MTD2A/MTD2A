@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_input.h
  * @author  Joergen Bo Madsen
- * @version V1.1.3
- * @date    30. maj 2025
+ * @version V1.1.4
+ * @date    28. june 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -36,17 +36,12 @@
 
 class MTD2A_binary_input: public MTD2A
 {
-  public:
-    // Debug help text
-    static constexpr const char* phaseText[5] = { "[0] Reset", "[1] First time", "[2] Last time", "[3] Pin blocking", "[4] Complete" };
-
-
   private:
-    static constexpr uint8_t RESET_PHASE      = MTD2A_const::RESET_PHASE; 
-    static constexpr uint8_t FIRST_TIME_PHASE = MTD2A_const::FIRST_TIME_PHASE;
-    static constexpr uint8_t LAST_TIME_PHASE  = MTD2A_const::LAST_TIME_PHASE; 
-    static constexpr uint8_t BLOCKING_PHASE   = MTD2A_const::BLOCKING_PHASE;
-    static constexpr uint8_t COMPLETE_PHASE   = MTD2A_const::COMPLETE_PHASE;
+    static constexpr uint8_t RESET_PHASE      {MTD2A_const::RESET_PHASE}; 
+    static constexpr uint8_t FIRST_TIME_PHASE {MTD2A_const::FIRST_TIME_PHASE};
+    static constexpr uint8_t LAST_TIME_PHASE  {MTD2A_const::LAST_TIME_PHASE}; 
+    static constexpr uint8_t BLOCKING_PHASE   {MTD2A_const::BLOCKING_PHASE};
+    static constexpr uint8_t COMPLETE_PHASE   {MTD2A_const::COMPLETE_PHASE};
     // Arguments
     char    *objectName    {nullptr};      // Constructor initialized (User defined name to display identification)
     uint32_t delayTimeMS   {0};            // Constructor default argument (Milliseconds)
@@ -61,13 +56,13 @@ class MTD2A_binary_input: public MTD2A
     bool     inputMode     {PULSE};        // set_InputState () default argument / FIXED
     // Other
     bool     debugPrint    {DISABLE};      // set_debugPrint () default argument / ENABLE
+    bool     errorPrint    {DISABLE};      // set_errorPrint () default argument / ENABLE
     uint8_t  errorNumber   {0};            // get_reset_error () Error {1-127} and Warning {128-255}
     // Timers    
     uint32_t firstTimeMS   {0};            // Milliseconds (FIRST_TRIGGER)
     uint32_t lastTimeMS    {0};            // Milliseconds (LAST_TRIGGER)
     uint32_t endTimeMS     {0};            // Milliseconds (delay end time)
     uint32_t blockTimeMS   {0};            // Milliseconds (pin input blocking time)
-    uint32_t currentTimeMS {0};            // Handle millis overflow
     // Timer process stop
     bool     stopDelayTM   {DISABLE};      // stop first or last timer proces and go to next phase
     bool     stopBlockTM   {DISABLE};      // stop blocking timer procesand go to next phase
@@ -213,12 +208,21 @@ class MTD2A_binary_input: public MTD2A
 
 
     /*
-     * @brief Enable print phase state number and phase state text. Optional loop update.
+     * @brief Enable print phase state number, phase state text and error text. Optional loop update.
      * @name object_name.set_debugPrint
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */    
     void set_debugPrint (const bool &setEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
+
+
+    /*
+     * @brief Enable error print text. Optional loop update.
+     * @name object_name.set_errorPrint
+     * @param ( {ENABLE | DISABLE} );
+     * @return none
+     */    
+    void set_errorPrint (const bool &setEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
 
 
     // Getters -----------------------------------------------
@@ -322,7 +326,8 @@ class MTD2A_binary_input: public MTD2A
     void begin_state      ();
     void end_state        ();
     void complete_state   ();
-    void loop_fast_ptr    ();
+    void print_phase_text ();
+    void print_phase_line (const bool &printRestartTimer = false);
 }; // class MTD2A_binary_input
 
 

@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_const.h
  * @author  Joergen Bo Madsen
- * @version V1.1.1
- * @date    06. june 2025
+ * @version V1.1.2
+ * @date    6. june 2025
  * @brief   Global constants for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -41,7 +41,7 @@ namespace MTD2A_const {
   constexpr bool     TIME_DELAY    = true,  MONO_STABLE  = false;
   constexpr bool     NORMAL        = true,  INVERTED     = false;  
   constexpr bool     PULSE         = true,  FIXED        = false;
-  constexpr bool     BINARY        = true,  PWM          = false;
+  constexpr bool     BINARY        = true,  P_W_M        = false;
   constexpr bool     RESTART_TIMER = true,  STOP_TIMER   = false;
   constexpr uint32_t DELAY_10MS    = 10,    DELAY_1MS    = 1;
   // Process phases
@@ -49,13 +49,13 @@ namespace MTD2A_const {
   constexpr uint8_t  BEGIN_PHASE      = 1, OUTPUT_PHASE    = 2, END_PHASE      = 3; // binary_input 
   constexpr uint8_t  FIRST_TIME_PHASE = 1, LAST_TIME_PHASE = 2, BLOCKING_PHASE = 3; // binary_output
   constexpr uint8_t  COMPLETE_PHASE   = 4;
-  // PWM curves
-  constexpr uint8_t NO_CURVE    = 0; 
-  constexpr uint8_t RISING_XY   = 1,  FALLING_XY   =  2;
-  constexpr uint8_t RISING_B05  = 3,  RISING_B025  =  4;
-  constexpr uint8_t RISING_E05  = 5,  RISING_E025  =  6;
-  constexpr uint8_t FALLING_B05 = 7,  FALLING_B025 =  8;
-  constexpr uint8_t FALLING_E05 = 9,  FALLING_E025 = 10;
+  // PWM curves 
+  constexpr uint8_t  NO_CURVE     = 0; 
+  constexpr uint8_t  RISING_XY    = 1,  FALLING_XY    =  2;
+  constexpr uint8_t  RISING_B05   = 3,  RISING_B025   =  4;
+  constexpr uint8_t  RISING_E05   = 5,  RISING_E025   =  6;
+  constexpr uint8_t  FALLING_B05  = 7,  FALLING_B025  =  8;
+  constexpr uint8_t  FALLING_E05  = 9,  FALLING_E025  = 10;
 } // namespace _MTD2A_const 
 
 #endif
