@@ -8,7 +8,7 @@ MTD2A is a collection of user friendly advanced and functional C++ classes - bui
 • They support a wide range of input sensors and output devices <br/>
 • Are simple to use to build complex solutions with few commands <br/>
 • They operate non-blocking, process-oriented and state-driven <br/>
-* Support parallel processing and asynchronous execution <br/>
+• Support parallel processing and asynchronous execution <br/>
 • Offers extensive control and troubleshooting information <br/>
 • Thoroughly documented with examples <br>
 
