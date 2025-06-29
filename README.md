@@ -11,8 +11,8 @@ MTD2A is a collection of user friendly advanced and functional C++ classes - bui
 • Offers extensive control and troubleshooting information <br/>
 • Thoroughly documented with examples <br>
 
-### Example
-Example of parallel processing: https://youtu.be/eyGRazX9Bko
+### Example of parallel processing
+https://youtu.be/eyGRazX9Bko
 
 ### To do
 * class MTD2A_delay
