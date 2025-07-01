@@ -35,7 +35,7 @@ void loop() {
       Serial.println("Moving left");
     }
   }
-  else
+  else {
     if (FC_51_left.get_processState() == COMPLETE  &&  FC_51_right.get_processState() == ACTIVE) {  
     // equivalent to: if (FC_51_left < FC_51_right) {
       if (FC_51_right.get_phaseChange() == true  &&  FC_51_right.get_phaseNumber() == FIRST_TIME_PHASE) {
@@ -43,6 +43,7 @@ void loop() {
         Serial.println("Moving rigth");
       }
     }
+  }
   
   MTD2A_loop_execute ();  // Update the state (event) system
 } // Determining the direction of travel of the train
