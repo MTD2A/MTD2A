@@ -21,22 +21,14 @@ MTD2A is a so-called state machine. This means MTD2A objects are quickly travers
 The top $\color{Green}{\textsf{green}}$ process is carried out together with user-defined code and other libraries. <br/>
 The lower $\color{Blue}{\textsf{blue}}$ process is carried out via `MTD2A_loop_execute();` and as the last in `void loop();` 
 
-### Example of parallel processing
-https://youtu.be/eyGRazX9Bko
+In this way, an approximate parallelization is achieved, where several functions can in practice be executed simultaneously. For example, two flashing LEDs, where one is synchronous and the other is asynchronous. Example of parallel processing https://youtu.be/eyGRazX9Bko <br/>
 
-### To do
-* class MTD2A_delay
-* class MTD2A_astable
-* class MTD2A_flip_flop
-* class MTD2A_tone
-* class MTD2A_sound
-* class MTD2A_servo
-* class MTD2A_stepper
-* class MTD2A_display
-* class MTD2A_ultrasonic
-* class MTD2A_laser
-* class MTD2A_IR_ranging
-* class MTD2A_DCC_input
+The MTD2A library can be mixed with custom code and other libraries without further ado, as long as the execution is done non-blocking. But it requires a slightly different mindset when developing code, as it must always be taken into account that the infinite and fast loop must not be delayed, but also that user code is not executed more times than what is intended. It is often necessary to use different types of logic control flags. 
+
+### Non-blocking execution 
+It is absolutely crucial that no delaying or blocking code is used with the MTD2A library. Do not use delaying functions such as `delay();` as well as bibliographies that prevent rapid passages of the infinite loop. However, by default, delays up to a maximum of 10 milliseconds are allowed per pass. In most cases, this is sufficient of time to execute custom code and different types of libraries simultaneously. See further explanation in later sections. <br/>
+
+See more here: [Finite-state machine - Wikipedia](https://en.wikipedia.org/wiki/Finite-state_machine) and here: [Real-time operating system - Wikipedia](https://en.wikipedia.org/wiki/Real-time_operating_system)
 
 ### documentation 
 [https://github.com/MTD2A/MTD2A/tree/main/doc](https://github.com/MTD2A/MTD2A/blob/main/doc/README.md)
