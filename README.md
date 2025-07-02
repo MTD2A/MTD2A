@@ -9,7 +9,17 @@ MTD2A is a collection of user friendly advanced and functional C++ classes - bui
 • Are simple to use to build complex solutions with few commands <br/>
 • They operate non-blocking, process-oriented and state-driven <br/>
 • Offers extensive control and troubleshooting information <br/>
-• Thoroughly documented with examples <br>
+• Thoroughly documented with examples <br/>
+
+## Mode of operation
+MTD2A is a so-called state machine. This means MTD2A objects are quickly traversed in an infinite loop, and each traversal is divided into two phases:
+1.	Changing state variables (changing and/or reading and checking)
+2.	Execute functionality and control the passage of time.
+
+### Concept Diagram
+![](/image/Concept-Diagram.png)
+The top $\color{Green}{\textsf{green}}$ process is carried out together with user-defined code and other libraries. <br/>
+The lower $\color{Blue}{\textsf{blue}}$ process is carried out via `MTD2A_loop_execute();` and as the last in `void loop();` 
 
 ### Example of parallel processing
 https://youtu.be/eyGRazX9Bko
