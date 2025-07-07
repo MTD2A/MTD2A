@@ -13,6 +13,8 @@ MTD2A_binary_input FC_51_sensor ("FC-51 sensor", 5000);
 
 void setup () {
   Serial.begin (9600);  // Required and first if status messages are to be displayed
+  while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
+
   byte FC_51_SENSOR_PIN = 2; // Arduino board pin 2 input.
   FC_51_sensor.initialize (FC_51_SENSOR_PIN);
   FC_51_sensor.set_debugPrint ();  // Display status messages

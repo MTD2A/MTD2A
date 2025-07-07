@@ -13,7 +13,8 @@ MTD2A_binary_output red_LED_left    ("Red LED left",    3000);  // 3 seconds out
 MTD2A_binary_output green_LED_right ("Green LED right", 3000);  // 3 seconds output time
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(9600); 
+  while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   MTD2A_globalDebugPrint (); // Enable debug print for all instantiated classes
   
   byte FC_51_LEFT_PIN  = 2;  // Input Arduino board pin 2

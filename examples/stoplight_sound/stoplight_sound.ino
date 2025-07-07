@@ -1,7 +1,7 @@
 
 // Stop light and sound message: The train brakes and temporarily stops at a red light.
 // Speaker announcement is broadcast to the passengers. If the train is passing by, no announcement is broadcast.
-// Jørgen Bo Madsen / june 2025 / https://github.com/jebmdk
+// Jørgen Bo Madsen / june 2025 / https://github.com/jebmdk  Sensor: https://github.com/MTD2A/FC-51
 
 #include <MTD2A.h>
 using namespace MTD2A_const;
@@ -14,6 +14,7 @@ MTD2A_binary_output train_sound ("Sound", 100, 8000, 8000);
 
 void setup() {
   Serial.begin(9600);
+  while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   byte FC_51_STOP_PIN  = A0; // Arduino board input analog and digtal pin A0
   byte TRAIN_SOUND_PIN = 2;  // Arduino board output pin 2
   FC_51_stop.initialize  (FC_51_STOP_PIN);

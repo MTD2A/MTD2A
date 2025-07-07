@@ -20,6 +20,7 @@ bool trackShiftState = false;
 
 void setup() {
   Serial.begin(9600);
+  while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   MTD2A_globalDebugPrint     ();    // Enable debug print for all instantiated classes
   FC_51_left.initialize      (A0);  // Pin input no: Sensor detection moving train left
   FC_51_right.initialize     (A1);  // Pin input no: Sensor detection moving train right
@@ -47,7 +48,7 @@ void loop() {
       trackShiftState = false;  // last command in the process
     }
   }
-  // Mirror fromabove
+  // Mirror from above
   if (FC_51_right.get_processState() == ACTIVE) {
     if (FC_51_right.get_phaseChange() == true  &&  position_right.get_processState() == ACTIVE) {
       trackShiftState = true;

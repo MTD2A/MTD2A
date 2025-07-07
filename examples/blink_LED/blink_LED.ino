@@ -1,4 +1,4 @@
-// Two blinking LEDs. One with symmetric interval and another with asymmetric interval.
+// Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
 // Jørgen Bo Madsen / june 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
@@ -10,6 +10,7 @@ MTD2A_binary_output green_LED ("Green LED", 300, 700, 0, P_W_M, 96);  // 0.3 sec
 
 void setup() {
   Serial.begin(9600);
+  while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
 
   byte RED_LED_PIN   = 9;
   byte GREEN_LED_PIN = 10;
@@ -29,5 +30,5 @@ void loop() {
   }
 
   MTD2A_loop_execute();
-} // Two blinking LEDs. One with symmetric interval and another with asymetric interval.
+} // Two flashing LEDs. One with symmetric interval and another with asymetric interval.
 
