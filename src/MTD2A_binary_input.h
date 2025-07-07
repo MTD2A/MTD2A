@@ -36,7 +36,6 @@
 
 class MTD2A_binary_input: public MTD2A
 {
-  private:
     static constexpr uint8_t RESET_PHASE      {MTD2A_const::RESET_PHASE}; 
     static constexpr uint8_t FIRST_TIME_PHASE {MTD2A_const::FIRST_TIME_PHASE};
     static constexpr uint8_t LAST_TIME_PHASE  {MTD2A_const::LAST_TIME_PHASE}; 
@@ -101,6 +100,8 @@ class MTD2A_binary_input: public MTD2A
         delete [] objectName; 
         objectName = nullptr;
       }
+      if (globalObjectCount > 0 )
+        globalObjectCount--;
     };    
   
     // Operator oveloading
@@ -319,15 +320,17 @@ class MTD2A_binary_input: public MTD2A
 
 
   private: // Functions
-    void loop_fast_input  ();
-    void loop_fast_binary ();
-    void loop_fast_first  ();
-    void loop_fast_last   ();
-    void begin_state      ();
-    void end_state        ();
-    void complete_state   ();
-    void print_phase_text ();
-    void print_phase_line (const bool &printRestartTimer = false);
+    void     loop_fast_input  ();
+    void     loop_fast_binary ();
+    void     loop_fast_first  ();
+    void     loop_fast_last   ();
+    void     begin_state      ();
+    void     end_state        ();
+    void     complete_state   ();
+    void     print_phase_text ();
+    void     print_phase_line (const bool &printRestartTimer = false);
+    uint32_t check_set_time   (const uint32_t &setCheckTimeMS);
+    
 }; // class MTD2A_binary_input
 
 

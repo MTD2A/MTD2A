@@ -33,19 +33,6 @@
 #define _MTD2A_H_
 
 
-#ifndef SerialPort
-#define SerialPort true
-#endif
-
-#if SerialPort == true
-  #define PortPrint(x)   Serial.print(x)
-  #define PortPrintln(x) Serial.println(x)
-#else // Production
-  #define PortPrint(x)
-  #define PortPrintln(x)
-#endif
-
-
 #include "Arduino.h"
 #include "MTD2A_const.h"
 #include "MTD2A_base.h"

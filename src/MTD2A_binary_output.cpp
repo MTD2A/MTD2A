@@ -35,6 +35,28 @@
 #include "MTD2A_binary_output.h"
 
 
+// Specific global constants from MTD2A_binary_output.h (MTD2A_const.h)
+constexpr uint8_t MTD2A_binary_output::RESET_PHASE; 
+constexpr uint8_t MTD2A_binary_output::BEGIN_PHASE;
+constexpr uint8_t MTD2A_binary_output::OUTPUT_PHASE; 
+constexpr uint8_t MTD2A_binary_output::END_PHASE;
+constexpr uint8_t MTD2A_binary_output::COMPLETE_PHASE;
+    // PWM curves
+constexpr uint8_t MTD2A_binary_output::MIN_PWM_VALUE;
+constexpr uint8_t MTD2A_binary_output::MAX_PWM_VALUE; 
+constexpr uint8_t MTD2A_binary_output::NO_CURVE;
+constexpr uint8_t MTD2A_binary_output::RISING_XY;
+constexpr uint8_t MTD2A_binary_output::FALLING_XY;
+constexpr uint8_t MTD2A_binary_output::RISING_B05;
+constexpr uint8_t MTD2A_binary_output::RISING_B025;
+constexpr uint8_t MTD2A_binary_output::RISING_E05;
+constexpr uint8_t MTD2A_binary_output::RISING_E025;
+constexpr uint8_t MTD2A_binary_output::FALLING_B05;
+constexpr uint8_t MTD2A_binary_output::FALLING_B025;
+constexpr uint8_t MTD2A_binary_output::FALLING_E05;
+constexpr uint8_t MTD2A_binary_output::FALLING_E025;
+
+
 // Constructor
 MTD2A_binary_output::MTD2A_binary_output
   (
@@ -46,26 +68,36 @@ MTD2A_binary_output::MTD2A_binary_output
     const uint8_t  setPinBeginValue, 
     const uint8_t  setPinEndValue
   )
-  : 
-    outputTimeMS  {setOutputTimeMS},
-    beginDelayMS  {setBeginDelayMS},
-    endDelayMS    {setEndDelayMS},
-    pinOutputMode {setPinOutputMode}, 
+  : pinOutputMode {setPinOutputMode}, 
     pinBeginValue {setPinBeginValue}, 
     pinEndValue   {setPinEndValue},
     // Instatiated funtion pointer
     MTD2A{[](MTD2A* funcPtr) { static_cast<MTD2A_binary_output*>(funcPtr)->loop_fast(); }}
   {
     MTD2A_add_function_pointer_loop_fast(this);
-    objectName = MTD2A_set_object_name(setObjectName);
+    objectName    = MTD2A_set_object_name(setObjectName);
+    outputTimeMS  = check_set_time  (setOutputTimeMS);
+    beginDelayMS  = check_set_time  (setBeginDelayMS);
+    endDelayMS    = check_set_time  (setEndDelayMS);
     pinBeginValue = check_pin_value (pinBeginValue);
     pinEndValue   = check_pin_value (pinEndValue);
     if (outputTimeMS == 0)
-      errorNumber = 140;
+      errorNumber = 150;
     if (outputTimeMS == 0 && beginDelayMS == 0 && endDelayMS == 0)
-      errorNumber = 141; // No timing configured
+      errorNumber = 151; // No timing configured
   }
 // MTD2A_binary_output
+
+
+uint32_t MTD2A_binary_output::check_set_time (const uint32_t &setCheckTimeMS) {
+  if (setCheckTimeMS > 0 && setCheckTimeMS < globalDelayTimeMS) {
+    errorNumber = 9; 
+    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+    return globalDelayTimeMS;
+  }
+  else
+    return setCheckTimeMS;
+} // check_set_time
 
 
 void MTD2A_binary_output::initialize (const uint8_t &setPinNumber, const bool &setPinNomalOrInverted, const uint8_t &setStartPinValue) {
@@ -148,7 +180,8 @@ void MTD2A_binary_output::activate_process () {
 
 void MTD2A_binary_output::set_pinWrite (const bool &setPinEnableOrDisable, const bool &LoopFastOnce) {
   if (setPinEnableOrDisable == ENABLE  &&  pinNumber == PIN_ERROR_NO) {
-    errorNumber = 1; MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);  
+    errorNumber = 1; 
+    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);  
   }
   else {
     pinWrite = setPinEnableOrDisable;
@@ -165,7 +198,8 @@ void MTD2A_binary_output::set_pinOutput (const bool &setPinNomalOrInverted, cons
       loop_fast();
   }
   else {
-    errorNumber = 1; MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+    errorNumber = 1; 
+    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
   }
 }
 
@@ -178,7 +212,8 @@ void MTD2A_binary_output::set_setPinValue  (const uint8_t &setSetPinValue, const
       loop_fast();
   }
   else {
-    errorNumber = 11; MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+    errorNumber = 11; 
+    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
   }
 } // set_setPinValue
 
@@ -274,8 +309,11 @@ uint8_t const &MTD2A_binary_output::get_reset_error () {
 
 
 uint8_t MTD2A_binary_output::check_pin_value (const uint8_t &checkPinValue) {
-    if (pinOutputMode == BINARY  &&  checkPinValue > 0)
+    if (pinOutputMode == BINARY  &&  checkPinValue > 1) {
+      errorNumber = 152; 
+      MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
       return 1;
+    }
     else
       return checkPinValue;
 } // check_pin_value
@@ -406,11 +444,11 @@ void MTD2A_binary_output::reset () {
 
 void MTD2A_binary_output::print_phase_text() {
   switch(phaseNumber) {
-    case 0: Serial.println(F("[0] Reset"));         break;
-    case 1: Serial.println(F("[1] First time"));    break;
-    case 2: Serial.println(F("[2] Last time"));     break;
-    case 3: Serial.println(F("[3] Pin blocking"));  break;
-    case 4: Serial.println(F("[4] Complete"));      break;
+    case 0: PortPrintln(F("[0] Reset"));         break;
+    case 1: PortPrintln(F("[1] First time"));    break;
+    case 2: PortPrintln(F("[2] Last time"));     break;
+    case 3: PortPrintln(F("[3] Pin blocking"));  break;
+    case 4: PortPrintln(F("[4] Complete"));      break;
   }
 } // print_phase_text
 
@@ -419,32 +457,32 @@ void MTD2A_binary_output::print_phase_line (const bool &printRestartTimer) {
   if (debugPrint == ENABLE  ||  globalDebugPrint == ENABLE) {
     MTD2A_print_object_name (objectName);
     if (printRestartTimer == RESTART_TIMER)
-      Serial.print(F(": Restart timer "));
+      PortPrint(F(": Restart timer "));
     print_phase_text ();
   }
 } // print_phase_line
 
 
 void MTD2A_binary_output::print_conf () {
-  Serial.println(F("MTD2A_binary_output: "));
+  PortPrintln(F("MTD2A_binary_output: "));
   MTD2A_print_name_state (objectName, processState);
-  Serial.print  (F("  phaseText    : ")); print_phase_text ();
+  PortPrint  (F("  phaseText    : ")); print_phase_text ();
   MTD2A_print_debug_error  (debugPrint, errorPrint, errorNumber);
   //
-  Serial.print  (F("  outputTimeMS : ")); Serial.println(outputTimeMS);
-  Serial.print  (F("  beginDelayMS : ")); Serial.println(beginDelayMS);
-  Serial.print  (F("  endDelayMS   : ")); Serial.println(endDelayMS);
-  Serial.print  (F("  pinOutputMode: ")); if (pinOutputMode == P_W_M)  Serial.println(F("P_W_M")); else Serial.println(F("BINARY"));
-  Serial.print  (F("  pinBeginValue: ")); MTD2A_print_value_binary (pinOutputMode, pinBeginValue);
-  Serial.print  (F("  pinEndValue  : ")); MTD2A_print_value_binary (pinOutputMode, pinEndValue);
+  PortPrint  (F("  outputTimeMS : ")); PortPrintln(outputTimeMS);
+  PortPrint  (F("  beginDelayMS : ")); PortPrintln(beginDelayMS);
+  PortPrint  (F("  endDelayMS   : ")); PortPrintln(endDelayMS);
+  PortPrint  (F("  pinOutputMode: ")); if (pinOutputMode == P_W_M)  PortPrintln(F("P_W_M")); else PortPrintln(F("BINARY"));
+  PortPrint  (F("  pinBeginValue: ")); MTD2A_print_value_binary (pinOutputMode, pinBeginValue);
+  PortPrint  (F("  pinEndValue  : ")); MTD2A_print_value_binary (pinOutputMode, pinEndValue);
   // pin and input setup
   MTD2A_print_pin_number (pinNumber);
-  Serial.print  (F("  pinWrite     : ")); MTD2A_print_enable_disable (pinWrite);
-  Serial.print  (F("  pinOutput    : ")); MTD2A_print_normal_inverted (pinOutput);
-  Serial.print  (F("  startPinValue: ")); MTD2A_print_value_binary (pinOutputMode, startPinValue);
-  Serial.print  (F("  setPinValue  : ")); MTD2A_print_value_binary (pinOutputMode, setPinValue);
+  PortPrint  (F("  pinWrite     : ")); MTD2A_print_enable_disable (pinWrite);
+  PortPrint  (F("  pinOutput    : ")); MTD2A_print_normal_inverted (pinOutput);
+  PortPrint  (F("  startPinValue: ")); MTD2A_print_value_binary (pinOutputMode, startPinValue);
+  PortPrint  (F("  setPinValue  : ")); MTD2A_print_value_binary (pinOutputMode, setPinValue);
   // timers
-  Serial.print  (F("  setBeginMS   : ")); Serial.println(setBeginMS);
-  Serial.print  (F("  setOutputMS  : ")); Serial.println(setOutputMS);
-  Serial.print  (F("  setEndMS     : ")); Serial.println(setEndMS);
+  PortPrint  (F("  setBeginMS   : ")); PortPrintln(setBeginMS);
+  PortPrint  (F("  setOutputMS  : ")); PortPrintln(setOutputMS);
+  PortPrint  (F("  setEndMS     : ")); PortPrintln(setEndMS);
 } // print_conf 

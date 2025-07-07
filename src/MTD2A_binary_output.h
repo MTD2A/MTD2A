@@ -43,6 +43,8 @@ class MTD2A_binary_output: public MTD2A
     static constexpr uint8_t END_PHASE      {MTD2A_const::END_PHASE};
     static constexpr uint8_t COMPLETE_PHASE {MTD2A_const::COMPLETE_PHASE};
     // PWM curves
+    static constexpr uint8_t MIN_PWM_VALUE  {MTD2A_const::MIN_PWM_VALUE};
+    static constexpr uint8_t MAX_PWM_VALUE  {MTD2A_const::MAX_PWM_VALUE}; 
     static constexpr uint8_t NO_CURVE       {MTD2A_const::NO_CURVE};
     static constexpr uint8_t RISING_XY      {MTD2A_const::RISING_XY};
     static constexpr uint8_t FALLING_XY     {MTD2A_const::FALLING_XY};
@@ -51,7 +53,7 @@ class MTD2A_binary_output: public MTD2A
     static constexpr uint8_t RISING_E05     {MTD2A_const::RISING_E05};
     static constexpr uint8_t RISING_E025    {MTD2A_const::RISING_E025};
     static constexpr uint8_t FALLING_B05    {MTD2A_const::FALLING_B05};
-    static constexpr uint8_t FALLING_B025   {MTD2A_const::FALLING_E025};
+    static constexpr uint8_t FALLING_B025   {MTD2A_const::FALLING_B025};
     static constexpr uint8_t FALLING_E05    {MTD2A_const::FALLING_E05};
     static constexpr uint8_t FALLING_E025   {MTD2A_const::FALLING_E025};
     // Arguments
@@ -113,6 +115,8 @@ class MTD2A_binary_output: public MTD2A
         delete [] objectName; 
         objectName = nullptr;
       }
+      if (globalObjectCount > 0 )
+        globalObjectCount--;
     };
 
     // Operator oveloading
@@ -150,7 +154,7 @@ class MTD2A_binary_output: public MTD2A
   
 
     /*
-     * @brief Activate process. Optional process update.
+     * @brief Activate process. Optional loop update.
      * @name object_name.activate
      * @param ( pinBeginValueMS, pinEndValue, PWMcurveType ));
      * @return none
@@ -340,16 +344,17 @@ class MTD2A_binary_output: public MTD2A
 
 
   private: // Functions
-    void    activate_process    ();
-    uint8_t check_pin_value     (const uint8_t &checkPinValue);
-    void    write_pin_value     (const uint8_t &setPinValue);
-    void    loop_fast_begin     ();
-    void    loop_fast_out_begin ();
-    void    loop_fast_out_end   ();
-    void    loop_fast_end       ();
-    void    loop_fast_complete  ();
-    void    print_phase_text    ();
-    void    print_phase_line    (const bool &printRestartTimer = false);   
+    uint32_t check_set_time      (const uint32_t &setCheckTimeMS);
+    void     activate_process    ();
+    uint8_t  check_pin_value     (const uint8_t &checkPinValue);
+    void     write_pin_value     (const uint8_t &setPinValue);
+    void     loop_fast_begin     ();
+    void     loop_fast_out_begin ();
+    void     loop_fast_out_end   ();
+    void     loop_fast_end       ();
+    void     loop_fast_complete  ();
+    void     print_phase_text    ();
+    void     print_phase_line    (const bool &printRestartTimer = false);
 }; // class MTD2A_binary_output 
 
 

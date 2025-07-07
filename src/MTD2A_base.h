@@ -33,6 +33,14 @@
 #ifndef _MTD2A_base_H_
 #define _MTD2A_base_H_
 
+// Development an debug
+#define PortPrint(x)   Serial.print(x)
+#define PortPrintln(x) Serial.println(x)
+// Optimized production
+// #define PortPrint(x)
+// #define PortPrintln(x)
+
+
 #include "Arduino.h"
 #include "MTD2A_const.h"
 
@@ -44,18 +52,6 @@ class MTD2A  // base class
 
     friend class MTD2A_binary_output;
     friend class MTD2A_binary_input;
-    friend class MTD2A_timer; 
-    friend class MTD2A_astable;
-    friend class MTD2A_flip_flop;
-    friend class MTD2A_tone;
-    friend class MTD2A_sound;
-    friend class MTD2A_servo;
-    friend class MTD2A_stepper;
-    friend class MTD2A_display;
-    friend class MTD2A_ultrasonic;
-    friend class MTD2A_laser;
-    friend class MTD2A_IR_ranging;
-    friend class MTD2A_DCC_input;
 
   private:
     static constexpr uint8_t  MAX_BYTE_VALUE {255};
@@ -82,29 +78,26 @@ class MTD2A  // base class
     static const uint8_t DIGITAL_FLAG_0 {1}, ANALOG_FLAG_1 {2}, INPUT_FLAG_2 {4}, PULLUP_FLAG_3 {8}, 
                          OUTPUT_FLAG_4 {16}, PWM_FLAG_5 {32},   TONE_FLAG_6 {64}, INTERRUPT_FLAG_7 {128};
     // 
-   
     static bool     globalDebugPrint;
     static bool     globalErrorPrint;
     static uint32_t globalSyncTimeMS;
-    static uint32_t delayTimeMS;
-    static uint32_t lastTimeMS;
-    static uint32_t loopTimeMS;
-    static uint32_t maxLoopTimeMS;
-    static uint8_t  objectCount;
-
+    static uint32_t globalDelayTimeMS;
+    static uint32_t globalLastTimeMS;
+    static uint32_t globalLoopTimeMS;
+    static uint32_t globalMaxLoopMS;
+    static uint8_t  globalObjectCount;
 
   public:
     virtual ~MTD2A() = default;
     // setters
-    static void     set_globalDebugPrint (const bool &setEnableOrDisable = ENABLE);
-    static void     set_globalErrorPrint (const bool &setEnableOrDisable = DISABLE);
-    static void     set_delayTimeMS      (const bool &setDelayTimeMS = DELAY_10MS);
+    static void     set_globalDebugPrint  (const bool &setEnableOrDisable   = ENABLE);
+    static void     set_globalErrorPrint  (const bool &setEnableOrDisable   = DISABLE);
+    static void     set_globalDelayTimeMS (const bool &setGlobalDelayTimeMS = DELAY_10MS);
     // getters
-    static uint32_t get_globalSyncTimeMS ();
-    static uint32_t get_reset_maxLoopMS  ();
-    static uint8_t  get_objectCount      ();
-    
-    static void     print_conf           ();
+    static uint32_t get_globalSyncTimeMS  ();
+    static uint32_t get_reset_maxLoopMS   ();
+    static uint8_t  get_objectCount       ();
+    static void     print_conf            ();
 
   private:
     // Function pointer linked list -----------------------------------------------------------------------------------
@@ -123,18 +116,19 @@ class MTD2A  // base class
 
   private:
     // Internal functions
-    static char   *MTD2A_set_object_name       (const char    *setObjectName);
-    static uint8_t MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber,    const uint8_t &checkPinFlags);
-    static void    MTD2A_print_object_name     (const char    *printObjectName);
+    static char    *MTD2A_set_object_name       (const char     *setObjectName);
+    static void     MTD2A_print_object_name     (const char     *printObjectName);
+    static uint8_t  MTD2A_reserve_and_check_pin (const uint8_t  &checkPinNumber,    const uint8_t &checkPinFlags);
+
     // Error and debug print
-    static void    MTD2A_print_error_text      (const bool    &DebugOrErrorPrint, const uint8_t &printErrorNumber, const uint8_t &printPinNumber);
-    static void    MTD2A_print_debug_error     (const bool    &printDebugPrint,   const bool    &printErrorPrint,  const uint8_t &printErrorNumber);
-    static void    MTD2A_print_pin_number      (const uint8_t &printPinNumber);
-    static void    MTD2A_print_name_state      (const char    *printObjectName,   const bool    &printProcessState);
-    static void    MTD2A_print_value_binary    (const bool    &binaryOrP_W_M,     const uint8_t &PrintValue);
-    static void    MTD2A_print_enable_disable  (const bool    &enableOrDisable);
-    static void    MTD2A_print_normal_inverted (const bool    &normalOrInverted);
-    static void    MTD2A_print_pulse_fixed     (const bool    &pulseOrFixed);
+    static void     MTD2A_print_error_text      (const bool     &DebugOrErrorPrint, const uint8_t &printErrorNumber, const uint8_t &printPinNumber);
+    static void     MTD2A_print_debug_error     (const bool     &printDebugPrint,   const bool    &printErrorPrint,  const uint8_t &printErrorNumber);
+    static void     MTD2A_print_pin_number      (const uint8_t  &printPinNumber);
+    static void     MTD2A_print_name_state      (const char     *printObjectName,   const bool    &printProcessState);
+    static void     MTD2A_print_value_binary    (const bool     &binaryOrP_W_M,     const uint8_t &PrintValue);
+    static void     MTD2A_print_enable_disable  (const bool     &enableOrDisable);
+    static void     MTD2A_print_normal_inverted (const bool     &normalOrInverted);
+    static void     MTD2A_print_pulse_fixed     (const bool     &pulseOrFixed);
     
 };  // MTD2A
 
@@ -176,12 +170,12 @@ auto MTD2A_globalErrorPrint = [](const bool &setEnableOrDisable  = MTD2A_const::
 
 /*
  * @brief Set main loop delay in milliseconds in function MTD2A_loop_execute();
- * @name MTD2A_delayTimeMS
+ * @name MTD2A_globalDelayTimeMS
  * @param ( {DELAY_10MS | DELAY_1MS} );
  * @return none
  */
-auto MTD2A_delayTimeMS = [](const bool &setDelayTimeMS = MTD2A_const::DELAY_10MS) {
-  MTD2A::set_delayTimeMS (setDelayTimeMS); 
+auto MTD2A_globalDelayTimeMS = [](const bool &setGlobalDelayTimeMS = MTD2A_const::DELAY_10MS) {
+  MTD2A::set_globalDelayTimeMS (setGlobalDelayTimeMS); 
 };
 
 
@@ -202,7 +196,7 @@ auto MTD2A_globalSyncTimeMS = []() {
  * @param none
  * @return unit32_t milliseconds
  */
-auto MTD2A_maxLoopMS = []() {
+auto MTD2A_globalMaxLoopMS = []() {
   return MTD2A::get_reset_maxLoopMS ();
 };
 
@@ -213,7 +207,7 @@ auto MTD2A_maxLoopMS = []() {
  * @param none
  * @return unit8_t count
  */
-auto MTD2A_objectCount = []() {
+auto MTD2A_globalObjectCount = []() {
   return MTD2A::get_objectCount ();
 };
 

@@ -35,6 +35,14 @@
 #include "MTD2A_binary_input.h"
 
 
+// Specific global constants from MTD2A_binary_input.h (MTD2A_const.h)
+constexpr uint8_t MTD2A_binary_input::RESET_PHASE; 
+constexpr uint8_t MTD2A_binary_input::FIRST_TIME_PHASE;
+constexpr uint8_t MTD2A_binary_input::LAST_TIME_PHASE; 
+constexpr uint8_t MTD2A_binary_input::BLOCKING_PHASE;
+constexpr uint8_t MTD2A_binary_input::COMPLETE_PHASE;
+
+
 // Constructor
 MTD2A_binary_input::MTD2A_binary_input
   (
@@ -44,19 +52,29 @@ MTD2A_binary_input::MTD2A_binary_input
     const bool     setTimeOrMono, 
     const uint32_t setPinBlockMS
   )
-  : delayTimeMS {setDelayTimeMS}, 
-    triggerMode {setFirstOrLast}, 
+  : triggerMode {setFirstOrLast}, 
     timerMode   {setTimeOrMono}, 
-    pinBlockMS  {setPinBlockMS},
     // Instatiated funtion pointer
     MTD2A{[](MTD2A* funcPtr) { static_cast<MTD2A_binary_input*>(funcPtr)->loop_fast(); }}
   {
     MTD2A_add_function_pointer_loop_fast(this);
-    objectName = MTD2A_set_object_name(setObjectName);
+    objectName  = MTD2A_set_object_name(setObjectName);
+    delayTimeMS = check_set_time (setDelayTimeMS);
+    pinBlockMS  = check_set_time (setPinBlockMS);
     if (delayTimeMS == 0)
-      errorNumber = 130;  // Warning
+      errorNumber = 140;  // Warning
   }
 // MTD2A_binary_input
+
+
+uint32_t MTD2A_binary_input::check_set_time (const uint32_t &setCheckTimeMS) {
+  if (setCheckTimeMS > 0 && setCheckTimeMS < globalDelayTimeMS) {
+    errorNumber = 9; MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+    return globalDelayTimeMS;
+  }
+  else
+    return setCheckTimeMS;
+} // check_set_time
 
 
 void MTD2A_binary_input::initialize (const uint8_t &setPinNumber, const bool &setPinNomalOrInverted, const uint8_t &setPinPullupOrInput) {
@@ -356,11 +374,11 @@ void MTD2A_binary_input::reset () {
 
 void MTD2A_binary_input::print_phase_text() {
   switch(phaseNumber) {
-    case 0: Serial.println(F("[0] Reset"));         break;
-    case 1: Serial.println(F("[1] First time"));    break;
-    case 2: Serial.println(F("[2] Last time"));     break;
-    case 3: Serial.println(F("[3] Pin blocking"));  break;
-    case 4: Serial.println(F("[4] Complete"));      break;
+    case 0: PortPrintln(F("[0] Reset"));         break;
+    case 1: PortPrintln(F("[1] First time"));    break;
+    case 2: PortPrintln(F("[2] Last time"));     break;
+    case 3: PortPrintln(F("[3] Pin blocking"));  break;
+    case 4: PortPrintln(F("[4] Complete"));      break;
   }
 } // print_phase_text
 
@@ -369,34 +387,34 @@ void MTD2A_binary_input::print_phase_line (const bool &printRestartTimer) {
   if (debugPrint == ENABLE  ||  globalDebugPrint == ENABLE) {
     MTD2A_print_object_name (objectName);
     if (printRestartTimer == RESTART_TIMER)
-      Serial.print(F(": Restart timer "));
+      PortPrint(F(": Restart timer "));
     print_phase_text ();
   }
 } // print_phase_line
 
 
 void MTD2A_binary_input::print_conf () {
-  Serial.println(F("MTD2A_binary_input: "));
+  PortPrintln(F("MTD2A_binary_input: "));
   MTD2A_print_name_state (objectName, processState);
-  Serial.print  (F("  phaseText    : ")); print_phase_text ();
+  PortPrint  (F("  phaseText    : ")); print_phase_text ();
   MTD2A_print_debug_error (debugPrint, errorPrint, errorNumber);
   //
-  Serial.print  (F("  triggerMode  : ")); if (triggerMode == LAST_TRIGGER) Serial.println(F("LAST_TRIGGER")); else Serial.println(F("FIRST_TRIGGER"));
-  Serial.print  (F("  timerMode    : ")); if (timerMode == TIME_DELAY)     Serial.println(F("TIME_DELAY"));   else Serial.println(F("MONO_STABLE"));
+  PortPrint  (F("  triggerMode  : ")); if (triggerMode == LAST_TRIGGER) PortPrintln(F("LAST_TRIGGER")); else PortPrintln(F("FIRST_TRIGGER"));
+  PortPrint  (F("  timerMode    : ")); if (timerMode == TIME_DELAY)     PortPrintln(F("TIME_DELAY"));   else PortPrintln(F("MONO_STABLE"));
   // Setup
   MTD2A_print_pin_number (pinNumber);
-  Serial.print  (F("  pinType      : ")); if (pinType == INPUT_PULLUP) Serial.println(F("INPUT_PULLUP")); else Serial.println(F("INPUT"));
-  Serial.print  (F("  pinRead      : ")); MTD2A_print_enable_disable  (pinRead);
-  Serial.print  (F("  pinInput     : ")); MTD2A_print_normal_inverted (pinInput);
-  Serial.print  (F("  inputMode    : ")); MTD2A_print_pulse_fixed     (inputMode);
+  PortPrint  (F("  pinType      : ")); if (pinType == INPUT_PULLUP) PortPrintln(F("INPUT_PULLUP")); else PortPrintln(F("INPUT"));
+  PortPrint  (F("  pinRead      : ")); MTD2A_print_enable_disable  (pinRead);
+  PortPrint  (F("  pinInput     : ")); MTD2A_print_normal_inverted (pinInput);
+  PortPrint  (F("  inputMode    : ")); MTD2A_print_pulse_fixed     (inputMode);
   // timers
-  Serial.print  (F("  delayTimeMS  : ")); Serial.println(delayTimeMS);
-  Serial.print  (F("  firstTimeMS  : ")); Serial.println(firstTimeMS);
-  Serial.print  (F("  lastTimeMS   : ")); Serial.println(lastTimeMS);
-  Serial.print  (F("  endTimeMS    : ")); Serial.println(endTimeMS);
-  Serial.print  (F("  blockTimeMS  : ")); Serial.println(blockTimeMS);
+  PortPrint  (F("  delayTimeMS  : ")); PortPrintln(delayTimeMS);
+  PortPrint  (F("  firstTimeMS  : ")); PortPrintln(firstTimeMS);
+  PortPrint  (F("  lastTimeMS   : ")); PortPrintln(lastTimeMS);
+  PortPrint  (F("  endTimeMS    : ")); PortPrintln(endTimeMS);
+  PortPrint  (F("  blockTimeMS  : ")); PortPrintln(blockTimeMS);
   // state loggic
-  Serial.print  (F("  pinState     : ")); MTD2A_print_value_binary (BINARY, pinState);
-  Serial.print  (F("  inputState   : ")); MTD2A_print_value_binary (BINARY, inputState);
+  PortPrint  (F("  pinState     : ")); MTD2A_print_value_binary (BINARY, pinState);
+  PortPrint  (F("  inputState   : ")); MTD2A_print_value_binary (BINARY, inputState);
 } // print_conf 
 

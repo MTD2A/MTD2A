@@ -33,13 +33,15 @@
 #ifndef _MTD2A_const_H_
 #define _MTD2A_const_H_
 
+#include "Arduino.h"
+
 namespace MTD2A_const {
   // Easy understanding global definitions
   constexpr bool     ENABLE        = true,  DISABLE      = false;
   constexpr bool     ACTIVE        = true,  COMPLETE     = false;
   constexpr bool     FIRST_TRIGGER = true,  LAST_TRIGGER = false;
   constexpr bool     TIME_DELAY    = true,  MONO_STABLE  = false;
-  constexpr bool     NORMAL        = true,  INVERTED     = false;  
+  constexpr bool     NORMAL        = true,  INVERTED     = false;
   constexpr bool     PULSE         = true,  FIXED        = false;
   constexpr bool     BINARY        = true,  P_W_M        = false;
   constexpr bool     RESTART_TIMER = true,  STOP_TIMER   = false;
@@ -50,12 +52,13 @@ namespace MTD2A_const {
   constexpr uint8_t  FIRST_TIME_PHASE = 1, LAST_TIME_PHASE = 2, BLOCKING_PHASE = 3; // binary_output
   constexpr uint8_t  COMPLETE_PHASE   = 4;
   // PWM curves 
-  constexpr uint8_t  NO_CURVE     = 0; 
-  constexpr uint8_t  RISING_XY    = 1,  FALLING_XY    =  2;
-  constexpr uint8_t  RISING_B05   = 3,  RISING_B025   =  4;
-  constexpr uint8_t  RISING_E05   = 5,  RISING_E025   =  6;
-  constexpr uint8_t  FALLING_B05  = 7,  FALLING_B025  =  8;
-  constexpr uint8_t  FALLING_E05  = 9,  FALLING_E025  = 10;
+  constexpr uint8_t  MIN_PWM_VALUE = 0,  MAX_PWM_VALUE = 255;  
+  constexpr uint8_t  NO_CURVE      = 0; 
+  constexpr uint8_t  RISING_XY     = 1,  FALLING_XY    = 2;
+  constexpr uint8_t  RISING_B05    = 3,  RISING_B025   = 4;
+  constexpr uint8_t  RISING_E05    = 5,  RISING_E025   = 6;
+  constexpr uint8_t  FALLING_B05   = 7,  FALLING_B025  = 8;
+  constexpr uint8_t  FALLING_E05   = 9,  FALLING_E025  = 10;
 } // namespace _MTD2A_const 
 
 #endif
