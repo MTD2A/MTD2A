@@ -27,9 +27,9 @@ In this way, an approximate parallelization is achieved, where several functions
 The MTD2A library can be mixed with custom code and other libraries without further ado, as long as the execution is done non-blocking. But it requires a slightly different mindset when developing code, as it must always be taken into account that the infinite and fast loop must not be delayed, but also that user code is not executed more times than what is intended. It is often necessary to use different types of logic control flags. 
 
 ### Non-blocking execution 
-It is absolutely crucial that no delaying or blocking code is used with the MTD2A library. Do not use delaying functions such as `delay();` as well as bibliographies that prevent rapid passages of the infinite loop. However, by default, delays up to a maximum of 10 milliseconds are allowed per pass. In most cases, this is sufficient of time to execute custom code and different types of libraries simultaneously. See further explanation in later sections. <br/>
+It is absolutely crucial that no delaying or blocking code is used with the MTD2A library. Do not use delaying functions such as `delay();` as well as bibliographies that prevent rapid passages of the infinite loop. However, by default, delays up to a maximum of 10 milliseconds are allowed per pass. In most cases, this is sufficient of time to execute custom code and different types of libraries simultaneously. See further explanation [MTD2A -englsh.pdf](https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A%20-%20english.pdf) <br/>
 
-See more here: [Finite-state machine - Wikipedia](https://en.wikipedia.org/wiki/Finite-state_machine) and here: [Real-time operating system - Wikipedia](https://en.wikipedia.org/wiki/Real-time_operating_system)
+Further explanation: [Finite-state machine - Wikipedia](https://en.wikipedia.org/wiki/Finite-state_machine) and here: [Real-time operating system - Wikipedia](https://en.wikipedia.org/wiki/Real-time_operating_system)
 
 ### documentation 
 [https://github.com/MTD2A/MTD2A/tree/main/doc](https://github.com/MTD2A/MTD2A/blob/main/doc/README.md)
