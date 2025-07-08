@@ -18,8 +18,8 @@ MTD2A is a so-called state machine. This means MTD2A objects are quickly travers
 
 ### Concept Diagram
 ![](/image/Concept-Diagram.png)
-The top $\color{Green}{\textsf{green}}$ process is carried out together with user-defined code and other libraries. <br/>
-The lower $\color{Blue}{\textsf{blue}}$ process is carried out via `MTD2A_loop_execute();` and as the last in `void loop();` 
+The top $\color{Green}\large{\textbf{green}}$ process is carried out together with user-defined code and other libraries. <br/>
+The lower $\color{#1E90FF}\large{\textbf{blue}}$ process is carried out via `MTD2A_loop_execute();` and as the last in `void loop();` 
 
 ### Parallel processing
 In this way, an approximate parallelization is achieved, where several functions can in practice be executed simultaneously. For example, two flashing LEDs, where one is synchronous and the other is asynchronous. Example of parallel processing https://youtu.be/eyGRazX9Bko <br/>
