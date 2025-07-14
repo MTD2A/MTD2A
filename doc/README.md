@@ -13,5 +13,6 @@
 
 ### MTD2A_binary_output
 * Source files contains doxygen documentation.
-* Detailed danish documentation: [MTD2A_binary_output.pdf](/doc/MTD2A_binary_output.pdf)
+* Detailed **Danish** documentation: [MTD2A_binary_output.pdf](/doc/MTD2A_binary_output.pdf)
+* Detailed **English** documentation: [MTD2A_binary_output - english.pdf](/doc/MTD2A_binary_output%20-%20english.pdf)
 * DEMO: Two blinking LEDs. One with symmetric interval and another with asymetric interval. https://youtu.be/eyGRazX9Bko
