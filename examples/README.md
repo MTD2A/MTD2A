@@ -22,10 +22,13 @@ Automatic switch to the direction the train is coming from (to avoid derailment 
 <br/> Using standard LGB switch (turnout) with position switches for feedback. https://youtu.be/oMeD3e_oXEI
 <br/> Diagram drawing: [Switch (turnout) direction](/image/switch_direction.png)
 
+
+### math_fade_LED.ino
+Two LEDs fading in and fading out using a linear function and a math potence function.
+
+
 # To do
 
-### fade_in_out_LED.ino
-Show differense in fading an LED: 1) uneven: lineary PWM curve 2) even: mathematical power formula PWM curve.
 
 ### railway_crossing.ino
 Activate red warning light, start bell, lower barriers. Wait for the train to pass and do everything in reverse order.
