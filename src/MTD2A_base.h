@@ -57,6 +57,7 @@ class MTD2A  // base class
     static constexpr uint8_t  MAX_BYTE_VALUE {255};
     static constexpr uint8_t  PIN_ERROR_NO   {255};
     static constexpr uint8_t  WARNING_START  {128};
+    static constexpr uint8_t  MAX_PWM_CURVES {16};
     // Global constants from MTD2A_const.h
     static constexpr bool ENABLE         {MTD2A_const::ENABLE};
     static constexpr bool DISABLE        {MTD2A_const::DISABLE};
@@ -75,7 +76,7 @@ class MTD2A  // base class
     static constexpr uint32_t DELAY_10MS {MTD2A_const::DELAY_10MS};
     static constexpr uint32_t DELAY_1MS  {MTD2A_const::DELAY_1MS};
     //
-    static const uint8_t DIGITAL_FLAG_0 {1}, ANALOG_FLAG_1 {2}, INPUT_FLAG_2 {4}, PULLUP_FLAG_3 {8}, 
+    static const uint8_t DIGITAL_FLAG_0 {1}, ANALOG_FLAG_1 {2}, INPUT_FLAG_2 {4}, PULLUP_FLAG_3    {8}, 
                          OUTPUT_FLAG_4 {16}, PWM_FLAG_5 {32},   TONE_FLAG_6 {64}, INTERRUPT_FLAG_7 {128};
     // 
     static bool     globalDebugPrint;

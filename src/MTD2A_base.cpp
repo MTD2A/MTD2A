@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.5
- * @date    28. june 2025
+ * @version V1.1.6
+ * @date    7. july 2025
  * @brief   functions for MTD2A_base.h base class (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -121,6 +121,10 @@ void MTD2A::MTD2A_add_function_pointer_loop_fast (MTD2A* object) {
 
 
 void MTD2A::loop_execute() {
+  // Correct the time if delay() is used before loop ()
+  if (globalSyncTimeMS == 0);
+    globalSyncTimeMS = millis();
+  // Execute function pointers
   MTD2A* object = begin;
   while (object != nullptr) {
     object->function_pointer(object);
@@ -270,7 +274,7 @@ void MTD2A::MTD2A_print_error_text (const bool &DebugOrErrorPrint, const uint8_t
       case   6: PortPrintln (F("tone() conflicts with PWM pin"));     break;
       case   7: PortPrintln (F("Pin does not support interrupt"));    break;
       case   8: PortPrintln (F("Must be INPUT or INPUT_PULLUP"));     break;
-      case   9: PortPrint   (F("Time must be >= ")); PortPrintln (globalDelayTimeMS);  break;
+      case   9: PortPrint   (F("Time must be >= ")); PortPrintln (globalDelayTimeMS); break;
       case  11: PortPrintln (F("Pin write is disabled"));             break;
       case 128: PortPrintln (F("Digital Pin check not possible"));    break;
       case 129: PortPrintln (F("Anaog Pin check not possible"));      break;
@@ -281,8 +285,11 @@ void MTD2A::MTD2A_print_error_text (const bool &DebugOrErrorPrint, const uint8_t
       case 150: PortPrintln (F("Output timer value is zero"));        break;
       case 151: PortPrintln (F("All three timers are zero"));         break;
       case 152: PortPrintln (F("Binary pin value > 1. Set to HIGH")); break;
+      case 153: PortPrint   (F("Undefined PWM curve. Must be <= ")); PortPrintln (MAX_PWM_CURVES); break;
+      case 154: PortPrintln (F("Use RISING curve instead of FALLING"));break;
+      case 155: PortPrintln (F("Use FALLING curve instead of RISING"));break;
       default:
-        PortPrintln(F("Unknown error. Please report"));
+        PortPrint(F("Unknown error: ")); PortPrint(printErrorNumber); PortPrintln(F(" Please report"));
     }
   }
 } // MTD2A_print_error_text

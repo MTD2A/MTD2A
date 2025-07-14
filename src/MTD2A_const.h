@@ -51,14 +51,20 @@ namespace MTD2A_const {
   constexpr uint8_t  BEGIN_PHASE      = 1, OUTPUT_PHASE    = 2, END_PHASE      = 3; // binary_input 
   constexpr uint8_t  FIRST_TIME_PHASE = 1, LAST_TIME_PHASE = 2, BLOCKING_PHASE = 3; // binary_output
   constexpr uint8_t  COMPLETE_PHASE   = 4;
-  // PWM curves 
-  constexpr uint8_t  MIN_PWM_VALUE = 0,  MAX_PWM_VALUE = 255;  
+  // PWM rising curves 
+  constexpr uint8_t  MIN_PWM_VALUE = 0,   MAX_PWM_VALUE = 255;  
   constexpr uint8_t  NO_CURVE      = 0; 
-  constexpr uint8_t  RISING_XY     = 1,  FALLING_XY    = 2;
-  constexpr uint8_t  RISING_B05    = 3,  RISING_B025   = 4;
-  constexpr uint8_t  RISING_E05    = 5,  RISING_E025   = 6;
-  constexpr uint8_t  FALLING_B05   = 7,  FALLING_B025  = 8;
-  constexpr uint8_t  FALLING_E05   = 9,  FALLING_E025  = 10;
+  constexpr uint8_t  RISING_XY     = 1;
+  constexpr uint8_t  RISING_B05    = 2,   RISING_B025   = 3;
+  constexpr uint8_t  RISING_E05    = 4,   RISING_E025   = 5;
+  constexpr uint8_t  RISING_SM8    = 6,   RISING_SM5    = 7;
+  constexpr uint8_t  RISING_LED    = 8;
+  // PWM falling curves
+  constexpr uint8_t  FALLING_XY    = 9;
+  constexpr uint8_t  FALLING_B05   = 10,  FALLING_B025  = 11;
+  constexpr uint8_t  FALLING_E05   = 12,  FALLING_E025  = 13;
+  constexpr uint8_t  FALLING_SM8   = 14,  FALLING_SM5   = 15;
+  constexpr uint8_t  FALLING_LED   = 16;
 } // namespace _MTD2A_const 
 
 #endif
