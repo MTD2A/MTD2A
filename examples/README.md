@@ -25,7 +25,7 @@ Automatic switch to the direction the train is coming from (to avoid derailment 
 
 ### math_fade_LED.ino
 Two LEDs fading in and fading out using a linear function and a math potence function. https://youtu.be/8TV6nOdXBno
-<br/>PWM curves
+<br/>Overview of [PWM curves](/doc/PWM_curves.pdf)
 
 # To do
 
