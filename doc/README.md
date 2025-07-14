@@ -15,4 +15,3 @@
 * Source files contains doxygen documentation.
 * Detailed danish documentation: [MTD2A_binary_output.pdf](/doc/MTD2A_binary_output.pdf)
 * DEMO: Two blinking LEDs. One with symmetric interval and another with asymetric interval. https://youtu.be/eyGRazX9Bko
-* DEMO: Two LEDs fading in and fading out using a linear function and a math potence function. https://youtu.be/8TV6nOdXBno
