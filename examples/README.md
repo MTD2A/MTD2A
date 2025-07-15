@@ -37,7 +37,7 @@ Activate red warning light, start bell, lower barriers. Wait for the train to pa
 Automatic pendulum operation on model railway system using relays. 
 When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
 
-### pendulum_H-bridge.ino
+### pendulum_H_bridge.ino
 Automatic pendulum and smooth operation on model railway system using PWM controlled analog DC motor H-bridge driver. 
 When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
 
