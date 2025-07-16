@@ -11,7 +11,7 @@ MTD2A_binary_output red_LED_2   ("Red LED",   2000);
 MTD2A_binary_output green_LED_1 ("Green LED", 2000);  
 MTD2A_binary_output green_LED_2 ("Green LED", 2000);  
 
-int  loopCount       = 0;
+long loopCount       = 0;
 bool changeFlag      = false;
 bool LEDchangeFlag   = true;
 
