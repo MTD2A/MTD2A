@@ -1,4 +1,5 @@
 // Two LEDs fading in and fading out using a linear function and a math potence function
+// https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_output_english.pdf
 // Jørgen Bo Madsen / july 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
