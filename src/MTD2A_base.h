@@ -63,15 +63,12 @@ class MTD2A  // base class
     static constexpr bool DISABLE        {MTD2A_const::DISABLE};
     static constexpr bool ACTIVE         {MTD2A_const::ACTIVE};
     static constexpr bool COMPLETE       {MTD2A_const::COMPLETE};
-    static constexpr bool BINARY         {MTD2A_const::BINARY};
     static constexpr bool NORMAL         {MTD2A_const::NORMAL};
     static constexpr bool INVERTED       {MTD2A_const::INVERTED};
     static constexpr bool PULSE          {MTD2A_const::PULSE};
-    static constexpr bool MONO_STABLE    {MTD2A_const::MONO_STABLE};
-    static constexpr bool LAST_TRIGGER   {MTD2A_const::LAST_TRIGGER};
-    static constexpr bool TIME_DELAY     {MTD2A_const::TIME_DELAY};
+    static constexpr bool FIXED          {MTD2A_const::FIXED};
+    static constexpr bool BINARY         {MTD2A_const::BINARY};
     static constexpr bool P_W_M          {MTD2A_const::P_W_M};
-    static constexpr bool STOP_TIMER     {MTD2A_const::STOP_TIMER};
     static constexpr bool RESTART_TIMER  {MTD2A_const::RESTART_TIMER};
     static constexpr uint32_t DELAY_10MS {MTD2A_const::DELAY_10MS};
     static constexpr uint32_t DELAY_1MS  {MTD2A_const::DELAY_1MS};

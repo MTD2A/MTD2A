@@ -36,11 +36,21 @@
 
 class MTD2A_binary_input: public MTD2A
 {
+  private:
+    // Specific global constants from MTD2A_binary_output.h (MTD2A_const.h)
+    static constexpr bool    FIRST_TRIGGER    {MTD2A_const::FIRST_TRIGGER};
+    static constexpr bool    LAST_TRIGGER     {MTD2A_const::LAST_TRIGGER};
+    static constexpr bool    TIME_DELAY       {MTD2A_const::TIME_DELAY};
+    static constexpr bool    MONO_STABLE      {MTD2A_const::MONO_STABLE};
+    // Phases 
     static constexpr uint8_t RESET_PHASE      {MTD2A_const::RESET_PHASE}; 
     static constexpr uint8_t FIRST_TIME_PHASE {MTD2A_const::FIRST_TIME_PHASE};
     static constexpr uint8_t LAST_TIME_PHASE  {MTD2A_const::LAST_TIME_PHASE}; 
     static constexpr uint8_t BLOCKING_PHASE   {MTD2A_const::BLOCKING_PHASE};
     static constexpr uint8_t COMPLETE_PHASE   {MTD2A_const::COMPLETE_PHASE};
+    // base
+    static constexpr uint8_t PIN_ERROR_NO     {MTD2A::PIN_ERROR_NO};
+    
     // Arguments
     char    *objectName    {nullptr};      // Constructor initialized (User defined name to display identification)
     uint32_t delayTimeMS   {0};            // Constructor default argument (Milliseconds)
@@ -170,7 +180,7 @@ class MTD2A_binary_input: public MTD2A
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */
-    void set_pinRead (const bool &setPinEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
+    void set_pinRead (const bool &setPinEnableOrDisable = ENABLE, const bool &loopFastOnce = DISABLE);
 
 
     /*
@@ -179,7 +189,7 @@ class MTD2A_binary_input: public MTD2A
      * @param ( {NORMAL | INVERTED} );
      * @return non
      */
-    void set_pinInput (const bool &setPinNomalOrInverted = NORMAL, const bool &LoopFastOnce = DISABLE);
+    void set_pinInput (const bool &setPinNomalOrInverted = NORMAL, const bool &loopFastOnce = DISABLE);
 
 
     /*
@@ -188,7 +198,7 @@ class MTD2A_binary_input: public MTD2A
      * @param ( {HIGH | LOW}, {PULSE | FIXED} );
      * @return none
      */
-    void set_inputState (const bool &setInputLowOrHigh = LOW, const bool &setPulseOrFixed = PULSE, const bool &LoopFastOnce = DISABLE);
+    void set_inputState (const bool &setInputLowOrHigh = LOW, const bool &setPulseOrFixed = PULSE, const bool &loopFastOnce = DISABLE);
 
 
     /*
@@ -197,7 +207,7 @@ class MTD2A_binary_input: public MTD2A
      * @param none
      * @return none
      */
-    void set_stopDelayTimer (const bool &LoopFastOnce = DISABLE);
+    void set_stopDelayTimer (const bool &loopFastOnce = DISABLE);
 
     /*
      * @brief stop blocking timer process immediately and continue to next phase. Optional loop update.
@@ -205,7 +215,7 @@ class MTD2A_binary_input: public MTD2A
      * @param none
      * @return none
      */
-    void set_stopBlockTimer (const bool &LoopFastOnce = DISABLE);
+    void set_stopBlockTimer (const bool &loopFastOnce = DISABLE);
 
 
     /*
@@ -214,7 +224,7 @@ class MTD2A_binary_input: public MTD2A
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */    
-    void set_debugPrint (const bool &setEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
+    void set_debugPrint (const bool &setEnableOrDisable = ENABLE, const bool &loopFastOnce = DISABLE);
 
 
     /*
@@ -223,7 +233,7 @@ class MTD2A_binary_input: public MTD2A
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */    
-    void set_errorPrint (const bool &setEnableOrDisable = ENABLE, const bool &LoopFastOnce = DISABLE);
+    void set_errorPrint (const bool &setEnableOrDisable = ENABLE, const bool &loopFastOnce = DISABLE);
 
 
     // Getters -----------------------------------------------
