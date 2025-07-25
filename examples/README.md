@@ -29,7 +29,7 @@ Danish railway crossing. Read left and right sensor, activate red blinking warni
 
 
 ### math_fade_LED.ino
-Two LEDs fading in and fading out using a linear function and a math potence function. https://youtu.be/8TV6nOdXBno
+Two LEDs fading in and fading out using a linear function and a math potence (power) function. https://youtu.be/8TV6nOdXBno
 <br/>Overview of [PWM curves](/doc/PWM_curves.pdf)
 
 # To do
