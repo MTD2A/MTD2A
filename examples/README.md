@@ -1,15 +1,15 @@
 # Arduino examples
 
 ### blink_LED.ino
-Two blinking LEDs. One with symmetric interval and another with asymetric interval https://youtu.be/eyGRazX9Bko
+Two blinking LEDs. One with symmetric interval and another with asymetric interval. https://youtu.be/eyGRazX9Bko
 <br/> Diagram drawing: [Blink LED](/image/blink_LED.png)
 
 ### read_sensor.ino
-Read sensor and write phase state information to Arduino IDE serial monitor https://youtu.be/RDFgEbhYUzE
+Read sensor and write phase state information to Arduino IDE serial monitor. https://youtu.be/RDFgEbhYUzE
 <br/> Diagram drawing: [Read sensor](/image/read_sensor.png)
 
 ### train_direction.ino
-Determining the direction of travel of the train (left / right) https://youtu.be/BqwTf03yEwQ
+Determining the direction of travel of the train (left / right). https://youtu.be/BqwTf03yEwQ
 <br/> Diagram drawing: [Blink LED](/image/blink_LED.png) and [Read sensor](/image/read_sensor.png)
 
 ### stoplight_sound.ino
@@ -24,7 +24,7 @@ Automatic switch to the direction the train is coming from (to avoid derailment 
 
 ### railway_crossing.ino
 Danish railway crossing. Read left and right sensor, activate red blinking warning light, start pulsating bell, lower boom slowly. 
-<br/> Wait for the train to pass, raise boom slowly and stop red blink.
+<br/> Wait for the train to pass, raise boom slowly and stop red blink. https://youtu.be/VaXmki2oLrk
 <br/> Diagram drawing: [Railway crossing](/image/railway_crossing.png)
 
 
