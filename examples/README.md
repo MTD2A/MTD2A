@@ -22,16 +22,15 @@ Automatic switch to the direction the train is coming from (to avoid derailment 
 <br/> Using standard LGB switch (turnout) with position switches for feedback. https://youtu.be/oMeD3e_oXEI
 <br/> Diagram drawing: [Switch (turnout) direction](/image/switch_direction.png)
 
+### railway_crossing.ino
+Danish railway crossing. Read left and right sensor, activate red blinking warning light, start pulsating bell, lower boom slowly. 
+<br/> Wait for the train to pass, raise boom slowly and stop red blink.
 
 ### math_fade_LED.ino
 Two LEDs fading in and fading out using a linear function and a math potence function. https://youtu.be/8TV6nOdXBno
 <br/>Overview of [PWM curves](/doc/PWM_curves.pdf)
 
 # To do
-
-
-### railway_crossing.ino
-Activate red warning light, start bell, lower barriers. Wait for the train to pass and do everything in reverse order.
 
 ### pendulum_relay.ino
 Automatic pendulum operation on model railway system using relays. 
