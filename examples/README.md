@@ -27,10 +27,14 @@ Danish railway crossing. Read left and right sensor, activate red blinking warni
 <br/> Wait for the train to pass, raise boom slowly and stop red blink. https://youtu.be/VaXmki2oLrk
 <br/> Diagram drawing: [Railway crossing](/image/railway_crossing.png)
 
-
 ### math_fade_LED.ino
 Two LEDs fading in and fading out using a linear function and a math potence (power) function. https://youtu.be/8TV6nOdXBno
-<br/>Overview of [PWM curves](/doc/PWM_curves.pdf)
+<br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
+
+### servo_math_curve.ino
+Use PWM math S-curve to move servo from 0 to 180 degrees. 
+<br/> Exampe shows: 1) No curve 2) linear curve and 3) [Sigmoid S-curve](https://en.wikipedia.org/wiki/Sigmoid_function)
+<br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 
 # To do
 
