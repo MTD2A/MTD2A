@@ -1,4 +1,4 @@
-// Use PWM math curve to move server from 0 to 180 degrees
+// Use PWM math S-curve to move servo from 0 to 180 degrees and vice versa
 // https://docs.arduino.cc/libraries/servo/ 
 // https://github.com/MTD2A/MTD2A/tree/main/doc
 // Jørgen Bo Madsen / july 2025 / https://github.com/jebmdk
@@ -7,14 +7,13 @@
 #include <Servo.h>
 using namespace MTD2A_const;
 
- // 4 seconds slow movement and 1 second pause
+ // 3 seconds slow movement and 1 second pause
 MTD2A_binary_output boom_angel ("Boom angel", 3000, 1000);
 Servo boom_servo;
 
 // Arduino board pins
-byte BOOM_SERVO_PIN = 5;   // output
+byte BOOM_SERVO_PIN = 5;  // Servo output
 bool changeFlag     = false;
-long servoMicroSec  = 0;
 
 void setup() {
   Serial.begin(9600);
