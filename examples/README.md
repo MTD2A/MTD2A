@@ -32,7 +32,7 @@ Two LEDs fading in and fading out using a linear function and a math potence (po
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 
 ### servo_math_curve.ino
-Use PWM math S-curve to move servo from 0 to 180 degrees. 
+Use math S-curve to move servo from 0 to 180 degrees and vice versa. https://youtu.be/rhQtu0iKFl8
 <br/> Exampe shows: 1) No curve 2) linear curve and 3) [Sigmoid S-curve](https://en.wikipedia.org/wiki/Sigmoid_function)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 
