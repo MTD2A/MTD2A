@@ -67,6 +67,7 @@ set_beginTimer	KEYWORD2
 set_endTimer	KEYWORD2
 
 get_pinWriteToggl	KEYWORD2
+get_pinWriteMode	KEYWORD2
 get_pinOutputValue	KEYWORD2
 get_setBeginMS	KEYWORD2
 get_setOutputMS	KEYWORD2
