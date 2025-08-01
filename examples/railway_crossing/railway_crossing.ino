@@ -34,8 +34,8 @@ bool rightActive = false;
 bool beginFlag   = false;
 bool endFlag     = false;
 // Time counters
-long beginCount  = 0;
-long endCount    = 0;
+long beginCount  = 0; // Default MTD2A loop time step is 10 milliseconds
+long endCount    = 0; // Default MTD2A loop time step is 10 milliseconds
 
 void setup() {
   Serial.begin(9600);
@@ -104,13 +104,14 @@ void loop() {
 
 
   if (beginFlag == true) {  // Begin phase
+    // Default MTD2A loop time step is 10 milliseconds.
     // Red LED blink every second
-    if (beginCount >= 100) { // compensate for the MP3 player's slow response to start
+    if (beginCount >= 80) { // compensate for the MP3 player's slow response to start
       red_LED_1.activate();
       red_LED_2.activate();
     }
     // play sound for 6 seconds and stop when boom is down
-    if (beginCount <= 600) {
+    if (beginCount <= 600) { // 600 * 10 = 6000 Milliseconds or 6 seconds.
       bell_sound.activate ();
     }
     // wait 3 seconds and raise the boom over a period of 3 seconds
@@ -127,18 +128,19 @@ void loop() {
       endFlag   = true;
       endCount  = 0;
     }
-    beginCount++;
+    beginCount++; // 10 Millisecond step
   } // beginFlag == true
 
 
 if (endFlag == true) { // End phase
+  // Default MTD2A loop time step is 10 milliseconds.
   // Red LED blink until boom is up
-  if (endCount <= 300) { 
+  if (endCount <= 300) {  // 300 * 10 = 3000 Milliseconds or 3 seconds.
     red_LED_1.activate();
     red_LED_2.activate();
   }
   // Lower the boom over a period of 3 seconds
-  if (endCount == 0) { 
+  if (endCount == 0) {  // start immediately
     boom_angel.activate (BOOM_DOWN, BOOM_UP, FALLING_XY); // FALLING_SM8
   }
   if (boom_angel.get_processState() == ACTIVE) {
@@ -151,7 +153,7 @@ if (endFlag == true) { // End phase
     leftActive  = false;
     rightActive = false;
   }
-  endCount++;
+  endCount++; // 10 Millisecond step
 } // endFlag == true
 
   MTD2A_loop_execute();  // Update the state (event) system
