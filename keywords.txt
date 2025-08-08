@@ -40,8 +40,8 @@ reset	KEYWORD2
 loop_fast	KEYWORD2
 print_conf	KEYWORD2
 
-set_pinRead	KEYWORD2
-set_pinInput	KEYWORD2
+set_pinReadToggl	KEYWORD2
+set_pinReadMode	KEYWORD2
 set_InputState	KEYWORD2
 set_stopDelayTimer	KEYWORD2
 set_stopBlockTimer	KEYWORD2
@@ -62,7 +62,7 @@ get_inputGoHigh	KEYWORD2
 set_pinWriteToggl	KEYWORD2
 set_pinWriteMode	KEYWORD2
 set_setPinValue	KEYWORD2
-set_outputDelayMS	KEYWORD2
+set_outputTimeMS	KEYWORD2
 set_beginDelayMS	KEYWORD2
 set_endDelayMS	KEYWORD2
 set_outputTimer	KEYWORD2
