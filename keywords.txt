@@ -15,7 +15,9 @@ MTD2A_const	KEYWORD2
 loop_execute	KEYWORD2
 set_globalDebugPrint	KEYWORD2
 set_globalErrorPrint	KEYWORD2
-set_delayTimeMS	KEYWORD2
+set_globalDelayTimeMS	KEYWORD2
+
+get_globalDelayTimeMSS	KEYWORD2
 get_globalSyncTimeMS	KEYWORD2
 get_reset_maxLoopMS	KEYWORD2
 get_objectCount	KEYWORD2
@@ -23,13 +25,8 @@ get_objectCount	KEYWORD2
 MTD2A_loop_execute	KEYWORD2
 MTD2A_globalDebugPrint	KEYWORD2
 MTD2A_globalErrorPrint	KEYWORD2
-MTD2A_delayTimeMS	KEYWORD2
-MTD2A_globalSyncTimeMS	KEYWORD2
-
-MTD2A_maxLoopMS	KEYWORD2
-MTD2A_objectCount	KEYWORD2
+MTD2A_globalDelayTimeMS	KEYWORD2
 MTD2A_print_conf	KEYWORD2
-
 
 MTD2A_binary_input	KEYWORD2
 MTD2A_binary_output	KEYWORD2
