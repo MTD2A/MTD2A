@@ -1,15 +1,15 @@
 // Two LEDs fading in and fading out using a linear function and a math potence function
 // https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_output_english.pdf
-// Jørgen Bo Madsen / july 2025 / https://github.com/jebmdk
+// Jørgen Bo Madsen / August 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 using namespace MTD2A_const;
 
 // 2 sec light, no time delay before and after
-MTD2A_binary_output red_LED_1   ("Red LED",   2000);
-MTD2A_binary_output red_LED_2   ("Red LED",   2000);  
-MTD2A_binary_output green_LED_1 ("Green LED", 2000);  
-MTD2A_binary_output green_LED_2 ("Green LED", 2000);  
+MTD2A_binary_output green_LED_1 ("Green LED 1", 2000);  
+MTD2A_binary_output green_LED_2 ("Green LED 2", 2000);  
+MTD2A_binary_output red_LED_1   ("Red LED 1",   2000);
+MTD2A_binary_output red_LED_2   ("Red LED 2",   2000);  
 
 long loopCount       = 0;
 bool changeFlag      = false;
@@ -19,15 +19,15 @@ void setup() {
   Serial.begin(9600);
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
 
-  byte RED_LED_PIN_1   = 5;
-  byte RED_LED_PIN_2   = 6;
-  byte GREEN_LED_PIN_1 = 9;
-  byte GREEN_LED_PIN_2 = 10;
+  byte GREEN_LED_PIN_1 = 5;
+  byte GREEN_LED_PIN_2 = 6;
+  byte RED_LED_PIN_1   = 9;
+  byte RED_LED_PIN_2   = 10;
 
-  red_LED_1.initialize   (RED_LED_PIN_1);
-  red_LED_2.initialize   (RED_LED_PIN_2);
   green_LED_1.initialize (GREEN_LED_PIN_1);
   green_LED_2.initialize (GREEN_LED_PIN_2);
+  red_LED_1.initialize   (RED_LED_PIN_1);
+  red_LED_2.initialize   (RED_LED_PIN_2);
 }
 
 void loop() {
