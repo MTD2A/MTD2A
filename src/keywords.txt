@@ -1,0 +1,134 @@
+#######################################
+# Syntax Coloring Map For MTD2A
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+MTD2A	KEYWORD2
+MTD2A_const	KEYWORD2
+
+loop_execute	KEYWORD2
+set_globalDebugPrint	KEYWORD2
+set_globalErrorPrint	KEYWORD2
+set_globalDelayTimeMS	KEYWORD2
+
+get_globalDelayTimeMS	KEYWORD2
+get_globalSyncTimeMS	KEYWORD2
+get_reset_maxLoopMS	KEYWORD2
+get_objectCount	KEYWORD2
+
+MTD2A_loop_execute	KEYWORD2
+MTD2A_globalDebugPrint	KEYWORD2
+MTD2A_globalErrorPrint	KEYWORD2
+MTD2A_globalDelayTimeMS	KEYWORD2
+MTD2A_print_conf	KEYWORD2
+
+MTD2A_binary_input	KEYWORD2
+MTD2A_binary_output	KEYWORD2
+
+initialize	KEYWORD2
+activate	KEYWORD2
+reset	KEYWORD2
+loop_fast	KEYWORD2
+print_conf	KEYWORD2
+
+get_processtState	KEYWORD2
+get_phaseChange	KEYWORD2
+get_phaseNumber	KEYWORD2
+get_reset_error	KEYWORD2
+set_debugPrint	KEYWORD2
+set_errorPrint	KEYWORD2
+
+set_pinReadToggl	KEYWORD2
+set_pinReadMode	KEYWORD2
+set_InputState	KEYWORD2
+set_stopDelayTimer	KEYWORD2
+set_stopBlockTimer	KEYWORD2
+
+get_pinState	KEYWORD2
+get_firstTimeMS	KEYWORD2
+get_lastTimeMS	KEYWORD2
+get_endTimeMS	KEYWORD2
+get_inputGoLow	KEYWORD2
+get_inputGoHigh	KEYWORD2
+
+
+set_pinWriteToggl	KEYWORD2
+set_pinWriteMode	KEYWORD2
+set_PinWriteValue	KEYWORD2
+set_outputTimeMS	KEYWORD2
+set_beginDelayMS	KEYWORD2
+set_endDelayMS	KEYWORD2
+set_outputTimer	KEYWORD2
+set_beginTimer	KEYWORD2
+set_endTimer	KEYWORD2
+
+get_pinWriteToggl	KEYWORD2
+get_pinWriteMode	KEYWORD2
+get_PinWriteValue	KEYWORD2
+get_pinOutputValue	KEYWORD2
+get_setOutputMS	KEYWORD2
+get_setBeginMS	KEYWORD2
+get_setEndMS	KEYWORD2
+get_setBeginMS	KEYWORD2
+get_setEndMS	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+ENABLE	LITERAL1
+DISABLE	LITERAL1
+ACTIVE	LITERAL1
+COMPLETE	LITERAL1
+FIRST_TRIGGER	LITERAL1
+LAST_TRIGGER	LITERAL1
+TIME_DELAY	LITERAL1
+MONO_STABLE	LITERAL1
+NORMAL	LITERAL1
+INVERTED	LITERAL1
+PULSE	LITERAL1 
+FIXED	LITERAL1
+BINARY	LITERAL1
+PWM	LITERAL1
+RESET_TIMER	LITERAL1
+STOP_TIMER	LITERAL1
+
+RESET_PHASE	LITERAL1
+FIRST_TIME_PHASE	LITERAL1
+LAST_TIME_PHASE	LITERAL1
+BLOCKING_PHASE	LITERAL1
+BEGIN_PHASE	LITERAL1
+OUTPUT_PHASE	LITERAL1
+END_PHASE	LITERAL1
+COMPLETE_PHASE	LITERAL1
+
+DELAY_1MS	LITERAL1
+DELAY_10MS	LITERAL1
+
+MIN_PWM_VALUE	LITERAL1
+MAX_PWM_VALUE	LITERAL1
+NO_CURVE	LITERAL1
+RISING_XY	LITERAL1
+RISING_B05	LITERAL1
+RISING_B025	LITERAL1
+RISING_E05	LITERAL1
+RISING_E025	LITERAL1
+RISING_SM8	LITERAL1
+RISING_SM5	LITERAL1
+RISING_LED	LITERAL1
+FALLING_XY	LITERAL1
+FALLING_B05	LITERAL1
+FALLING_B025	LITERAL1
+FALLING_E05	LITERAL1
+FALLING_E025	LITERAL1
+FALLING_SM8	LITERAL1
+FALLING_SM5	LITERAL1
+FALLING_LED	LITERAL1
+
