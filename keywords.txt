@@ -10,6 +10,7 @@
 # Methods and Functions (KEYWORD2)
 #######################################
 
+MTD2A	KEYWORD2
 MTD2A_const	KEYWORD2
 
 loop_execute	KEYWORD2
@@ -17,7 +18,7 @@ set_globalDebugPrint	KEYWORD2
 set_globalErrorPrint	KEYWORD2
 set_globalDelayTimeMS	KEYWORD2
 
-get_globalDelayTimeMSS	KEYWORD2
+get_globalDelayTimeMS	KEYWORD2
 get_globalSyncTimeMS	KEYWORD2
 get_reset_maxLoopMS	KEYWORD2
 get_objectCount	KEYWORD2
@@ -37,17 +38,18 @@ reset	KEYWORD2
 loop_fast	KEYWORD2
 print_conf	KEYWORD2
 
+get_processtState	KEYWORD2
+get_phaseChange	KEYWORD2
+get_phaseNumber	KEYWORD2
+get_reset_error	KEYWORD2
+set_debugPrint	KEYWORD2
+set_errorPrint	KEYWORD2
+
 set_pinReadToggl	KEYWORD2
 set_pinReadMode	KEYWORD2
 set_InputState	KEYWORD2
 set_stopDelayTimer	KEYWORD2
 set_stopBlockTimer	KEYWORD2
-set_debugPrint	KEYWORD2
-
-get_processtState	KEYWORD2
-get_phaseChange	KEYWORD2
-get_phaseNumber	KEYWORD2
-get_reset_error	KEYWORD2
 
 get_pinState	KEYWORD2
 get_firstTimeMS	KEYWORD2
@@ -56,9 +58,10 @@ get_endTimeMS	KEYWORD2
 get_inputGoLow	KEYWORD2
 get_inputGoHigh	KEYWORD2
 
+
 set_pinWriteToggl	KEYWORD2
 set_pinWriteMode	KEYWORD2
-set_setPinValue	KEYWORD2
+set_PinWriteValue	KEYWORD2
 set_outputTimeMS	KEYWORD2
 set_beginDelayMS	KEYWORD2
 set_endDelayMS	KEYWORD2
@@ -68,9 +71,12 @@ set_endTimer	KEYWORD2
 
 get_pinWriteToggl	KEYWORD2
 get_pinWriteMode	KEYWORD2
+get_PinWriteValue	KEYWORD2
 get_pinOutputValue	KEYWORD2
-get_setBeginMS	KEYWORD2
 get_setOutputMS	KEYWORD2
+get_setBeginMS	KEYWORD2
+get_setEndMS	KEYWORD2
+get_setBeginMS	KEYWORD2
 get_setEndMS	KEYWORD2
 
 #######################################
@@ -91,7 +97,7 @@ PULSE	LITERAL1
 FIXED	LITERAL1
 BINARY	LITERAL1
 PWM	LITERAL1
-RESTART_TIMER	LITERAL1
+RESET_TIMER	LITERAL1
 STOP_TIMER	LITERAL1
 
 RESET_PHASE	LITERAL1
