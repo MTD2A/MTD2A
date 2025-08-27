@@ -58,10 +58,9 @@ get_endTimeMS	KEYWORD2
 get_inputGoLow	KEYWORD2
 get_inputGoHigh	KEYWORD2
 
-
+PinWriteValue	KEYWORD2
 set_pinWriteToggl	KEYWORD2
 set_pinWriteMode	KEYWORD2
-set_PinWriteValue	KEYWORD2
 set_outputTimeMS	KEYWORD2
 set_beginDelayMS	KEYWORD2
 set_endDelayMS	KEYWORD2
