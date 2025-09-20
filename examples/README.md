@@ -8,6 +8,10 @@ Two blinking LEDs. One with symmetric interval and another with asymetric interv
 Read sensor and write phase state information to Arduino IDE serial monitor. https://youtu.be/RDFgEbhYUzE
 <br/> Diagram drawing: [Read sensor](/image/read_sensor.png)
 
+### time_event_processes.ino
+7 time and event processes examples, to inspire how to code state machine process flows.
+
+
 ### train_direction.ino
 Determining the direction of travel of the train (left / right). https://youtu.be/BqwTf03yEwQ
 <br/> Diagram drawing: [Blink LED](/image/blink_LED.png) and [Read sensor](/image/read_sensor.png)
