@@ -1,6 +1,6 @@
 # Arduino examples
 
-### $\color{Green}\large{\textbf{green}}$ blink_LED.ino
+### blink_LED.ino
 Two blinking LEDs. One with symmetric interval and another with asymetric interval. https://youtu.be/eyGRazX9Bko
 <br/> Diagram drawing: [Blink LED](/image/blink_LED.png)
 
