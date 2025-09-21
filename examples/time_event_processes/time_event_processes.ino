@@ -1,4 +1,4 @@
-// Time and event processes examples, to inspire how to code state machine process flows.
+// 7 time and event processes examples, to inspire how to code state machine process flows.
 // https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_english.pdf
 // Joergen Bo Madsen / September 2025 / https://github.com/jebmdk
 
@@ -228,22 +228,24 @@ void loop() {
   switch (stepCount) {
     case 0:
       if (IR_sensor.get_processState() == ACTIVE) {
+        // do something while detecting
         Serial.println ("Object detected");
         stepCount = 1;
       }
       // do something while wating on ACTIVE
     break;
     case 1:
-      // Add 0,5 second pause delay to blink LED
-      timer_GL1.timer (START_TIMER, 500); // 0,5 second
+      // Add 500 milliseconds pause delay to blink LED
+      timer_GL1.timer (START_TIMER, 500);
       stepCount = 2;
     break;
     case 2:
       if (timer_GL1.get_processState() == COMPLETE) {
+        // do something once
         green_LED_1.activate();
         stepCount = 3;
       }
-      // do something once
+      // do something while wating on ACTIVE
     break;
     case 3:
       if (green_LED_1.get_processState() == COMPLETE) {
