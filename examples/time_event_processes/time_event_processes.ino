@@ -51,7 +51,7 @@ void loop() {
 
 #if section == 1
 
-  // Timed cascading (round robin) 4 LEDs. Time controlled.
+  // Timed cascading (round robin) 4 LEDs. Loop time controlled.
   // Suitable for predictable process flows where timing is important / follows a time line
   // loopCount will be in sync with MTD2A_loop_execute (). 
   // however, if the throughput time exceeds 10 milliseconds, unexpected actions may occur
@@ -133,7 +133,7 @@ void loop() {
 
 #if section == 4
 
-  // Timed if-condition controlled. Not recommended. Can be used for simple solutions
+  // Timed if-condition nested controlled. Not recommended. Can be used for simple solutions
   // Simple step cascading 4 LEDs. Time / delay independent
   // Suitable for predictable and unpredictable process flows and unexpected loop delays
   if (loopCount == 0)
@@ -203,8 +203,8 @@ void loop() {
 
 #if section == 6
 
-  // Event if condition controlled. Recommended for simple solutions
-  // Red infrared sensor. Short detection: One LED blink. 
+  // Event if-condition controlled. Recommended for simple solutions
+  // Read infrared sensor. Short detection: One LED blink. 
   // continuously detection: continuously LED blink
   // Suitable for Unpredictable process flows such as object detection with a sensor 
   if (IR_sensor.get_processState() == ACTIVE) {
