@@ -20,7 +20,7 @@ set_globalDelayTimeMS	KEYWORD2
 
 get_globalDelayTimeMS	KEYWORD2
 get_globalSyncTimeMS	KEYWORD2
-get_reset_maxLoopMS	KEYWORD2
+get_maxElapsedTimeMS	KEYWORD2
 get_objectCount	KEYWORD2
 
 MTD2A_loop_execute	KEYWORD2
@@ -48,6 +48,9 @@ set_errorPrint	KEYWORD2
 set_pinReadToggl	KEYWORD2
 set_pinReadMode	KEYWORD2
 set_InputState	KEYWORD2
+
+set_delayTimeMS	KEYWORD2
+set_pinBlockMS	KEYWORD2
 set_stopDelayTimer	KEYWORD2
 set_stopBlockTimer	KEYWORD2
 
@@ -58,7 +61,7 @@ get_endTimeMS	KEYWORD2
 get_inputGoLow	KEYWORD2
 get_inputGoHigh	KEYWORD2
 
-PinWriteValue	KEYWORD2
+set_pinWriteValue	KEYWORD2
 set_pinWriteToggl	KEYWORD2
 set_pinWriteMode	KEYWORD2
 set_outputTimeMS	KEYWORD2
@@ -77,6 +80,15 @@ get_setBeginMS	KEYWORD2
 get_setEndMS	KEYWORD2
 get_setBeginMS	KEYWORD2
 get_setEndMS	KEYWORD2
+
+MTD2A_timer	KEYWORD2
+timer	KEYWORD2
+set_countDownMS	KEYWORD2
+get_startTimeMS	KEYWORD2
+get_stopTimeMS	KEYWORD2
+get_pauseTimeMS	KEYWORD2 
+get_remainTimeMS	KEYWORD2
+get_elapsedTimeMS	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
