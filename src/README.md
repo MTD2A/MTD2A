@@ -11,3 +11,5 @@ MTD2A.h
 * MTD2A_binary_input.cpp
 * MTD2A_binary_output.h
 * MTD2A_binary_output.cpp
+* MTD2A_timer.h
+* MTD2A_timer.cpp
