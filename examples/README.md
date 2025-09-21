@@ -9,8 +9,7 @@ Read sensor and write phase state information to Arduino IDE serial monitor. htt
 <br/> Diagram drawing: [Read sensor](/image/read_sensor.png)
 
 ### time_event_processes.ino
-7 time and event processes examples, to inspire how to code state machine process flows.
-
+7 time and event processes examples, to inspire how to code state machine process flows. https://youtu.be/UU4k4_8GWfM
 
 ### train_direction.ino
 Determining the direction of travel of the train (left / right). https://youtu.be/BqwTf03yEwQ
