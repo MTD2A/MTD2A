@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A.h
  * @author  Joergen Bo Madsen
- * @version V1.1.1
- * @date    21. maj 2025
+ * @version V1.1.2
+ * @date    28. august 2025
  * @brief   Abstract main header for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -36,6 +36,7 @@
 #include "Arduino.h"
 #include "MTD2A_const.h"
 #include "MTD2A_base.h"
+#include "MTD2A_timer.h"
 #include "MTD2A_binary_input.h"
 #include "MTD2A_binary_output.h"
 

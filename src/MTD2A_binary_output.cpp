@@ -1,9 +1,9 @@
-/*
+/**
  ******************************************************************************
  * @file    MTD2A_binary_output.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.6
- * @date    7.july 2025
+ * @version V1.1.8
+ * @date    31.august 2025
  * @brief   functions for MTD2A_binary_output.h (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -39,7 +39,9 @@
 // Specific global constants from MTD2A_binary_output.h (MTD2A_const.h)
 constexpr bool    MTD2A_binary_output::P_W_M;
 constexpr bool    MTD2A_binary_output::BINARY;
-constexpr bool    MTD2A_binary_output::STOP_TIMER;
+// TIMERS
+constexpr uint8_t MTD2A_binary_output::STOP_TIMER;
+constexpr uint8_t MTD2A_binary_output::RESET_TIMER;
 // Phases
 constexpr uint8_t MTD2A_binary_output::RESET_PHASE; 
 constexpr uint8_t MTD2A_binary_output::BEGIN_PHASE;
@@ -67,8 +69,6 @@ constexpr uint8_t MTD2A_binary_output::FALLING_SM8;
 constexpr uint8_t MTD2A_binary_output::FALLING_SM5;
 constexpr uint8_t MTD2A_binary_output::FALLING_LED;
 // Base 
-constexpr uint8_t MTD2A_binary_output::MAX_BYTE_VALUE;
-constexpr uint8_t MTD2A_binary_output::PIN_ERROR_NO;
 constexpr uint8_t MTD2A_binary_output::MAX_PWM_CURVES;
 
 
@@ -83,51 +83,41 @@ MTD2A_binary_output::MTD2A_binary_output
     const uint8_t  setPinBeginValue, 
     const uint8_t  setPinEndValue
   )
-  : pinOutputMode {setPinOutputMode}, 
+  : outputTimeMS  {setOutputTimeMS},
+    beginDelayMS  {setBeginDelayMS},
+    endDelayMS    {setEndDelayMS},
+    pinOutputMode {setPinOutputMode}, 
     pinBeginValue {setPinBeginValue}, 
     pinEndValue   {setPinEndValue},
     // Instatiated funtion pointer
     MTD2A{[](MTD2A* funcPtr) { static_cast<MTD2A_binary_output*>(funcPtr)->loop_fast(); }}
   {
     MTD2A_add_function_pointer_loop_fast(this);
-    objectName    = MTD2A_set_object_name(setObjectName);
-    outputTimeMS  = check_set_time  (setOutputTimeMS);
-    beginDelayMS  = check_set_time  (setBeginDelayMS);
-    endDelayMS    = check_set_time  (setEndDelayMS);
-    pinBeginValue = check_pin_value (setPinBeginValue);
-    pinEndValue   = check_pin_value (setPinEndValue);
-    if (outputTimeMS == 0)
-      errorNumber = 150;
-    if (outputTimeMS == 0 && beginDelayMS == 0 && endDelayMS == 0)
-      errorNumber = 151; // No timing configured
+    objectName = MTD2A_set_object_name(setObjectName);
   }
 // MTD2A_binary_output
 
 
-uint32_t MTD2A_binary_output::check_set_time (const uint32_t &setCheckTimeMS) {
-  if (setCheckTimeMS > 0 && setCheckTimeMS < globalDelayTimeMS) {
-    errorNumber = 9; 
-    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
-    return globalDelayTimeMS;
-  }
-  else
-    return setCheckTimeMS;
-} // check_set_time
-
-
 void MTD2A_binary_output::initialize (const uint8_t &setPinNumber, const bool &setPinNomalOrInverted, const uint8_t &setpinStartValue) {
-  // Check for previous instantiated object error
-  if (errorNumber > 0)
-    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
-  //
-  errorNumber   = 0;
   pinWriteMode  = setPinNomalOrInverted;
   pinStartValue = check_pin_value (setpinStartValue);
-  //
   if (pinWriteToggl == ENABLE)
     check_pin_init (setPinNumber);
   else
     pinNumber = PIN_ERROR_NO;
+  // Check for previous instantiated object error
+  outputTimeMS  = check_set_time  (outputTimeMS);
+  beginDelayMS  = check_set_time  (beginDelayMS);
+  endDelayMS    = check_set_time  (endDelayMS);
+  pinBeginValue = check_pin_value (pinBeginValue);
+  pinEndValue   = check_pin_value (pinEndValue);
+  //
+  if (outputTimeMS == 0 && beginDelayMS == 0 && endDelayMS == 0) {
+    print_error_text (151); // No timing configured
+  }
+  else if (outputTimeMS == 0) {
+    print_error_text (150);
+  }
 } // initialize
 
 
@@ -142,7 +132,7 @@ void MTD2A_binary_output::check_pin_init (const uint8_t &checkPinNumber) {
     write_pin_value (pinStartValue);
   }
   else {
-    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, checkPinNumber); 
+    print_error_text (errorNumber);
     pinWriteToggl = DISABLE;
     pinNumber     = PIN_ERROR_NO;
   }
@@ -177,26 +167,14 @@ void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue, const uint8
       PWM_curve_begin_end ();
     activate_process ();
   }
-}
-void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType, const bool &loopFastOnce) {
-  if (processState == COMPLETE) {
-    pinOutputMode = P_W_M;
-    pinBeginValue = check_pin_value (setPinBeginValue);
-    pinEndValue   = check_pin_value (setPinEndValue);
-    PWMcurveType  = check_PWM_curve (setPWMcurveType);
-    if (PWMcurveType != NO_CURVE)
-      PWM_curve_begin_end ();
-    activate_process ();
-    if (loopFastOnce == ENABLE)
-      loop_fast();
-  }
-}  // Activate
+ }// Activate
 
 
 void MTD2A_binary_output::activate_process () {
   processState = ACTIVE;
   phaseChange  = true;
-  // Determine starting phase based on configured delays
+  startPhase   = true;
+  // Determine starting phase based on configured delays and output time
   if (beginDelayMS > 0)
       phaseNumber = BEGIN_PHASE; 
   else if (outputTimeMS > 0)
@@ -208,93 +186,132 @@ void MTD2A_binary_output::activate_process () {
 } // activate_process
 
 
-void MTD2A_binary_output::set_pinWriteToggl (const bool &setPinEnableOrDisable, const bool &loopFastOnce) {
+
+// Setters -----------------------------------------------
+
+
+void MTD2A_binary_output::set_pinWriteValue (const uint8_t &PinValue) {
+  if (pinWriteToggl == ENABLE) {
+    pinWriteValue = check_pin_value (PinValue);
+    write_pin_value (pinWriteValue);
+  }
+  else {
+    print_error_text (11);
+  }
+} // set_pinWriteValue
+
+
+void MTD2A_binary_output::set_pinWriteToggl (const bool &setPinEnableOrDisable) {
   if (setPinEnableOrDisable == ENABLE  &&  pinNumber == PIN_ERROR_NO) {
-    errorNumber = 1; 
-    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);  
+    print_error_text (1);
   }
   else {
     pinWriteToggl = setPinEnableOrDisable;
-    if (loopFastOnce == ENABLE)
-      loop_fast();
   }
 }  // set_pinWriteToggl
 
 
-void MTD2A_binary_output::set_pinWriteMode (const bool &setPinNomalOrInverted, const bool &loopFastOnce) {
+void MTD2A_binary_output::set_pinWriteMode (const bool &setPinNomalOrInverted) {
     pinWriteMode = setPinNomalOrInverted;
-    if (loopFastOnce == ENABLE)
-      loop_fast();
 } // set_pinWriteMode
 
 
-void MTD2A_binary_output::set_setPinValue  (const uint8_t &setSetPinValue, const bool &loopFastOnce) {
-  if (pinWriteToggl == ENABLE) {
-    setPinValue = check_pin_value (setSetPinValue);
-    write_pin_value (setPinValue);
-    if (loopFastOnce == ENABLE)
-      loop_fast();
+void MTD2A_binary_output::set_outputTimeMS (const uint32_t &setOutputTimeMS) {
+  if (processState == COMPLETE) {
+    if (setOutputTimeMS == 0)
+      print_error_text (150);
+    else
+      outputTimeMS = check_set_time (setOutputTimeMS);
+  } 
+  else {
+    print_error_text (12);
+  }
+} // set_outputTimeMS
+
+
+void MTD2A_binary_output::set_beginDelayMS (const uint32_t &setBeginDelayMS) {
+  if (processState == COMPLETE) {
+    beginDelayMS = check_set_time (setBeginDelayMS);
+  } 
+  else {
+    print_error_text (12);
+  }
+} // set_beginDelayMS
+
+
+void MTD2A_binary_output::set_endDelayMS (const uint32_t &setEndDelayMS) {
+  if (processState == COMPLETE) {
+    endDelayMS = check_set_time  (setEndDelayMS);
+  } 
+  else {
+    print_error_text (12);
+  }
+} // set_endDelayMS
+
+
+void MTD2A_binary_output::set_outputTimer (const uint8_t &setOutputTimer) {
+  if (outputTimeMS > 0) {
+    switch (setOutputTimer) {
+      case STOP_TIMER : stopOutputTM  = ENABLE; break;
+      case RESET_TIMER: resetOutputTM = ENABLE; break;
+      default: print_error_text (13);           break; 
+    }
   }
   else {
-    errorNumber = 11; 
-    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+    print_error_text (150);
   }
-} // set_setPinValue
-
-
-void MTD2A_binary_output::set_outputTimer (const bool &changeOutputTimer, const bool &loopFastOnce) {
-  if (changeOutputTimer == STOP_TIMER) 
-    stopOutputTM = ENABLE;
-  else { // Restart timer
-    print_phase_line (RESTART_TIMER);
-    setOutputMS = globalSyncTimeMS;
-  }
-  if (loopFastOnce == ENABLE)
-    loop_fast();
 } // set_outputTimer
 
 
-void MTD2A_binary_output::set_beginTimer (const bool &changeBeginTimer, const bool &loopFastOnce) {
-  if (changeBeginTimer == STOP_TIMER) 
-    stopBeginTM = ENABLE;
-  else { // Restart timer
-    print_phase_line (RESTART_TIMER);
-    setBeginMS = globalSyncTimeMS;
+void MTD2A_binary_output::set_beginTimer (const uint8_t &setBeginTimer) {
+  if (beginDelayMS > 0) {
+    switch (setBeginTimer) {
+      case STOP_TIMER : stopBeginTM  = ENABLE; break;
+      case RESET_TIMER: resetBeginTM = ENABLE; break;
+      default: print_error_text (13);          break; 
+    }
   }
-  if (loopFastOnce == ENABLE)
-    loop_fast();
+  else {
+    print_error_text (140);
+  }
 } // set_beginTimer
 
 
-void MTD2A_binary_output::set_endTimer (const bool &changeEndTimer, const bool &loopFastOnce) {
-  if (changeEndTimer == STOP_TIMER) 
-    stopEndTM = ENABLE;
-  else { // Restart timer
-    print_phase_line (RESTART_TIMER);
-    setEndMS = globalSyncTimeMS;
+void MTD2A_binary_output::set_endTimer (const uint8_t &setEndTimer) {
+  if (endDelayMS > 0) {
+    switch (setEndTimer) {
+      case STOP_TIMER : stopEndTM  = ENABLE; break;
+      case RESET_TIMER: resetEndTM = ENABLE; break;
+      default: print_error_text (13);        break; 
+    }
   }
-  if (loopFastOnce == ENABLE)
-    loop_fast();
+  else {
+    print_error_text (140);
+  }
 } // set_endTimer
 
 
-void MTD2A_binary_output::set_debugPrint (const bool &setEnableOrDisable, const bool &loopFastOnce) {
+void MTD2A_binary_output::set_debugPrint (const bool &setEnableOrDisable) {
   debugPrint = setEnableOrDisable;
-  if (loopFastOnce == ENABLE)
-    loop_fast();
 } // set_debugPrint
 
 
-void MTD2A_binary_output::set_errorPrint (const bool &setEnableOrDisable, const bool &loopFastOnce) {
+void MTD2A_binary_output::set_errorPrint (const bool &setEnableOrDisable) {
   errorPrint = setEnableOrDisable;
-  if (loopFastOnce == ENABLE)
-    loop_fast();
 } // set_errorPrint
+
+
+// Getters -----------------------------------------------
 
 
 bool const &MTD2A_binary_output::get_pinWriteToggl () const {
   return pinWriteToggl;
 }
+
+
+bool const &MTD2A_binary_output::get_pinWriteMode () const{
+    return pinWriteMode;
+} // get_pinWriteMode
 
 
 uint8_t const &MTD2A_binary_output::get_pinOutputValue () const {
@@ -332,7 +349,6 @@ uint32_t const &MTD2A_binary_output::get_setEndMS () const {
 }
 
 
-
 uint8_t const &MTD2A_binary_output::get_reset_error () {
   static uint8_t tempErrorNumber;
   tempErrorNumber = errorNumber;
@@ -344,10 +360,19 @@ uint8_t const &MTD2A_binary_output::get_reset_error () {
 // Internal -----------------------------------------------
 
 
+uint32_t MTD2A_binary_output::check_set_time (const uint32_t &setCheckTimeMS) {
+  if (setCheckTimeMS > 0 && setCheckTimeMS < globalDelayTimeMS) {
+    print_error_text (9);
+    return globalDelayTimeMS;
+  }
+  else
+    return setCheckTimeMS;
+} // check_set_time
+
+
 uint8_t MTD2A_binary_output::check_pin_value (const uint8_t &checkPinValue) {
     if (pinOutputMode == BINARY  &&  checkPinValue > 1) {
-      errorNumber = 152; 
-      MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+      print_error_text (152);
       return 1;
     }
     else
@@ -379,8 +404,7 @@ void MTD2A_binary_output::write_pin_value (const uint8_t &writePinValue) {
 
 uint8_t MTD2A_binary_output::check_PWM_curve (const uint8_t &checkPWMcurveType) {
   if (checkPWMcurveType > MAX_PWM_CURVES) {
-    errorNumber = 153; 
-    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+    print_error_text (153);
     return NO_CURVE;
   }
   else
@@ -393,26 +417,24 @@ void MTD2A_binary_output::PWM_curve_begin_end () {
     PWMoffstePoint = pinBeginValue;
     PWMscaleFactor = ((double)pinEndValue - (double)pinBeginValue) / (double)MAX_BYTE_VALUE;
     if (PWMcurveType >= FALLING_XY && PWMcurveType <= FALLING_SM5) {
-      errorNumber = 154; 
-      MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+      print_error_text (154);
     }
   }
   else {
     PWMoffstePoint = pinEndValue;
     PWMscaleFactor = ((double)pinBeginValue - (double)pinEndValue) / (double)MAX_BYTE_VALUE;
     if (PWMcurveType >= RISING_XY && PWMcurveType <= RISING_SM5) {
-      errorNumber = 155; 
-      MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+      print_error_text (155);
     }
   }
   // Devision by zero guard
   if (outputTimeMS == 0) {
     PWMtimeStep = 1;
-    errorNumber = 150;
-    MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+    print_error_text (150);
   }
-  else
+  else {
     PWMtimeStep = (double)outputTimeMS / (double)MAX_BYTE_VALUE;
+  }
   PWMlastPoint = MAX_BYTE_VALUE;
   PWMcurrPoint = 0;
 } // PWM_curve_begin_end
@@ -512,130 +534,198 @@ int16_t scalePointY;
     // inaccuracy in the calculation formula
   else
     return (uint8_t) scalePointY;
-} // constrain_point_Y 
+} // PWM_scale_point
+
+
+// Main loop -----------------------------------------------
 
 
 void MTD2A_binary_output::loop_fast () {
-  if (processState == ACTIVE) {
-    // RESET_PHASE: do nothing
-    if (phaseNumber == BEGIN_PHASE) 
-      loop_fast_begin ();
-    else if (phaseNumber == OUTPUT_PHASE) {  
-      loop_fast_out_begin (); 
-      loop_fast_out_end ();  
+  phaseChange = false;
+  switch (phaseNumber) {
+    case BEGIN_PHASE   : loop_fast_begin_start ();
+                         loop_fast_begin_timer ();  break;
+    case OUTPUT_PHASE  : loop_fast_out_start   ();  
+                         loop_fast_out_timer   ();  break;
+    case END_PHASE     : loop_fast_end_start   ();
+                         loop_fast_end_timer   ();  break;
+    case COMPLETE_PHASE: loop_fast_complete    ();  break;
     }
-    else if (phaseNumber == END_PHASE)
-      loop_fast_end ();
-    else if (phaseNumber == COMPLETE_PHASE)
-      loop_fast_complete ();
-  }
 } // loop_fast
 
 
-void MTD2A_binary_output::loop_fast_begin () {
-  if (phaseChange == true) {
-    phaseChange = false;
+void MTD2A_binary_output::loop_fast_begin_start () {
+  if (startPhase == true) {
+    startPhase  = false;
+    phaseChange = true;
     setBeginMS  = globalSyncTimeMS;
     print_phase_line ();
   }
-  if ((globalSyncTimeMS - setBeginMS) >= beginDelayMS  ||  stopBeginTM == ENABLE) {
-    phaseChange = true;
-    stopBeginTM = DISABLE;
-    if (outputTimeMS > 0)
-      phaseNumber = OUTPUT_PHASE;
-    else if (endDelayMS > 0)
-      phaseNumber = END_PHASE;
-    else
-      phaseNumber = COMPLETE_PHASE;
+  // Check for timer reset
+  if (resetBeginTM == ENABLE) {
+    resetBeginTM = DISABLE;
+    print_phase_line (RESET_TIMER);
+    setBeginMS = globalSyncTimeMS;
   }
-} // loop_fast_begin
+} // loop_fast_begin_start
 
 
-void MTD2A_binary_output::loop_fast_out_begin () { 
-  if (phaseChange == true) {
-    phaseChange = false;
+void MTD2A_binary_output::loop_fast_begin_timer () {
+  // Timer control
+  if ((globalSyncTimeMS - setBeginMS) >= beginDelayMS  ||  stopBeginTM == ENABLE) {
+    startPhase  = true;
+    stopBeginTM = DISABLE;
+    if (outputTimeMS > 0) {
+      phaseNumber = OUTPUT_PHASE;
+      loop_fast_out_start ();
+      loop_fast_out_timer ();
+    }
+    else if (endDelayMS > 0) {
+      phaseNumber = END_PHASE;
+      loop_fast_end_start ();
+      loop_fast_end_timer ();
+    }
+    else {
+      processState = COMPLETE;
+      phaseNumber  = COMPLETE_PHASE;
+      loop_fast_complete ();
+    }
+  }
+} // loop_fast_begin_timer
+
+
+void MTD2A_binary_output::loop_fast_out_start () { 
+  if (startPhase == true) {
+    startPhase  = false;
+    phaseChange = true;
     setOutputMS = globalSyncTimeMS;
     if (pinStartValue != pinBeginValue) 
       write_pin_value (pinBeginValue);
     print_phase_line ();
   }
-} // loop_fast_out_begin
+  // Check for timer reset
+  if (resetOutputTM == ENABLE) {
+    resetOutputTM = DISABLE;
+    print_phase_line (RESET_TIMER);
+    setOutputMS = globalSyncTimeMS;
+  }
+} // loop_fast_out_start
 
 
-void MTD2A_binary_output::loop_fast_out_end () {
+void MTD2A_binary_output::loop_fast_out_timer () {
   if ((globalSyncTimeMS - setOutputMS) >= outputTimeMS  ||  stopOutputTM == ENABLE) {
-    phaseChange = true;
+    startPhase  = true;
     stopOutputTM = DISABLE;
     // Do not write the same value twice
     if (pinBeginValue != pinEndValue) 
       write_pin_value (pinEndValue);
-    if (endDelayMS > 0)
-      phaseNumber = END_PHASE;
-    else
-      phaseNumber = COMPLETE_PHASE;
+    if (endDelayMS > 0) {
+        phaseNumber = END_PHASE;
+        loop_fast_end_start ();
+        loop_fast_end_timer ();
+    }
+    else {
+      processState = COMPLETE;
+      phaseNumber  = COMPLETE_PHASE;
+      loop_fast_complete ();
+    }
   }
   else if (pinOutputMode == P_W_M  && PWMcurveType != NO_CURVE) {
     PWM_curve_step();
   }
-} // loop_fast_out_end
+} // loop_fast_out_timer
 
 
-void MTD2A_binary_output::loop_fast_end () {
-    if (phaseChange == true) {
-      phaseChange = false;
-      setEndMS = globalSyncTimeMS;
-      print_phase_line ();
-    }
-    if ((globalSyncTimeMS - setEndMS) >= endDelayMS  ||  stopEndTM == ENABLE) {
-      phaseNumber = COMPLETE_PHASE;
-      phaseChange = true;
-      stopEndTM = DISABLE;
-    }
-} // loop_fast_end
+void MTD2A_binary_output::loop_fast_end_start () {
+  if (startPhase == true) {
+    startPhase  = false;
+    phaseChange = true;
+    setEndMS    = globalSyncTimeMS;
+    print_phase_line ();
+  }
+  // Check for timer reset
+  if (resetEndTM == ENABLE) {
+    resetEndTM = DISABLE;
+    print_phase_line (RESET_TIMER);
+    setEndMS = globalSyncTimeMS;
+  }
+} // loop_fast_end_start
+
+
+void MTD2A_binary_output::loop_fast_end_timer () {
+  if ((globalSyncTimeMS - setEndMS) >= endDelayMS  ||  stopEndTM == ENABLE) {
+    startPhase   = true;
+    stopEndTM    = DISABLE;
+    processState = COMPLETE;
+    phaseNumber  = COMPLETE_PHASE;
+    loop_fast_complete ();
+  }
+} // loop_fast_end_timer
 
 
 void MTD2A_binary_output::loop_fast_complete () {
-  processState = COMPLETE;
-  phaseChange  = false;
-  print_phase_line ();
+  if (startPhase == true) {
+    startPhase = false;
+    phaseChange = true;
+    print_phase_line ();
+  } 
 } // loop_fast_complete
 
 
 void MTD2A_binary_output::reset () {
-  setPinValue    = LOW;
+  pinWriteValue  = LOW;
   processState   = COMPLETE;
   setBeginMS     = 0;
   setOutputMS    = 0;
   setEndMS       = 0;
   errorNumber    = 0;
-  phaseChange    = false;
+  startPhase     = false; 
+  phaseChange    = true;
   phaseNumber    = RESET_PHASE;
   stopOutputTM   = DISABLE;
   stopBeginTM    = DISABLE;
   stopEndTM      = DISABLE;
   pinOutputValue = pinStartValue;
+  pinWriteValue  = LOW;
+  // PWM curves
+  PWMcurveType   = NO_CURVE;
+  PWMoffstePoint = 0;
+  PWMcurrPoint   = 0;
+  PWMlastPoint   = MAX_BYTE_VALUE;
+  PWMpinValue    = 0;
+  PWMscaleFactor = 0.0;
+  PWMtimeStep    = 0.0;
   if (pinNumber != PIN_ERROR_NO  && pinWriteToggl == ENABLE)
     write_pin_value (pinStartValue);
   print_phase_line ();
 }  // reset
 
 
-void MTD2A_binary_output::print_phase_text() {
+void MTD2A_binary_output::print_error_text (const uint8_t setErrorNumber) {
+  errorNumber = setErrorNumber;
+  MTD2A_print_object_name (objectName);
+  MTD2A_print_error_text ((debugPrint == ENABLE || errorPrint == ENABLE), errorNumber, pinNumber);
+} // print_error_text
+
+
+void MTD2A_binary_output::print_phase_text () {
   switch(phaseNumber) {
-    case 0: PortPrintln(F("[0] Reset"));         break;
-    case 1: PortPrintln(F("[1] First time"));    break;
-    case 2: PortPrintln(F("[2] Last time"));     break;
-    case 3: PortPrintln(F("[3] Pin blocking"));  break;
-    case 4: PortPrintln(F("[4] Complete"));      break;
+    case 0: PortPrintln(F("[0] Reset"));        break;
+    case 1: PortPrintln(F("[1] Begin delay"));  break;
+    case 2: PortPrintln(F("[2] Output timer")); break;
+    case 3: PortPrintln(F("[3] End delay"));    break;
+    case 4: PortPrintln(F("[4] Complete"));     break;
   }
 } // print_phase_text
 
 
-void MTD2A_binary_output::print_phase_line (const bool &printRestartTimer) {
+void MTD2A_binary_output::print_phase_line (const uint8_t &printResetTimer) {
   if (debugPrint == ENABLE  ||  globalDebugPrint == ENABLE) {
     MTD2A_print_object_name (objectName);
-    if (printRestartTimer == RESTART_TIMER)
-      PortPrint(F(": Restart timer "));
+    if (printResetTimer == RESET_TIMER) {
+      PortPrint(F(": Reset timer >"));
+    }
+    PortPrint(F(" "));  
     print_phase_text ();
   }
 } // print_phase_line
@@ -659,9 +749,9 @@ void MTD2A_binary_output::print_conf () {
   PortPrint  (F("  pinWriteToggl: ")); MTD2A_print_enable_disable  (pinWriteToggl);
   PortPrint  (F("  pinWriteMode : ")); MTD2A_print_normal_inverted (pinWriteMode);
   PortPrint  (F("  pinStartValue: ")); MTD2A_print_value_binary (pinOutputMode, pinStartValue);
-  PortPrint  (F("  setPinValue  : ")); MTD2A_print_value_binary (pinOutputMode, setPinValue);
+  PortPrint  (F("  pinWriteValue: ")); MTD2A_print_value_binary (pinOutputMode, pinWriteValue);
   // timers
-  PortPrint  (F("  setBeginMS   : ")); PortPrintln(setBeginMS);
   PortPrint  (F("  setOutputMS  : ")); PortPrintln(setOutputMS);
+  PortPrint  (F("  setBeginMS   : ")); PortPrintln(setBeginMS);
   PortPrint  (F("  setEndMS     : ")); PortPrintln(setEndMS);
 } // print_conf 

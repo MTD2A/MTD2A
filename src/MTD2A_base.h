@@ -1,9 +1,9 @@
-/*
+/**
  ******************************************************************************
  * @file    MTD2A_base.h
  * @author  Joergen Bo Madsen
- * @version V1.1.6
- * @date    28. june 2025
+ * @version V1.1.7
+ * @date    31. august 2025
  * @brief   Abstract base Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -47,29 +47,32 @@
 
 class MTD2A  // base class
 { 
-  // Static class that makes the attributes or method belong to the class itself instead of to instances of the class. 
+  // Static class that makes the attributes or methods belong to the class itself instead of to instances of the class. 
   public:
 
+    friend class MTD2A_timer;
+    friend class MTD2A_stopwatch;
     friend class MTD2A_binary_output;
     friend class MTD2A_binary_input;
 
   private:
-    static constexpr uint8_t  MAX_BYTE_VALUE {255};
-    static constexpr uint8_t  PIN_ERROR_NO   {255};
+    static constexpr uint8_t  NO_PRINT_PIN   {254};
     static constexpr uint8_t  WARNING_START  {128};
     static constexpr uint8_t  MAX_PWM_CURVES {16};
     // Global constants from MTD2A_const.h
-    static constexpr bool ENABLE         {MTD2A_const::ENABLE};
-    static constexpr bool DISABLE        {MTD2A_const::DISABLE};
-    static constexpr bool ACTIVE         {MTD2A_const::ACTIVE};
-    static constexpr bool COMPLETE       {MTD2A_const::COMPLETE};
-    static constexpr bool NORMAL         {MTD2A_const::NORMAL};
-    static constexpr bool INVERTED       {MTD2A_const::INVERTED};
-    static constexpr bool PULSE          {MTD2A_const::PULSE};
-    static constexpr bool FIXED          {MTD2A_const::FIXED};
-    static constexpr bool BINARY         {MTD2A_const::BINARY};
-    static constexpr bool P_W_M          {MTD2A_const::P_W_M};
-    static constexpr bool RESTART_TIMER  {MTD2A_const::RESTART_TIMER};
+    static constexpr uint8_t  MAX_BYTE_VALUE {MTD2A_const::MAX_BYTE_VALUE};
+    static constexpr uint8_t  PIN_ERROR_NO   {MTD2A_const::PIN_ERROR_NO};
+    //
+    static constexpr bool     ENABLE     {MTD2A_const::ENABLE};
+    static constexpr bool     DISABLE    {MTD2A_const::DISABLE};
+    static constexpr bool     ACTIVE     {MTD2A_const::ACTIVE};
+    static constexpr bool     COMPLETE   {MTD2A_const::COMPLETE};
+    static constexpr bool     NORMAL     {MTD2A_const::NORMAL};
+    static constexpr bool     INVERTED   {MTD2A_const::INVERTED};
+    static constexpr bool     PULSE      {MTD2A_const::PULSE};
+    static constexpr bool     FIXED      {MTD2A_const::FIXED};
+    static constexpr bool     BINARY     {MTD2A_const::BINARY};
+    static constexpr bool     P_W_M      {MTD2A_const::P_W_M};
     static constexpr uint32_t DELAY_10MS {MTD2A_const::DELAY_10MS};
     static constexpr uint32_t DELAY_1MS  {MTD2A_const::DELAY_1MS};
     //
@@ -78,24 +81,97 @@ class MTD2A  // base class
     // 
     static bool     globalDebugPrint;
     static bool     globalErrorPrint;
-    static uint32_t globalSyncTimeMS;
-    static uint32_t globalDelayTimeMS;
-    static uint32_t globalLastTimeMS;
-    static uint32_t globalLoopTimeMS;
-    static uint32_t globalMaxLoopMS;
     static uint8_t  globalObjectCount;
+
+    static uint32_t globalDelayTimeMS;
+    static uint32_t globalSyncTimeMS;
+    static uint32_t elapsedTimeMS;
+    static uint32_t maxElapsedTimeMS;
+    
+    static uint32_t endTimeMS;
+    static uint32_t beginTimeMS;
 
   public:
     virtual ~MTD2A() = default;
-    // setters
-    static void     set_globalDebugPrint  (const bool &setEnableOrDisable   = ENABLE);
-    static void     set_globalErrorPrint  (const bool &setEnableOrDisable   = DISABLE);
-    static void     set_globalDelayTimeMS (const bool &setGlobalDelayTimeMS = DELAY_10MS);
-    // getters
-    static uint32_t get_globalSyncTimeMS  ();
-    static uint32_t get_reset_maxLoopMS   ();
-    static uint8_t  get_objectCount       ();
-    static void     print_conf            ();
+
+
+    // Setters -------------------------------------------------------------
+
+
+    /**
+     * @brief Enable print phase state number and phase state text for all instantiated classes
+     * @name set_globalDebugPrint
+     * @param ( {ENABLE | DISABLE} );
+     * @return none
+     */
+    static void set_globalDebugPrint (const bool &setEnableOrDisable = ENABLE);
+
+
+    /**
+     * @brief Enable print error and warning text for all instantiated classes
+     * @name set_globalErrorPrint
+     * @param ( {ENABLE | DISABLE} );
+     * @return none
+     */
+    static void set_globalErrorPrint (const bool &setEnableOrDisable = ENABLE);
+
+
+    /**
+     * @brief Set main loop delay in milliseconds in function MTD2A_loop_execute();
+     * @name set_globalDelayTimeMS
+     * @param ( {DELAY_10MS | DELAY_1MS} );
+     * @return none
+     */
+    static void set_globalDelayTimeMS (const bool &setGlobalDelayTimeMS = DELAY_10MS);
+
+
+    // getters -------------------------------------------------------------
+
+
+    /**
+     * @brief main loop delay in milliseconds
+     * @name get_globalDelayTimeMS();
+     * @param none
+     * @return unit32_t milliseconds
+     */
+    static uint32_t get_globalDelayTimeMS ();
+
+ 
+    /**
+     * @brief Current common reference time for all instantiated objects
+     * @name get_globalSyncTimeMS();
+     * @param none
+     * @return unit32_t milliseconds
+     */ 
+    static uint32_t get_globalSyncTimeMS ();
+
+
+    /**
+     * @brief Max MTD2A code, user code and other library loop execution time and reset measurement
+     * @name get_MaxElapsedTimeMS ();
+     * @param none
+     * @return unit32_t milliseconds
+     */
+    static uint32_t get_MaxElapsedTimeMS ();
+
+
+    /**
+     * @brief number of instatiated MTD2A objects 
+     * @name get_globalObjectCount();
+     * @param none
+     * @return unit8_t count
+     */
+    static uint8_t get_globalObjectCount ();
+
+
+    /**
+     * @brief print configuration parameters, timers and state logic.
+     * @name print_conf ();
+     * @param none
+     * @return none
+     */
+    static void print_conf ();
+
 
   private:
     // Function pointer linked list -----------------------------------------------------------------------------------
@@ -133,18 +209,19 @@ class MTD2A  // base class
 
 // User friendly alias and consistent naming ------------------------------------------------------------------------------------
 
-/*
+
+/**
  * @brief Update state mashine for all instantiated classes
  * @name MTD2A_loop_execute();
  * @param none
  * @return none
  */
 auto MTD2A_loop_execute = []() {
-  MTD2A::loop_execute();
+  MTD2A::loop_execute ();
 };
 
 
-/*
+/**
  * @brief Enable print phase state number and phase state text for all instantiated classes
  * @name MTD2A_globalDebugPrint
  * @param ( {ENABLE | DISABLE} );
@@ -155,7 +232,7 @@ auto MTD2A_globalDebugPrint = [](const bool &setEnableOrDisable = MTD2A_const::E
 };
 
 
-/*
+/**
  * @brief Enable print error and warning text for all instantiated classes
  * @name MTD2A_globalErrorPrint
  * @param ( {ENABLE | DISABLE} );
@@ -166,58 +243,15 @@ auto MTD2A_globalErrorPrint = [](const bool &setEnableOrDisable  = MTD2A_const::
 };
 
 
-/*
- * @brief Set main loop delay in milliseconds in function MTD2A_loop_execute();
- * @name MTD2A_globalDelayTimeMS
- * @param ( {DELAY_10MS | DELAY_1MS} );
- * @return none
- */
-auto MTD2A_globalDelayTimeMS = [](const bool &setGlobalDelayTimeMS = MTD2A_const::DELAY_10MS) {
-  MTD2A::set_globalDelayTimeMS (setGlobalDelayTimeMS); 
-};
-
-
-/*
- * @brief Current common time set for alle instantiated objects
- * @name MTD2A_globalSyncTimeMS();
- * @param none
- * @return unit32_t milliseconds
- */
-auto MTD2A_globalSyncTimeMS = []() {
-  MTD2A::get_globalSyncTimeMS ();
-};
-
-
-/*
- * @brief Max MTD2A code, user code and other library loop execution time 
- * @name MTD2A_maxLoopMS();
- * @param none
- * @return unit32_t milliseconds
- */
-auto MTD2A_globalMaxLoopMS = []() {
-  return MTD2A::get_reset_maxLoopMS ();
-};
-
-
-/*
- * @brief number of instatiated MTD2A objects 
- * @name MTD2A_objectCount();
- * @param none
- * @return unit8_t count
- */
-auto MTD2A_globalObjectCount = []() {
-  return MTD2A::get_objectCount ();
-};
-
-
-/*
+/**
  * @brief print configuration parameters, timers and state logic.
  * @name MTD2A_print_conf ();
  * @param none
  * @return none
  */
 auto MTD2A_print_conf = []() {
-  return MTD2A::print_conf ();
+  MTD2A::print_conf ();
 };
+
 
 #endif
