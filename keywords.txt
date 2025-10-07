@@ -21,6 +21,7 @@ set_globalDelayTimeMS	KEYWORD2
 get_globalDelayTimeMS	KEYWORD2
 get_globalSyncTimeMS	KEYWORD2
 get_maxElapsedTimeMS	KEYWORD2
+get_timeOverrunCount	KEYWORD2
 get_objectCount	KEYWORD2
 
 MTD2A_loop_execute	KEYWORD2
