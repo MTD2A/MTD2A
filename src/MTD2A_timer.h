@@ -64,16 +64,17 @@ class MTD2A_timer: public MTD2A
     uint8_t  errorNumber   {0};           // get_reset_error () Error {1-127} and Warning {128-255}    
     // State control
     bool     processState  {COMPLETE};    // get_processState () / ACTIVE 
-    bool     phaseChange   {false};       // true = change in timing state
+    bool     phaseChange   {false};       // true = change in timing state (one loop)
     uint8_t  phaseNumber   {STOP_TIMER};  // RESET_TIMER = 0, START_TIMER = 1, PAUSE_TIMER = 2, STOP_TIMER = 3
+    uint8_t  setPhaseNumber{STOP_TIMER};  // Set phase number to execute (loop_fast ();)
     // Pause timers
-    uint32_t beginPauseMS  {0};           // Timer begin pause milliseconds
-    uint32_t endPauseMS    {0};           // Timer end pause milliseconds
+    uint32_t pauseBeginMS  {0};           // Timer begin pause milliseconds
+    uint32_t pauseEndMS    {0};           // Timer end pause milliseconds
     // Time control
     bool     startProcess  {false};       // Control executing flags
     bool     stopProcess   {false};       // Control executing flags
-    bool     startPause    {false};       // Control executing flags
-    bool     stopPause     {false};       // Control executing flags
+    bool     beginPause    {false};       // Control executing flags
+    bool     endPause      {false};       // Control executing flags
 
  public:
     // Constructor inittializers
@@ -84,7 +85,7 @@ class MTD2A_timer: public MTD2A
      * @return none
      */
     MTD2A_timer (
-      const char    *setObjectName = "Object name", 
+      const char    *setObjectName  = "Object name", 
       const uint32_t setCountDownMS = 0
     );
 
@@ -129,8 +130,8 @@ class MTD2A_timer: public MTD2A
      * @param ( {START_TIMER | PAUSE_TIMER | STOP_TIMER | RESET_TIMER}, setCountDownMS );
      * @return none
      */
-    void timer (const uint8_t &StartStopPauseReset);
-    void timer (const uint8_t &StartStopPauseReset, const uint32_t &SetCountDownMS);
+    void timer (const uint8_t &setStartStopPauseReset = START_TIMER);
+    void timer (const uint8_t &setStartStopPauseReset, const uint32_t &SetCountDownMS);
 
 
     /**
@@ -175,7 +176,7 @@ class MTD2A_timer: public MTD2A
 
 
     /**
-     * @brief get start time in milliseconds
+     * @brief get start time in milliseconds (first if no pause was initated)
      * @name object_name.startTimeMS ();
      * @param none
      * @return unit32_t milliseconds
@@ -193,7 +194,7 @@ class MTD2A_timer: public MTD2A
 
 
     /**
-     * @brief get pause time in milliseconds
+     * @brief get acuumulated pause time in milliseconds (sum of all pause periods)
      * @name object_name.get_pauseTimeMS ();
      * @param none
      * @return unit32_t milliseconds
@@ -256,16 +257,21 @@ class MTD2A_timer: public MTD2A
     
   private: // Internal functions
   
-    void     start_timer      ();
-    void     reset_timer      ();
-    void     pause_timer      ();
-    void     stop_timer       ();
-    void     loop_fast        ();
-    void     set_timer_state  (const uint8_t &setStartStopPauseReset);
-    void     loop_fast_pause  ();
-    void     loop_fast_start  ();
-    void     loop_fast_timer  ();
-    uint32_t check_set_time   (const uint32_t &setCheckTimeMS);
+    void     start_timer       ();
+    void     reset_timer       ();
+    void     pause_timer       ();    
+    void     stop_timer        ();
+    bool     check_timer_arg   (const uint8_t  &argStartStopPauseReset);
+    void     set_timer_state   (const uint8_t  &setStartStopPauseReset);
+    uint32_t check_set_time    (const uint32_t &setCheckTimeMS);
+    // Execute
+    void     loop_fast             ();
+    void     loop_fast_start_reset ();
+    void     loop_fast_pause_begin ();
+    void     loop_fast_pause_end   ();
+    void     loop_fast_calc_time   ();
+    void     loop_fast_timer_stop  ();
+    // print
     void     print_phase_line ();
     void     print_phase_text ();
     void     print_error_text (const uint8_t setErrorNumber);

@@ -51,7 +51,6 @@ class MTD2A  // base class
   public:
 
     friend class MTD2A_timer;
-    friend class MTD2A_stopwatch;
     friend class MTD2A_binary_output;
     friend class MTD2A_binary_input;
 
@@ -59,6 +58,7 @@ class MTD2A  // base class
     static constexpr uint8_t  NO_PRINT_PIN   {254};
     static constexpr uint8_t  WARNING_START  {128};
     static constexpr uint8_t  MAX_PWM_CURVES {16};
+    static constexpr uint16_t MS_to_US       {1000};
     // Global constants from MTD2A_const.h
     static constexpr uint8_t  MAX_BYTE_VALUE {MTD2A_const::MAX_BYTE_VALUE};
     static constexpr uint8_t  PIN_ERROR_NO   {MTD2A_const::PIN_ERROR_NO};
@@ -73,23 +73,25 @@ class MTD2A  // base class
     static constexpr bool     FIXED      {MTD2A_const::FIXED};
     static constexpr bool     BINARY     {MTD2A_const::BINARY};
     static constexpr bool     P_W_M      {MTD2A_const::P_W_M};
-    static constexpr uint32_t DELAY_10MS {MTD2A_const::DELAY_10MS};
-    static constexpr uint32_t DELAY_1MS  {MTD2A_const::DELAY_1MS};
+    static constexpr uint8_t  DELAY_10MS {MTD2A_const::DELAY_10MS};
+    static constexpr uint8_t  DELAY_5MS  {MTD2A_const::DELAY_5MS};
+    static constexpr uint8_t  DELAY_1MS  {MTD2A_const::DELAY_1MS};
     //
     static const uint8_t DIGITAL_FLAG_0 {1}, ANALOG_FLAG_1 {2}, INPUT_FLAG_2 {4}, PULLUP_FLAG_3    {8}, 
                          OUTPUT_FLAG_4 {16}, PWM_FLAG_5 {32},   TONE_FLAG_6 {64}, INTERRUPT_FLAG_7 {128};
     // 
     static bool     globalDebugPrint;
     static bool     globalErrorPrint;
-    static uint8_t  globalObjectCount;
-
-    static uint32_t globalDelayTimeMS;
     static uint32_t globalSyncTimeMS;
-    static uint32_t elapsedTimeMS;
-    static uint32_t maxElapsedTimeMS;
-    
-    static uint32_t endTimeMS;
-    static uint32_t beginTimeMS;
+    static uint8_t  globalDelayTimeMS;
+    static uint8_t  globalObjectCount;
+    //
+    static uint32_t delayTimeUS;
+    static uint32_t elapsedTimeUS;
+    static uint32_t maxElapsedTimeUS;
+    static uint32_t timeOverrunCount;  
+    static uint32_t endTimeUS;
+    static uint32_t beginTimeUS;
 
   public:
     virtual ~MTD2A() = default;
@@ -119,26 +121,26 @@ class MTD2A  // base class
     /**
      * @brief Set main loop delay in milliseconds in function MTD2A_loop_execute();
      * @name set_globalDelayTimeMS
-     * @param ( {DELAY_10MS | DELAY_1MS} );
+     * @param ( {1 - 10} or { DELAY_10MS | DELAY_5MS | DELAY_1MS } );
      * @return none
      */
-    static void set_globalDelayTimeMS (const bool &setGlobalDelayTimeMS = DELAY_10MS);
+    static void set_globalDelayTimeMS (const uint8_t &setGlobalDelayTimeMS = DELAY_10MS);
 
 
     // getters -------------------------------------------------------------
 
 
     /**
-     * @brief main loop delay in milliseconds
+     * @brief Get main loop delay in milliseconds
      * @name get_globalDelayTimeMS();
      * @param none
-     * @return unit32_t milliseconds
+     * @return uint8_t ( {1 - 10} or { DELAY_10MS | DELAY_5MS | DELAY_1MS } );
      */
-    static uint32_t get_globalDelayTimeMS ();
+    static uint8_t get_globalDelayTimeMS ();
 
  
     /**
-     * @brief Current common reference time for all instantiated objects
+     * @brief Get current common reference time for all instantiated objects
      * @name get_globalSyncTimeMS();
      * @param none
      * @return unit32_t milliseconds
@@ -147,16 +149,25 @@ class MTD2A  // base class
 
 
     /**
-     * @brief Max MTD2A code, user code and other library loop execution time and reset measurement
-     * @name get_MaxElapsedTimeMS ();
+     * @brief Get max MTD2A code, user code and other library loop execution time and reset measurement
+     * @name get_maxElapsedTimeMS ();
      * @param none
      * @return unit32_t milliseconds
      */
-    static uint32_t get_MaxElapsedTimeMS ();
+    static uint32_t get_maxElapsedTimeUS ();
 
 
     /**
-     * @brief number of instatiated MTD2A objects 
+     * @brief Get number times loop time exceeds globalDelayTimeMS 
+     * @name get_timeOverrunCount ();
+     * @param none
+     * @return unit32_t milliseconds
+     */
+    static uint32_t get_timeOverrunCount ();
+
+    
+    /**
+     * @brief Get number of instatiated MTD2A objects 
      * @name get_globalObjectCount();
      * @param none
      * @return unit8_t count

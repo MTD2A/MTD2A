@@ -44,7 +44,7 @@ namespace MTD2A_const {
   constexpr bool     NORMAL         = true,  INVERTED     = false;
   constexpr bool     PULSE          = true,  FIXED        = false;
   constexpr bool     BINARY         = true,  P_W_M        = false;
-  constexpr uint32_t DELAY_10MS     = 10,    DELAY_1MS    = 1;
+  constexpr uint8_t  DELAY_10MS     = 10,    DELAY_5MS    = 5,    DELAY_1MS      = 1;
   constexpr uint8_t  MAX_BYTE_VALUE = 255,   PIN_ERROR_NO = 255;
   // Timers
   constexpr uint8_t  RESET_TIMER      = 0,  START_TIMER     = 1,  PAUSE_TIMER    = 2,  STOP_TIMER = 3;

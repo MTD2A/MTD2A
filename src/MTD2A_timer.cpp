@@ -58,6 +58,7 @@ MTD2A_timer::MTD2A_timer
     // Instatiated funtion pointer
     MTD2A{[](MTD2A* funcPtr) { static_cast<MTD2A_timer*>(funcPtr)->loop_fast(); }}
   { 
+    remainTimeMS  = countDownMS;
     MTD2A_add_function_pointer_loop_fast(this);
     objectName = MTD2A_set_object_name(setObjectName);
   }
@@ -65,84 +66,73 @@ MTD2A_timer::MTD2A_timer
 
 
 // Timer function overloading
-void MTD2A_timer::timer (const uint8_t &startStopPauseReset) {
-  set_timer_state (startStopPauseReset);
+void MTD2A_timer::timer (const uint8_t &setStartStopPauseReset) {
+  if (check_timer_arg (setStartStopPauseReset) == true) {
+    set_timer_state (setStartStopPauseReset);
+  }
 }
-void MTD2A_timer::timer (const uint8_t &startStopPauseReset, const uint32_t &setCountDownMS) {
-  if (startStopPauseReset == START_TIMER  ||  startStopPauseReset == RESET_TIMER) {
-    countDownMS = setCountDownMS;
+void MTD2A_timer::timer (const uint8_t &setStartStopPauseReset, const uint32_t &setCountDownMS) {
+  countDownMS = setCountDownMS;
+  if (check_timer_arg (setStartStopPauseReset) == true) {
+    set_timer_state (setStartStopPauseReset);
   }
-  else {
-    print_error_text (15);
-  }
-  set_timer_state (startStopPauseReset);
 }  // timer
 
 
-void MTD2A_timer::set_timer_state (const uint8_t &setStartStopPauseReset) {
-  countDownMS = check_set_time (countDownMS);
-  if (countDownMS == 0) {
-      print_error_text (140);
+bool MTD2A_timer::check_timer_arg (const uint8_t &argStartStopPauseReset) {
+  if (argStartStopPauseReset <= STOP_TIMER) {
+    if (argStartStopPauseReset == START_TIMER  ||  argStartStopPauseReset == RESET_TIMER) {
+      countDownMS = check_set_time (countDownMS);
+    }
+    return true;
   }
-  //
-  switch (setStartStopPauseReset) {
-    case START_TIMER: start_timer ();  break;
-    case RESET_TIMER: reset_timer ();  break;
-    case PAUSE_TIMER: pause_timer ();  break;
-    case STOP_TIMER:  stop_timer  ();  break;
-    default:
-      print_error_text (14);
-    break;
+  else {
+    print_error_text (14);
+    return false;
   }
+} // check_timer_arg
+
+
+void MTD2A_timer::set_timer_state (const uint8_t &startStopPauseReset) {
+    setPhaseNumber = startStopPauseReset;
+    switch (startStopPauseReset) {
+      case START_TIMER: start_timer ();  break;
+      case RESET_TIMER: reset_timer ();  break;
+      case PAUSE_TIMER: pause_timer ();  break;
+      case STOP_TIMER:  stop_timer  ();  break;
+    }
 } // set_timer_state
 
 
 void MTD2A_timer::start_timer () {
   if (processState == COMPLETE) {
-    processState = ACTIVE;
-    phaseChange  = true;
-    phaseNumber  = START_TIMER;
-    startProcess = true;
-    stopProcess  = true;
-    remainTimeMS = countDownMS;
+    startProcess  = true;
   }
+  //
   if (processState == ACTIVE  &&  phaseNumber == PAUSE_TIMER) {
-    phaseChange  = true;
-    phaseNumber  = START_TIMER;
-    stopPause    = true;
+    endPause = true;
   }
 } // start_timer
 
 
 void MTD2A_timer::reset_timer () {
-  if (processState == ACTIVE) {
-    phaseChange  = true;
-    phaseNumber  = RESET_TIMER;
-    startProcess = true;
-    stopProcess  = true;
-    remainTimeMS = countDownMS;
-    pauseTimeMS  = 0;
-  }
+  // Reset no matter processState
+  startProcess  = true;
 } // reset_timer
 
 
 void MTD2A_timer::pause_timer () {
-  if (processState == ACTIVE  && phaseNumber == START_TIMER) {
-    phaseChange  = true;
-    phaseNumber  = PAUSE_TIMER;
-    startPause   = true;
+  if (phaseNumber == START_TIMER  ||  phaseNumber == RESET_TIMER) {
+    beginPause = true;
   }
 } // pause_timer
 
 
 void MTD2A_timer::stop_timer () {
   if (processState == ACTIVE) {
-    processState = COMPLETE;
-    phaseChange  = true;
-    phaseNumber  = STOP_TIMER;
     stopProcess  = true;
     if (phaseNumber == PAUSE_TIMER) {
-      stopPause = true;
+      endPause = true;
     }
   }
 } // stop_timer
@@ -153,13 +143,7 @@ void MTD2A_timer::stop_timer () {
 
 void MTD2A_timer::set_countDownMS (const uint32_t &setCountDownMS) {
   if (processState == COMPLETE) {
-    if (setCountDownMS == 0)
-      print_error_text (140);
-    else
-      countDownMS = check_set_time (setCountDownMS);
-  } 
-  else {
-    print_error_text (12);
+    countDownMS = check_set_time (setCountDownMS);
   }
 } // set_countDownMS
 
@@ -196,7 +180,7 @@ uint32_t const &MTD2A_timer::get_remainTimeMS () const {
 
 
 uint32_t const &MTD2A_timer::get_elapsedTimeMS () const {
-  return remainTimeMS;
+  return elapsedTimeMS;
 }
 
 
@@ -228,54 +212,82 @@ uint8_t const &MTD2A_timer::get_reset_error () {
 
 void MTD2A_timer::loop_fast () {
   phaseChange = false;
-  loop_fast_pause ();
-  loop_fast_start ();
-  loop_fast_timer ();
+  phaseNumber = setPhaseNumber;
+ switch (phaseNumber) {
+    case START_TIMER:
+    case RESET_TIMER:
+         loop_fast_start_reset ();
+         loop_fast_pause_end   ();
+         loop_fast_calc_time   ();
+         loop_fast_timer_stop  ();
+    break;
+    case PAUSE_TIMER:
+         loop_fast_pause_begin ();
+    break;
+    case STOP_TIMER:
+         loop_fast_pause_end   ();
+         loop_fast_calc_time   ();
+         loop_fast_timer_stop  ();
+    break;
+ }
 } // loop_fast
 
 
-void MTD2A_timer::loop_fast_pause () {
-  if (startPause == true) {
-    startPause    = false;
-    phaseChange   = true;
-    beginPauseMS  = globalSyncTimeMS;
-    print_phase_line ();
-  }
-  if (stopPause == true) {
-    stopPause   = false;
-    phaseChange = true;
-    endPauseMS  = globalSyncTimeMS;
-    pauseTimeMS = pauseTimeMS + endPauseMS - beginPauseMS;
-    print_phase_line ();
-  }
-} // loop_fast_pause
-
-
-void MTD2A_timer::loop_fast_start () {
+void MTD2A_timer::loop_fast_start_reset () {
   if (startProcess == true) {
-    startProcess = false;
-    phaseChange  = true;
-    startTimeMS  = globalSyncTimeMS;
-    stopTimeMS   = 0;
-    pauseTimeMS  = 0;
+    startProcess  = false;
+    stopProcess   = true;
+    beginPause    = false;
+    endPause      = false;
+    phaseChange   = true;
+    processState  = ACTIVE;
+    startTimeMS   = globalSyncTimeMS;
+    remainTimeMS  = countDownMS;
+    elapsedTimeMS = 0;
+    pauseTimeMS   = 0;
+    stopTimeMS    = 0;
     print_phase_line ();
-    phaseNumber  = START_TIMER; // override RESET_TIME
-  }
-  else if (phaseNumber != PAUSE_TIMER) {
-    // checks for negative numbers
-    if ((globalSyncTimeMS - pauseTimeMS - startTimeMS)  >  countDownMS) {
-      remainTimeMS  = 0;
-      elapsedTimeMS = countDownMS;
-    }
-    else {
-      elapsedTimeMS  = globalSyncTimeMS - pauseTimeMS - startTimeMS;
-      remainTimeMS = countDownMS - elapsedTimeMS;
-    }
   }
 } // loop_fast_start
 
 
-void MTD2A_timer::loop_fast_timer () {
+void MTD2A_timer::loop_fast_pause_begin () {
+  if (beginPause == true) {
+    beginPause    = false;
+    phaseChange   = true;
+    pauseBeginMS  = globalSyncTimeMS;
+    print_phase_line ();
+  }
+} // loop_fast_begin_pause
+
+
+void MTD2A_timer::loop_fast_pause_end () {
+  if (endPause == true) {
+    endPause   = false;
+    phaseChange = true;
+    pauseEndMS  = globalSyncTimeMS;
+    pauseTimeMS = pauseTimeMS + pauseEndMS - pauseBeginMS;
+    print_phase_line ();
+  }
+} // loop_fast_end_pause
+
+
+void MTD2A_timer::loop_fast_calc_time () {
+  if (phaseNumber != PAUSE_TIMER  &&  stopProcess == true) {
+    // checks for negative numbers
+    elapsedTimeMS = globalSyncTimeMS - pauseTimeMS - startTimeMS;
+    if (elapsedTimeMS  >=  countDownMS) {
+      remainTimeMS = 0;
+      elapsedTimeMS = countDownMS;
+    }
+    else {
+      remainTimeMS = countDownMS - elapsedTimeMS;
+    }
+  }
+} // loop_fast_calc_time
+
+
+void MTD2A_timer::loop_fast_timer_stop () {
   if ((remainTimeMS) == 0  ||  phaseNumber == STOP_TIMER ) {
     if (stopProcess == true) {
       stopProcess  = false;
@@ -283,9 +295,6 @@ void MTD2A_timer::loop_fast_timer () {
       processState = COMPLETE;
       phaseNumber  = STOP_TIMER; 
       stopTimeMS   = globalSyncTimeMS;
-      if (phaseNumber != STOP_TIMER) { 
-        remainTimeMS = 0;
-      }
       print_phase_line ();
     }
   }
@@ -293,6 +302,9 @@ void MTD2A_timer::loop_fast_timer () {
 
 
 uint32_t MTD2A_timer::check_set_time (const uint32_t &setCheckTimeMS) {
+  if (countDownMS == 0) {
+    print_error_text (140);
+  }
   if (setCheckTimeMS > 0  &&  setCheckTimeMS < globalDelayTimeMS) {
     print_error_text (9);
     return globalDelayTimeMS;
@@ -336,13 +348,13 @@ void MTD2A_timer::print_conf () {
   MTD2A_print_debug_error (debugPrint, errorPrint, errorNumber);
   // timers
   PortPrint  (F("  countDownMS  : ")); PortPrintln(countDownMS);
-  PortPrint  (F("  startTimeMS  : ")); PortPrintln(startTimeMS);
-  PortPrint  (F("  stopTimeMS   : ")); PortPrintln(stopTimeMS);
   PortPrint  (F("  remainTimeMS : ")); PortPrintln(remainTimeMS);
   PortPrint  (F("  elapsedTimeMS: ")); PortPrintln(elapsedTimeMS);
+  PortPrint  (F("  startTimeMS  : ")); PortPrintln(startTimeMS);
+  PortPrint  (F("  stopTimeMS   : ")); PortPrintln(stopTimeMS);
   PortPrint  (F("  pauseTimeMS  : ")); PortPrintln(pauseTimeMS);
-  PortPrint  (F("  beginPauseMS : ")); PortPrintln(beginPauseMS);
-  PortPrint  (F("  endPauseMS   : ")); PortPrintln(endPauseMS);
+  PortPrint  (F("  pauseBeginMS : ")); PortPrintln(pauseBeginMS);
+  PortPrint  (F("  pauseEndMS   : ")); PortPrintln(pauseEndMS);
 } // print_conf 
 
 #endif

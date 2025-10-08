@@ -44,15 +44,17 @@ bool     MTD2A::globalDebugPrint  {DISABLE};
 bool     MTD2A::globalErrorPrint  {ENABLE};
 uint8_t  MTD2A::globalObjectCount {0};
 //
-uint32_t MTD2A::globalDelayTimeMS {DELAY_10MS};
 uint32_t MTD2A::globalSyncTimeMS  {0};
+uint8_t  MTD2A::globalDelayTimeMS {DELAY_10MS};
+uint32_t MTD2A::delayTimeUS       {DELAY_10MS * MS_to_US};
 //
-uint32_t MTD2A::elapsedTimeMS     {0};
-uint32_t MTD2A::maxElapsedTimeMS  {0};
+uint32_t MTD2A::elapsedTimeUS     {0};
+uint32_t MTD2A::maxElapsedTimeUS  {0};
+uint32_t MTD2A::timeOverrunCount  {0};
 //
-uint32_t MTD2A::endTimeMS   {0};
-uint32_t MTD2A::beginTimeMS {0};
-
+uint32_t MTD2A::endTimeUS         {0};
+uint32_t MTD2A::beginTimeUS       {0};
+ 
 // Funtion pointer linked list
 MTD2A   *MTD2A::begin {nullptr};
 MTD2A   *MTD2A::end   {nullptr};
@@ -69,11 +71,13 @@ constexpr bool     MTD2A::PULSE;
 constexpr bool     MTD2A::FIXED;
 constexpr bool     MTD2A::BINARY;
 constexpr bool     MTD2A::P_W_M;
-constexpr uint32_t MTD2A::DELAY_10MS;
-constexpr uint32_t MTD2A::DELAY_1MS;
+constexpr uint8_t  MTD2A::DELAY_10MS;
+constexpr uint8_t  MTD2A::DELAY_5MS;
+constexpr uint8_t  MTD2A::DELAY_1MS;
 //
 constexpr uint8_t  MTD2A::MAX_BYTE_VALUE;
 constexpr uint8_t  MTD2A::PIN_ERROR_NO;
+constexpr uint8_t  MTD2A::NO_PRINT_PIN;
 
 
 void MTD2A::set_globalDebugPrint (const bool &setEnableOrDisable) {
@@ -86,15 +90,21 @@ void MTD2A::set_globalErrorPrint (const bool &setEnableOrDisable) {
 }
 
 
-void MTD2A::set_globalDelayTimeMS (const bool &setGlobalDelayTimeMS) {
-  if (setGlobalDelayTimeMS == DELAY_10MS) 
-    globalDelayTimeMS = DELAY_10MS;
-  else 
-    globalDelayTimeMS = DELAY_1MS;
-}
+void MTD2A::set_globalDelayTimeMS (const uint8_t &setGlobalDelayTimeMS) {
+  if (setGlobalDelayTimeMS >= DELAY_1MS  &&  setGlobalDelayTimeMS <= DELAY_10MS) {
+    globalDelayTimeMS = setGlobalDelayTimeMS;
+    delayTimeUS = globalDelayTimeMS * MS_to_US;
+  }
+  else {
+    if (globalDebugPrint == ENABLE ||  globalErrorPrint == ENABLE) {
+      PortPrint ("set_globalDelayTimeMS: ");
+      MTD2A_print_error_text (true, 15, NO_PRINT_PIN);
+    }
+  }
+} // set_globalDelayTimeMS
 
 
-uint32_t MTD2A::get_globalDelayTimeMS () {
+uint8_t MTD2A::get_globalDelayTimeMS () {
   return globalDelayTimeMS;
 }
 
@@ -104,11 +114,16 @@ uint32_t MTD2A::get_globalSyncTimeMS () {
 }
 
 
-uint32_t MTD2A::get_MaxElapsedTimeMS () {
-  uint32_t tempLoopMS;
-  tempLoopMS = maxElapsedTimeMS;
-  maxElapsedTimeMS = 0;
-  return tempLoopMS;
+uint32_t MTD2A::get_maxElapsedTimeUS () {
+  uint32_t tempLoopUS;
+  tempLoopUS = maxElapsedTimeUS;
+  maxElapsedTimeUS = 0;
+  return tempLoopUS;
+} // get_MaxElapsedTimeUS
+
+
+uint32_t MTD2A::get_timeOverrunCount () {
+  return timeOverrunCount;
 }
 
 
@@ -129,10 +144,14 @@ void MTD2A::MTD2A_add_function_pointer_loop_fast (MTD2A* object) {
 }
 
 
-void MTD2A::loop_execute() {
+void MTD2A::loop_execute () {
+  // https://www.gammon.com.au/millis
+  //  globalSyncTimeMS = (uint32_t)(millis() / 10.0) * 10;
   globalSyncTimeMS = millis();
-  if (beginTimeMS == 0)  // handle delays before first loop iteration
-    beginTimeMS = globalSyncTimeMS;
+  // handle delays before first loop execution
+  if (beginTimeUS == 0) {     
+    beginTimeUS = micros();
+  }
   // Execute function pointers
   MTD2A* object = begin;
   while (object != nullptr) {
@@ -140,18 +159,18 @@ void MTD2A::loop_execute() {
     object = object->next;
   }
   // Cadence elapsed time correction from executing user code and MTD2A objects
-  endTimeMS = millis();
-  elapsedTimeMS = endTimeMS - beginTimeMS;
-  maxElapsedTimeMS = max(elapsedTimeMS, maxElapsedTimeMS);
-  if (globalDelayTimeMS == DELAY_10MS) {
-    if (elapsedTimeMS > DELAY_10MS)
-      ; // PortPrintln(F("Warning: User code executing delay is above threshold"));
-    else 
-      delay(DELAY_10MS - elapsedTimeMS);
+  endTimeUS = micros();
+  elapsedTimeUS = endTimeUS - beginTimeUS;
+  maxElapsedTimeUS = max(elapsedTimeUS, maxElapsedTimeUS);
+  // 
+  if (elapsedTimeUS > delayTimeUS) {
+    // PortPrintln(F("Warning: User code executing delay is above threshold"));
+    timeOverrunCount++;
   }
-  else
-    delay(globalDelayTimeMS);
-  beginTimeMS = millis();
+  else {
+    delayMicroseconds(delayTimeUS - elapsedTimeUS);
+  }
+  beginTimeUS = micros();
 }
 // ========== Function pointer linked list of the function "loop_fast" instantiated objects
 
@@ -277,32 +296,32 @@ void MTD2A::MTD2A_print_error_text
     if (printPinNumber != NO_PRINT_PIN)
       PortPrint (F("Pin: ")); PortPrint (printPinNumber);   PortPrint (F(" > "));
     switch (printErrorNumber) {
-      case   1: PortPrintln (F("Pin number not set (255)"));             break;
-      case   2: PortPrintln (F("Digital pin number out of range"));      break;
-      case   3: PortPrintln (F("Analog pin number out of range"));       break;
-      case   4: PortPrintln (F("Output pin already in use"));            break;
-      case   5: PortPrintln (F("Pin does not support PWM"));             break;
-      case   6: PortPrintln (F("tone() conflicts with PWM pin"));        break;
-      case   7: PortPrintln (F("Pin does not support interrupt"));       break;
-      case   8: PortPrintln (F("Must be INPUT or INPUT_PULLUP"));        break;
-      case   9: PortPrint   (F("Time must be >= ")); PortPrintln (globalDelayTimeMS); break;
-      case  11: PortPrintln (F("Pin write is disabled"));                break;
-      case  12: PortPrintln (F("Proces state must be COMPLETE"));        break;
-      case  13: PortPrintln (F("Select STOP_TIMER or RESET_TIMER"));     break;
-      case  14: PortPrintln (F("Unknown TIMER argument"));               break;
-      case  15: PortPrintln (F("Use with START_TIMER / RESET_TIMER"));   break;      
-      case 128: PortPrintln (F("Digital Pin check not possible"));       break;
-      case 129: PortPrintln (F("Anaog Pin check not possible"));         break;
-      case 130: PortPrintln (F("Pin used more than once"));              break;
-      case 131: PortPrintln (F("PWM Pin check not possible"));           break;
-      case 132: PortPrintln (F("Interupt Pin check not possible"));      break;
-      case 140: PortPrintln (F("Timer value is zero"));                  break;
-      case 150: PortPrintln (F("Output timer value is zero"));           break;
-      case 151: PortPrintln (F("All three timers are zero"));            break;
-      case 152: PortPrintln (F("Binary pin value > 1. Set to HIGH"));    break;
+      case   1: PortPrintln (F("Pin number not set (255)"));              break;
+      case   2: PortPrintln (F("Digital pin number out of range"));       break;
+      case   3: PortPrintln (F("Analog pin number out of range"));        break;
+      case   4: PortPrintln (F("Output pin already in use"));             break;
+      case   5: PortPrintln (F("Pin does not support PWM"));              break;
+      case   6: PortPrintln (F("tone() conflicts with PWM pin"));         break;
+      case   7: PortPrintln (F("Pin does not support interrupt"));        break;
+      case   8: PortPrintln (F("Must be INPUT or INPUT_PULLUP"));         break;
+      case   9: PortPrintln (F("Time must be >= globalDelayTimeMS"));     break;
+      case  11: PortPrintln (F("Pin write is disabled"));                 break;
+      case  12: PortPrintln (F("Proces state must be COMPLETE"));         break;
+      case  13: PortPrintln (F("Select STOP_TIMER or RESET_TIMER"));      break;
+      case  14: PortPrintln (F("Unknown TIMER argument"));                break;
+      case  15: PortPrintln (F("globalDelayTimeMS must be : 1 - 10 MS")); break;
+      case 128: PortPrintln (F("Digital Pin check not possible"));        break;
+      case 129: PortPrintln (F("Anaog Pin check not possible"));          break;
+      case 130: PortPrintln (F("Pin used more than once"));               break;
+      case 131: PortPrintln (F("PWM Pin check not possible"));            break;
+      case 132: PortPrintln (F("Interupt Pin check not possible"));       break;
+      case 140: PortPrintln (F("Timer value is zero"));                   break;
+      case 150: PortPrintln (F("Output timer value is zero"));            break;
+      case 151: PortPrintln (F("All three timers are zero"));             break;
+      case 152: PortPrintln (F("Binary pin value > 1. Set to HIGH"));     break;
       case 153: PortPrint   (F("Undefined PWM curve. Must be <= ")); PortPrintln (MAX_PWM_CURVES); break;
-      case 154: PortPrintln (F("Use RISING curve instead of FALLING"));  break;
-      case 155: PortPrintln (F("Use FALLING curve instead of RISING"));  break;
+      case 154: PortPrintln (F("Use RISING curve instead of FALLING"));   break;
+      case 155: PortPrintln (F("Use FALLING curve instead of RISING"));   break;
       default:
         PortPrint(F("Unknown error: ")); PortPrint(printErrorNumber); PortPrintln(F(" Please report"));
     }
@@ -380,14 +399,15 @@ void MTD2A::MTD2A_print_normal_inverted (const bool &normalOrInverted) {
 void MTD2A::print_conf () {
   PortPrintln(F("MTD2A_base:"));
   for (size_t i {1}; i < 20; i++) PortPrint(F("-")); PortPrintln();
-  PortPrint(F(" globalDebugPrint : ")); MTD2A_print_enable_disable(globalDebugPrint);
-  PortPrint(F(" globalErrorPrint : ")); MTD2A_print_enable_disable(globalErrorPrint);
-  PortPrint(F(" globalDelayTimeMS: ")); if (globalDelayTimeMS == DELAY_1MS) PortPrintln(F("DELAY_1MS")); 
-                                          else PortPrintln(F("DELAY_10MS"));
-  PortPrint(F(" globalSyncTimeMS : ")); PortPrintln(globalSyncTimeMS);
-  PortPrint(F(" elapsedTimeMS    : ")); PortPrintln(elapsedTimeMS);
-  PortPrint(F(" maxElapsedTimeMS : ")); PortPrintln(maxElapsedTimeMS);
-  PortPrint(F(" globalObjectCount: ")); PortPrintln(globalObjectCount);
+  PortPrint  (F("  globalDebugPrint : ")); MTD2A_print_enable_disable(globalDebugPrint);
+  PortPrint  (F("  globalErrorPrint : ")); MTD2A_print_enable_disable(globalErrorPrint);
+  PortPrint  (F("  globalDelayTimeMS: ")); PortPrintln(globalDelayTimeMS);
+  PortPrint  (F("  globalSyncTimeMS : ")); PortPrintln(globalSyncTimeMS);
+  PortPrint  (F("  lastElapsedTimeUS: ")); PortPrintln(elapsedTimeUS);
+  PortPrint  (F("  maxElapsedTimeUS : ")); PortPrintln(maxElapsedTimeUS);
+  PortPrint  (F("  timeOverrunCount : ")); PortPrintln(timeOverrunCount);
+  PortPrint  (F("  globalObjectCount: ")); PortPrintln(globalObjectCount);
+  PortPrintln(F("  MS/US = Milli/Microseconds"));
 }
 
 
