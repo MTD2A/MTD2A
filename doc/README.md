@@ -16,3 +16,9 @@
 * Detailed **Danish** documentation: [MTD2A_binary_output.pdf](/doc/MTD2A_binary_output.pdf)
 * Detailed **English** documentation: [MTD2A_binary_output_english.pdf](/doc/MTD2A_binary_output_english.pdf)
 * DEMO: Two blinking LEDs. One with symmetric interval and another with asymetric interval. https://youtu.be/eyGRazX9Bko
+
+### MTD2A_timer
+* Source files contains doxygen documentation.
+* Detailed **Danish** documentation: [MTD2A_timer.pdf](/doc/MTD2A_timer.pdf)
+* Detailed **English** documentation: [MTD2A_timer_english.pdf](/doc/MTD2A_timer_english.pdf)
+* DEMO: 7 time and event processes flow examples, to inspire how to code. https://youtu.be/eyGRazX9Bko
