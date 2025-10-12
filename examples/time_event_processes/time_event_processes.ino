@@ -52,7 +52,7 @@ void loop() {
 #if section == 1
 
   // Timed cascading (round robin) 4 LEDs. Loop time controlled.
-  // Simpel and easy to use. Suitable for predictable processes flowing a non critical time line
+  // Simpel and easy to use. Suitable for predictable processes folowing a non critical time line
   // however, if the throughput time exceeds 10 milliseconds, unexpected actions may occur
   // timing is a bit faster than loopCcount and and differences grow over time.
   // ATmega328: 1% - 5% and ESP32 below 1%. Use MTD2A_timer () for precision timing.
