@@ -51,9 +51,9 @@ void setup() {
   boom_angel.initialize ();  // pin not used
 
   // Two SG92R standard micro servo. Range: 0 - 180 degrees
-  boom_servo_1.attach (BOOM_SERVO_1_PIN);  // Attach servo to borad pin
+  boom_servo_1.attach (BOOM_SERVO_1_PIN);  // Attach servo 1 to board pin
   boom_servo_1.write  (BOOM_UP);  // Initialize servo position to position UP
-  boom_servo_2.attach (BOOM_SERVO_2_PIN);  // Attach servo to borad pin
+  boom_servo_2.attach (BOOM_SERVO_2_PIN);  // Attach servo 2 to board pin
   boom_servo_2.write  (BOOM_UP);  // Initialize servo position to position UP
 
   delay(1000);  // Give time for servo to find UP position
@@ -141,7 +141,7 @@ if (endFlag == true) { // End phase
   }
   // Lower the boom over a period of 3 seconds
   if (endCount == 0) {  // start immediately
-    boom_angel.activate (BOOM_DOWN, BOOM_UP, FALLING_XY); // FALLING_SM8
+    boom_angel.activate (BOOM_DOWN, BOOM_UP, FALLING_XY); //  Alternatively: FALLING_SM8
   }
   if (boom_angel.get_processState() == ACTIVE) {
     boom_servo_1.write( boom_angel.get_pinOutputValue() ); 
