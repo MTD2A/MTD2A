@@ -2,8 +2,9 @@
 // Automatic pendulum operation on model railway system using relays to control track switch, 
 // train direction, train power, and one IR sensor to calibrate time and distance offset.
 // When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time. 
+// Can be easily expanded with more tracks and sensors. Sensor: https://github.com/MTD2A/FC-51
 // MTD2A_binary_output: https://github.com/MTD2A/MTD2A/tree/main/doc#mtd2a_binary_output
-// Jørgen Bo Madsen / october 2025 / https://github.com/jebmdk  Sensor: https://github.com/MTD2A/FC-51
+// Jørgen Bo Madsen / october 2025 / https://github.com/jebmdk  
 
 #include <MTD2A.h>
 using namespace MTD2A_const;
@@ -20,10 +21,10 @@ MTD2A_binary_output actuator_right ("Right switch actuator", 500);
 // Track switch actuator power relay. Wait 0,1 second and send 0,4 seconds pulse
 MTD2A_binary_output actuator_power ("Power switch actuator", 400, 100);
 // Timer
-unsigned int backwardFromSide  = 6200; // Seconds to move bacward from side track
-unsigned int forwarFromRear    = 6200; // Seconds to move forward from rear track
-unsigned int backwardFromFront = 5600; // Seconds to move backward from front track
-unsigned int sideFromRear      = 6800; // Seconds to move side from rear track
+unsigned int backwardFromSide  = 6200; // Milliseconds to move bacward from side end of track
+unsigned int forwarFromRear    = 6200; // Milliseconds to move forward from rear end of track
+unsigned int backwardFromFront = 5600; // Milliseconds to move backward from front end of track
+unsigned int sideFromRear      = 6800; // Milliseconds to move to side from rear end of track
 
 // Process
 unsigned int stepCount = 0;
@@ -121,5 +122,4 @@ void backward_driving (unsigned int drivingTime) {
   train_backward.activate (); // Backward direction relay
   train_power.activate    (); // Power train on tracks
 }  // backward_driving
-
 
