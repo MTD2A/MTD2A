@@ -288,13 +288,17 @@ void MTD2A::MTD2A_print_error_text
   (const bool &DebugOrErrorPrint, const uint8_t &printErrorNumber, const uint8_t &printPinNumber) {
   if (DebugOrErrorPrint == ENABLE || globalDebugPrint == ENABLE ||  globalErrorPrint == ENABLE) {
     PortPrint (F(": ")); 
-    if (printErrorNumber < WARNING_START) 
-      PortPrint (F("ERROR")); 
-    else 
+    if (printErrorNumber < WARNING_START) {
+      PortPrint (F("ERROR"));
+    } 
+    else {
       PortPrint (F("Warning"));
+    }
     PortPrint (F(" ["));    PortPrint (printErrorNumber); PortPrint (F("] > "));
-    if (printPinNumber != NO_PRINT_PIN)
-      PortPrint (F("Pin: ")); PortPrint (printPinNumber);   PortPrint (F(" > "));
+    if (printPinNumber != NO_PRINT_PIN) {
+      PortPrint (F("Pin: ")); PortPrint (printPinNumber); PortPrint (F(" > "));
+    }
+      //
     switch (printErrorNumber) {
       case   1: PortPrintln (F("Pin number not set (255)"));              break;
       case   2: PortPrintln (F("Digital pin number out of range"));       break;
@@ -306,10 +310,11 @@ void MTD2A::MTD2A_print_error_text
       case   8: PortPrintln (F("Must be INPUT or INPUT_PULLUP"));         break;
       case   9: PortPrintln (F("Time must be >= globalDelayTimeMS"));     break;
       case  11: PortPrintln (F("Pin write is disabled"));                 break;
-      case  12: PortPrintln (F("Proces state must be COMPLETE"));         break;
+      case  12: PortPrintln (F("Process state must be COMPLETE"));        break;
       case  13: PortPrintln (F("Select STOP_TIMER or RESET_TIMER"));      break;
       case  14: PortPrintln (F("Unknown TIMER argument"));                break;
       case  15: PortPrintln (F("globalDelayTimeMS must be : 1 - 10 MS")); break;
+      case  16: PortPrintln (F("Process state must be ACTIVE"));          break;
       case 128: PortPrintln (F("Digital Pin check not possible"));        break;
       case 129: PortPrintln (F("Anaog Pin check not possible"));          break;
       case 130: PortPrintln (F("Pin used more than once"));               break;

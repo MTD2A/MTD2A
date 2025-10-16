@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
- * @version V1.1.6
+ * @version V 1.1.6
  * @date    31. August 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
@@ -105,9 +105,12 @@ class MTD2A_binary_output: public MTD2A
     bool     debugPrint     {DISABLE};        // set_debugPrint () print debug & error. default argument ENABLE
     uint8_t  errorNumber    {0};              // get_reset_error () Error {1-127} and Warning {128-255}
     // state control
-    bool     startPhase     {false};          // Initial phase procedure execution
+    bool     startPhase     {false};          // Start phase procedure execution
+    bool     setStartPhase  {false};          // Activate start phase procedure execution
     bool     phaseChange    {false};          // true = change in timing state
     uint8_t  phaseNumber    {COMPLETE_PHASE}; // reset = 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4
+    uint8_t  setPhaseNumber {COMPLETE_PHASE}; // Set phase number to execute (loop_fast ();)
+
     // PWM curves
     uint8_t  PWMcurveType   {NO_CURVE};       // PWM curve selection   
     uint8_t  PWMoffstePoint {0};              // PWM start (rising) or end (falling) value

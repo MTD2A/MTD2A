@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.h
  * @author  Joergen Bo Madsen
- * @version V1.1.7
- * @date    31. august 2025
+ * @version V1.1.8
+ * @date    16 october 2025
  * @brief   Abstract base Class for MTD2A (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 

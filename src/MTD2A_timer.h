@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_timers.h
  * @author  Joergen Bo Madsen
- * @version V1.1.1
+ * @version V1.1.3
  * @date    7. September 2025
  * @brief   Abstract base Class for MTD2A (Model Train Detection And Action)
  * 
@@ -262,7 +262,7 @@ class MTD2A_timer: public MTD2A
     void     pause_timer       ();    
     void     stop_timer        ();
     bool     check_timer_arg   (const uint8_t  &argStartStopPauseReset);
-    void     set_timer_state   (const uint8_t  &setStartStopPauseReset);
+    void     set_timer_state   (const uint8_t  &setStartRestPauseStop);
     uint32_t check_set_time    (const uint32_t &setCheckTimeMS);
     // Execute
     void     loop_fast             ();

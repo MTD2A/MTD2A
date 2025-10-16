@@ -144,6 +144,9 @@ void MTD2A_binary_input::set_pinBlockMS (const uint32_t &setPinBlockMS) {
 } // set_pinBlockMS
 
 
+//  Setters ----------------------------------------------------------------------------
+
+
 void MTD2A_binary_input::set_stopDelayTimer () {
   stopDelayTM = ENABLE;
 } // et_stopDelayTimer
@@ -162,6 +165,11 @@ void MTD2A_binary_input::set_debugPrint (const bool &setEnableOrDisable) {
 void MTD2A_binary_input::set_errorPrint (const bool &setEnableOrDisable) {
   errorPrint = setEnableOrDisable;
 } // set_debugPrint 
+
+
+
+//  Getters ----------------------------------------------------------------------------
+
 
 bool const &MTD2A_binary_input::get_processState () const {
   return processState; 

@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_timers.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.1
- * @date    31. august 2025
+ * @version V1.1.3
+ * @date    16. september 2025
  * @brief   functions for MTD2A_base.h base class (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -48,9 +48,6 @@ constexpr uint8_t  MTD2A_timer::STOP_TIMER;
 constexpr uint8_t  MTD2A_timer::NO_PRINT_PIN;
 
 
-// MTD2A_timer ===========================================================================
-
-
 // Constructor
 MTD2A_timer::MTD2A_timer
   (const char *setObjectName, const uint32_t setCountDownMS)
@@ -93,9 +90,9 @@ bool MTD2A_timer::check_timer_arg (const uint8_t &argStartStopPauseReset) {
 } // check_timer_arg
 
 
-void MTD2A_timer::set_timer_state (const uint8_t &startStopPauseReset) {
-    setPhaseNumber = startStopPauseReset;
-    switch (startStopPauseReset) {
+void MTD2A_timer::set_timer_state (const uint8_t &setStartRestPauseStop) {
+    setPhaseNumber = setStartRestPauseStop;
+    switch (setStartRestPauseStop) {
       case START_TIMER: start_timer ();  break;
       case RESET_TIMER: reset_timer ();  break;
       case PAUSE_TIMER: pause_timer ();  break;
@@ -108,9 +105,13 @@ void MTD2A_timer::start_timer () {
   if (processState == COMPLETE) {
     startProcess  = true;
   }
-  //
-  if (processState == ACTIVE  &&  phaseNumber == PAUSE_TIMER) {
-    endPause = true;
+  else { // ACTIVE
+    if (phaseNumber == PAUSE_TIMER) {
+      endPause = true;
+    }
+    else{
+      print_error_text (12);
+    }
   }
 } // start_timer
 
@@ -122,8 +123,13 @@ void MTD2A_timer::reset_timer () {
 
 
 void MTD2A_timer::pause_timer () {
-  if (phaseNumber == START_TIMER  ||  phaseNumber == RESET_TIMER) {
-    beginPause = true;
+  if (processState == ACTIVE) {
+    if (phaseNumber == START_TIMER  ||  phaseNumber == RESET_TIMER) {
+      beginPause = true;
+    }
+  }
+  else {
+    print_error_text (16);
   }
 } // pause_timer
 
@@ -135,6 +141,8 @@ void MTD2A_timer::stop_timer () {
       endPause = true;
     }
   }
+  else {
+    print_error_text (16);  }
 } // stop_timer
 
 
@@ -144,6 +152,9 @@ void MTD2A_timer::stop_timer () {
 void MTD2A_timer::set_countDownMS (const uint32_t &setCountDownMS) {
   if (processState == COMPLETE) {
     countDownMS = check_set_time (setCountDownMS);
+  }
+  else {
+    print_error_text (12);
   }
 } // set_countDownMS
 
