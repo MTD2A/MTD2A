@@ -41,14 +41,14 @@ Use math S-curve to move servo from 0 to 180 degrees and vice versa. https://you
 
 # To do
 
-### pendulum_relay.ino
-Automatic pendulum operation on model railway system using relays. 
+### pendulum_relays.ino
+Automatic pendulum operation on model railway system using relays to control track switch, train direction, train power, and one IR sensor to calibrate time and distance offset. https://youtu.be/mffAFvGHrFw
 When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
 
 ### pendulum_H_bridge.ino
 Automatic pendulum and smooth operation on model railway system using PWM controlled analog DC motor H-bridge driver. 
 When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
-
+<br/>https://youtu.be/mffAFvGHrFw
 <br/>
 
 ### Activate examples directly from Arduino IDE
