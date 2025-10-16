@@ -39,16 +39,15 @@ Use math S-curve to move servo from 0 to 180 degrees and vice versa. https://you
 <br/> Exampe shows: 1) No curve 2) linear curve and 3) [Sigmoid S-curve](https://en.wikipedia.org/wiki/Sigmoid_function)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 
-# To do
-
 ### pendulum_relays.ino
 Automatic pendulum operation on model railway system using relays to control track switch, train direction, train power, and one IR sensor to calibrate time and distance offset. https://youtu.be/mffAFvGHrFw
-When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
+<br/>When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
+
+# To do
 
 ### pendulum_H_bridge.ino
-Automatic pendulum and smooth operation on model railway system using PWM controlled analog DC motor H-bridge driver. 
-When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
-<br/>https://youtu.be/mffAFvGHrFw
+Automatic pendulum and smooth operation on model railway system using PWM controlled analog DC motor H-bridge driver. When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
+
 <br/>
 
 ### Activate examples directly from Arduino IDE
