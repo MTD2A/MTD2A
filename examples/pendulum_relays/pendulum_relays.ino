@@ -2,7 +2,7 @@
 // Automatic pendulum operation on model railway system using relays to control track switch, 
 // train direction, train power, and one IR sensor to calibrate time and distance offset.
 // When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time. 
-// Can be easily expanded with more tracks and sensors. Sensor: https://github.com/MTD2A/FC-51
+// Can easily be expanded with more tracks and sensors. Sensor: https://github.com/MTD2A/FC-51
 // MTD2A_binary_output: https://github.com/MTD2A/MTD2A/tree/main/doc#mtd2a_binary_output
 // Jørgen Bo Madsen / october 2025 / https://github.com/jebmdk  
 
@@ -122,4 +122,5 @@ void backward_driving (unsigned int drivingTime) {
   train_backward.activate (); // Backward direction relay
   train_power.activate    (); // Power train on tracks
 }  // backward_driving
+
 
