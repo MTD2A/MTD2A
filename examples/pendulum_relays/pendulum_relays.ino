@@ -117,10 +117,10 @@ void forward_driving (unsigned int drivingTime) {
 
 
 void backward_driving (unsigned int drivingTime) {
-  train_backward.set_outputTimeMS (drivingTime); // seconds backward
+  // Add 1000 milliseconds du to 100 milliseconds activation before train power relay
+  train_backward.set_outputTimeMS (drivingTime + 100); // seconds backward
   train_power.set_outputTimeMS    (drivingTime); // seconds train power
   train_backward.activate (); // Backward direction relay
   train_power.activate    (); // Power train on tracks
 }  // backward_driving
-
 
