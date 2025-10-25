@@ -185,13 +185,26 @@ void MTD2A_binary_output::activate_process () {
 } // activate_process
 
 
-
 // Setters -----------------------------------------------
 
 
-void MTD2A_binary_output::set_pinWriteValue (const uint8_t &PinValue) {
+void MTD2A_binary_output::set_PinOutputMode (const bool &setPinOutputMode) {
+  pinOutputMode = setPinOutputMode;
+} // set_PinOutputMode
+
+void MTD2A_binary_output::set_pinWriteValue (const uint8_t &setPinWriteValue ) {
   if (pinWriteToggl == ENABLE) {
-    pinWriteValue = check_pin_value (PinValue);
+    pinWriteValue = check_pin_value (setPinWriteValue);
+    write_pin_value (pinWriteValue);
+  }
+  else {
+    print_error_text (11);
+  }
+}  // overloading
+void MTD2A_binary_output::set_pinWriteValue (const uint8_t &setPinWriteValue, const bool &setPinOutputMode) {
+  if (pinWriteToggl == ENABLE) {
+    pinOutputMode = setPinOutputMode;
+    pinWriteValue = check_pin_value (setPinWriteValue);
     write_pin_value (pinWriteValue);
   }
   else {
@@ -397,12 +410,14 @@ uint8_t MTD2A_binary_output::check_pin_value (const uint8_t &checkPinValue) {
 void MTD2A_binary_output::write_pin_value (const uint8_t &writePinValue) {
   pinOutputValue = writePinValue;
   if (pinOutputMode == BINARY) {
-    if (pinWriteMode == INVERTED)
+    if (pinWriteMode == INVERTED) {
       pinOutputValue = !writePinValue;
+    }
   }
   else {
-    if (pinWriteMode == INVERTED)
+    if (pinWriteMode == INVERTED) {
       pinOutputValue = MAX_BYTE_VALUE - writePinValue;
+    }
   }
   //  
   if (pinNumber != PIN_ERROR_NO  &&  pinWriteToggl == ENABLE) {

@@ -138,8 +138,8 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @class MTD2A_BINARY_output
      * @brief Create object and set configuration parameters or use defaults
-     * @param ( "Object Name", outputTimeMS, beginDelayMS, endDelayMS, {BINARY | P_W_M}, pinBeginValueMS, pinEndValue );
-     * @param outputTimeMS, beginDelayMS, endDelayMSd {0 - 4294967295} milliseconds. pinValue {0 - 255}
+     * @param ( "Object Name", outputTimeMS, beginDelayMS, endDelayMS, {BINARY | P_W_M}, pinBeginValue, pinEndValue );
+     * @param outputTimeMS, beginDelayMS, endDelayMS {0 - 4294967295} milliseconds. pinValue {0 - 255}
      * @return none
      */
     MTD2A_binary_output (
@@ -232,12 +232,23 @@ class MTD2A_binary_output: public MTD2A
 
 
     /**
+     * @brief Select to write binary or PWM value to pin.
+     * @name object_name.set_pinOutputmode
+     * @param ( {BINARY | P_W_M} );
+     * @return none
+     */  
+    void set_PinOutputMode (const bool &setPinOutputMode = BINARY);
+
+
+    /**
      * @brief write binary or PWM value directly to pin.
-     * @name object_name.pinWriteValue
+     * @name object_name.set_pinWriteValue
      * @param (BINARY {HIGH | LOW} / P_W_M {0-255} );
+     * @param (BINARY {HIGH | LOW} / P_W_M {0-255}, {BINARY | P_W_M} );
      * @return none
      */  
     void set_pinWriteValue (const uint8_t &setPinWriteValue = LOW);
+    void set_pinWriteValue (const uint8_t &setPinWriteValue, const bool &setPinOutputMode);
 
   
     /**
