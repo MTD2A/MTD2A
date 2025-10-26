@@ -43,11 +43,13 @@ Use math S-curve to move servo from 0 to 180 degrees and vice versa. https://you
 Automatic pendulum operation on model railway system using relays to control track switch, train direction, train power, and one IR sensor to calibrate time and distance offset. https://youtu.be/mffAFvGHrFw
 <br/>When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
 
-# To do
-
 ### pendulum_H_bridge.ino
-Automatic pendulum and smooth operation on model railway system using PWM controlled analog DC motor H-bridge driver. When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
-
+Advanced automatic pendulum operation on model railway system using PWM controlled H-bridge
+to power train engine and direction. A simple H-bridge is used to control track switch and direction. 
+One IR sensor is used to calibrate time and distance offset. Finaly red and green train station signal.
+<br/> The train route is controlled by advanced mathematical PWM curves that compensate for inertia and 
+friction, and thus ensure smooth acceleration and deceleration.
+<br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 <br/>
 
 ### Activate examples directly from Arduino IDE
