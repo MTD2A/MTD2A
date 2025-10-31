@@ -21,16 +21,15 @@ MTD2A_binary_input  IR_sensor      ("IR sensor");
 MTD2A_binary_output train_forward  ("Train forward");
 MTD2A_binary_output train_backward ("Train backward");
 // Track switch actuator power and direction. PWM controlled DRV8871 H-bridge
-// Send 300 milisecond pulse at 12 voltage (12V devided by 18V multiplied by 255 = 170 PWM)
-MTD2A_binary_output switch_right   ("Switch right", 500, 0, 0, P_W_M, 170, 0);
-MTD2A_binary_output switch_left    ("Switch left",  500, 0, 0, P_W_M, 170, 0);
+MTD2A_binary_output switch_right   ("Switch right", 500);
+MTD2A_binary_output switch_left    ("Switch left",  500);
 // Timer
 MTD2A_timer         train_timer    ("Timer"); // Set time when starting
 
 // Driving speeds PWM {0 - 255}. 
 // Voltage = actual speed devided by 255 multiplied by power supply voltage
 
-byte zeroSpeed   =   0; //   05 voltage
+byte zeroSpeed   =   0; //   0% voltage
 byte snailSpeed  =  51; //  20% voltage
 byte slowSpeed   = 102; //  40% voltage
 byte mediumSpeed = 153; //  60% voltage
@@ -50,9 +49,9 @@ void setup() {
   train_forward.initialize   (5); 
   train_backward.initialize  (6);
   switch_right.initialize    (9);
-  switch_right.initialize    (10);
+  switch_left.initialize    (10);
   //
-  Serial.println("Advanced PWM controlled automatic pendulum operation. Activate sensor to start loop");
+  Serial.println(F("Advanced PWM controlled automatic pendulum operation. Activate sensor to start loop"));
 } // setup
 
 void loop() {
@@ -60,15 +59,15 @@ void loop() {
   switch (stepCount) {
     case 0: 
       if (IR_sensor.get_processState () == ACTIVE) {
-        Serial.println("0: Sensor activated - Stop train immediately!");
+        Serial.println(F("0: Sensor activated - Stop train. PWM curve: FALLING_B05 - Time: 1 seconds "));
         red_LED.set_pinWriteValue (HIGH);
-        train_forward.activate (snailSpeed, zeroSpeed, FALLING_E05, 1000);
+        train_forward.activate (snailSpeed, zeroSpeed, FALLING_B05, 1000);
         stepCount = 1;
       }
     break;
     case 1:
       if (train_forward.get_processState () == COMPLETE) {
-        Serial.println ("1: Wait 3 seconds");
+        Serial.println (F("1: Wait 3 seconds"));
         train_timer.timer (START_TIMER, 3000);
         stepCount = 2;
       }  
@@ -79,22 +78,22 @@ void loop() {
     case 2:
       if (train_timer.get_processState () == COMPLETE) {
         set_switch_direction_right ();
-        Serial.println ("2: Start train from the end of side track at IR sensor");
+        Serial.println (F("2: Start train from the end of side track at IR sensor. PWM curve: RISING_B05 - Time: 2 seconds"));
         train_backward.activate (zeroSpeed, snailSpeed, RISING_B05, 2000); // 2 seconds
         stepCount = 3;
       }
     break;
     case 3:
       if (train_backward.get_processState () == COMPLETE) {
-        Serial.println ("3: Continue driving backwards");
-        train_timer.timer (START_TIMER, 9000);
+        Serial.println (F("3: Continue driving backwards for 10,2 seconds"));
+        train_timer.timer (START_TIMER, 10200);
         stepCount = 4;
       }
     break;
     case 4:
       if (train_timer.get_processState () == COMPLETE) {
-        Serial.println ("4: Slow down and stop train");
-        train_backward.activate (snailSpeed, zeroSpeed, FALLING_E05, 2000); // 2 seconds
+        Serial.println (F("4: Slow down and stop train.  PWM curve: FALLING_B05 - Time: 2 seconds"));
+        train_backward.activate (snailSpeed, zeroSpeed, FALLING_B05, 2000); // 2 seconds
         stepCount = 5;
       }
     break;
@@ -103,7 +102,7 @@ void loop() {
     // From reverse to forward --------------------------------------------------------------
     case 5:
       if (train_backward.get_processState () == COMPLETE) {
-        Serial.println ("5: Wait 2 seconds");
+        Serial.println (F("5: Wait 2 seconds"));
         train_timer.timer (START_TIMER, 2000);
         stepCount = 6;       
       }
@@ -114,21 +113,21 @@ void loop() {
     case 6:
       if (train_timer.get_processState () == COMPLETE) {
         set_switch_direction_left ();
-        Serial.println ("6: Start train and drive forward towards the train station");
+        Serial.println (F("6: Start train and drive forward towards the train station.  PWM curve: RISING_B05 - Time: 5 seconds"));
         train_forward.activate (zeroSpeed, mediumSpeed, RISING_B05, 5000);
         stepCount = 7;
       }
     break;
     case 7:
       if (train_forward.get_processState () == COMPLETE) {
-        Serial.println ("7: Continue driving forwards");
-        train_timer.timer (START_TIMER, 8000);
+        Serial.println (F("7: Continue driving forwards for 7,5 seconds"));
+        train_timer.timer (START_TIMER, 7500);
         stepCount = 8;
       }
     break;
     case 8:
       if (train_timer.get_processState () == COMPLETE) {
-        Serial.println ("8: Stop train at train station");
+        Serial.println (F("8: Stop train at train station.  PWM curve: FALLING_B05 - Time: 5 seconds"));
         train_forward.activate (mediumSpeed, zeroSpeed, FALLING_B05, 5000);
         stepCount = 9;
       }
@@ -138,7 +137,7 @@ void loop() {
     // Train Station -------------------------------------------------------------------------
     case 9:
       if (train_forward.get_processState () == COMPLETE) {
-        Serial.println ("9: Wait 3 seconds");
+        Serial.println (F("9: Wait 3 seconds."));
         train_timer.timer (START_TIMER, 3000);
         stepCount = 10;       
       }
@@ -148,17 +147,18 @@ void loop() {
     // Towards track switch -----------------------------------------------------------------
     case 10:
       if (train_timer.get_processState () == COMPLETE) {
+        Serial.println (F("10: Starting up and drive towards track switch.  PWM curve: RISING_B05 - Time: 5 seconds"));
         red_LED.set_pinWriteValue (LOW);
         green_LED.set_pinWriteValue (HIGH);
-        Serial.println ("10: Starting up and drive towards track switch");
+        Serial.println (F("    Red LED off and Green LED on"));
         train_forward.activate (zeroSpeed, mediumSpeed, RISING_B05, 5000); 
         stepCount = 11;
       }
     break;
     case 11:
       if (train_forward.get_processState () == COMPLETE) {
-        Serial.println ("11: Continue driving forward");
-        train_timer.timer (START_TIMER, 7000);
+        Serial.println (F("11: Continue driving forward for 7,5 seconds"));
+        train_timer.timer (START_TIMER, 7500);
         stepCount = 12;
       }
     break;
@@ -167,15 +167,16 @@ void loop() {
     // Full speed on most og the railway ---------------------------------------------------
     case 12:
       if (train_timer.get_processState () == COMPLETE) {
-        Serial.println ("12: Speed up towards the train station");
+        Serial.println (F("12: Speed up towards the train station.  PWM curve: RISING_XY - Time: 3 seconds"));
         train_forward.activate (mediumSpeed, fullSpeed, RISING_XY, 3000); 
         stepCount = 13;
       }
     break;
     case 13:
       if (train_forward.get_processState () == COMPLETE) {
-        Serial.println ("13: Continue driving full speed");
-        train_timer.timer (START_TIMER, 4500);
+        Serial.println (F("13: Continue driving full speed for 4 seconds"));
+        Serial.println (F("    Green LED blink"));
+        train_timer.timer (START_TIMER, 4000);
         stepCount = 14;
       }
       if (green_LED.get_processState () == COMPLETE) {
@@ -184,7 +185,8 @@ void loop() {
     break;
     case 14:
       if (train_timer.get_processState () == COMPLETE) {
-        Serial.println ("14: Slow down from full speed");
+        Serial.println (F("14: Slow down from full speed.  PWM curve: FALLING_XY - Time: 5 seconds"));
+        Serial.println (F("    Green LED blink"));
         train_forward.activate (fullSpeed, snailSpeed, FALLING_XY, 5000);
         stepCount = 15;
       }
@@ -195,7 +197,8 @@ void loop() {
     case 15:
       red_LED.set_pinWriteValue (HIGH);
       if (train_forward.get_processState () == COMPLETE) {
-        Serial.println ("15: Drive forward towards track switch");
+        Serial.println (F("15: Drive forward towards track switch. Time: Until sesnor stop"));
+        set_switch_direction_right ();
         // The train continues to run at the last defined speed
         red_LED.set_pinWriteValue (LOW);  // No red signal
         stepCount = 0;
@@ -213,14 +216,14 @@ void loop() {
 
 
 void set_switch_direction_right () {
-  Serial.println("Set track switch direction to the RIGHT");
+  Serial.println("   Set track switch direction to the RIGHT");
   switch_left.set_pinWriteValue (0);
   switch_right.activate (); // Send 500 milliseconds puls
 } // set_switch_direction_right
 
 
 void set_switch_direction_left () {
-  Serial.println("Set track switch direction to the LEFT");
+  Serial.println("   Set track switch direction to the LEFT");
   switch_right.set_pinWriteValue (0);
   switch_left.activate (); // Send 500 milliseconds puls
 } // set_switch_direction_left
