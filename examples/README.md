@@ -42,6 +42,7 @@ Use math S-curve to move servo from 0 to 180 degrees and vice versa. https://you
 ### pendulum_relays.ino
 Automatic pendulum operation on model railway system using relays to control track switch, train direction, train power, and one IR sensor to calibrate time and distance offset. https://youtu.be/mffAFvGHrFw
 <br/>When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time.
+<br/> Diagram drawing: [Pendulum realys](/image/pendulum_relays.png)
 
 ### pendulum_H_bridge.ino
 Advanced automatic pendulum operation on model railway system using PWM controlled H-bridge
@@ -49,7 +50,7 @@ to power train engine and direction. A simple H-bridge is used to control track 
 One IR sensor is used to calibrate time and distance offset. Finaly red and green train station signal.
 <br/> The train route is controlled by advanced mathematical PWM curves that compensate for inertia and 
 friction, and thus ensure smooth acceleration and deceleration.
-<br/> Diagram drawing: [Avanced pendulum H-brige](/image/Advanced_pendulum_H_bridge.png)
+<br/> Diagram drawing: [Avanced pendulum H-brige](/image/advanced_pendulum_H_bridge.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 <br/>
 
