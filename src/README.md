@@ -19,4 +19,4 @@ MTD2A.h
 *	MTD2A_sound	
 *	MTD2A_display
 *	MTD2A_DCC_input
-*	Suggestions is welcome
+*	Suggestions are welcome
