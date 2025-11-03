@@ -13,3 +13,10 @@ MTD2A.h
 * MTD2A_binary_output.cpp
 * MTD2A_timer.h
 * MTD2A_timer.cpp
+
+### Additional planned building blocks
+*	MTD2A_tone
+*	MTD2A_sound	
+*	MTD2A_display
+*	MTD2A_DCC_input
+*	Suggestions is welcome
