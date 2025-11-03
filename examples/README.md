@@ -26,10 +26,10 @@ Stop light and sound message: The train brakes and temporarily stops at a red li
 <br/> Diagram drawing: [Stoplight sound](/image/stoplight_sound.png)
 
 ### switch_direction.ino
-Automatic switch to the direction the train is coming from (to avoid derailment if the switch direction is wrong).
-<br/> Using standard LGB switch (turnout) with position switches for feedback. 
+Automatic switch to the direction the train is coming from (to avoid derailment if the track switch direction is wrong).
+<br/> Using standard LGB track switch (turnout) with position switches for feedback. 
 <br/> Short DEMO: https://youtu.be/oMeD3e_oXEI
-<br/> Diagram drawing: [Switch (turnout) direction](/image/switch_direction.png)
+<br/> Diagram drawing: [Track switch (turnout) direction](/image/switch_direction.png)
 
 ### railway_crossing.ino
 Danish railway crossing. Read left and right sensor, activate red blinking warning light, start pulsating bell, lower boom slowly. 
