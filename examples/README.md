@@ -44,8 +44,9 @@ Two LEDs fading in and fading out using a linear function and a math potence (po
 ### servo_math_curve.ino
 Use math S-curve to move servo from 0 to 180 degrees and vice versa. 
 <br/> Short DEMO: https://youtu.be/rhQtu0iKFl8
-<br/> Exampe shows: 1) No curve 2) linear curve and 3) [Sigmoid S-curve](https://en.wikipedia.org/wiki/Sigmoid_function)
+<br/> Demo shows: 1) No curve 2) linear curve and 3) [Sigmoid S-curve](https://en.wikipedia.org/wiki/Sigmoid_function)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
+<br/> Article on difenrent fading lights: [Professor Tom Igoe](https://tigoe.github.io/LightProjects/fading.html)
 
 ### pendulum_relays.ino
 Automatic pendulum operation on model railway system using relays to control track switch, train direction, train power, and one IR sensor to calibrate time and distance offset. When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time. 
