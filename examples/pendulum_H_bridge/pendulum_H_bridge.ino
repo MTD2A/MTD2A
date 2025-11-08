@@ -121,7 +121,7 @@ void loop() {
     case 7:
       if (train_forward.get_processState () == COMPLETE) {
         Serial.println (F("7: Continue driving forwards for 7,5 seconds"));
-        train_timer.timer (START_TIMER, 7500);
+             train_timer.timer (START_TIMER, 7500);
         stepCount = 8;
       }
     break;
