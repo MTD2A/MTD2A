@@ -8,12 +8,15 @@ MTD2A_binary_output train_forward  ("Train forward");
 MTD2A_binary_output train_backward ("Train backward");
 MTD2A_binary_output red_LED        ("Red LED signal");
 MTD2A_binary_output green_LED      ("Geen LED signal");
+MTD2A_timer         train_timer    ("Timer");
 
-int  stepCount    =   0;
-int  drivingTime = 2000; // 2 seconds
-byte zeroSpeed   =    0; //   0% voltage
-byte snailSpeed  =   51; //  10% voltage
-byte fullSpeed   =  255; // 100% voltage
+int  stepCount   =    0;
+int  AccelTime   =  1500; //  1,5 second
+int  driveTime   =  1500; //  1,5 second
+int  bacwardTime = 11000; //   10 seconds
+byte zeroSpeed   =     0; //   0% voltage
+byte snailSpeed  =    85; //  33% voltage
+byte fullSpeed   =   255; // 100% voltage
 
 void setup() {
   Serial.begin(9600);
@@ -51,52 +54,47 @@ void loop() {
     break;
     case 1:
       Serial.println("NO_CURVE");
-      train_forward.activate (fullSpeed, zeroSpeed, NO_CURVE, drivingTime);
+      train_forward.activate (fullSpeed, zeroSpeed, NO_CURVE, AccelTime);
       stepCount = 0;
     break;
     case 2:
       Serial.println("RISING_XY");
-      train_forward.activate (zeroSpeed, fullSpeed, RISING_XY, drivingTime);
-      stepCount = 20;
+      train_forward.activate (zeroSpeed, fullSpeed, RISING_XY, AccelTime);
+      stepCount = 10;
     case 3:
       Serial.println("RISING_B05");
-      train_forward.activate (zeroSpeed, fullSpeed, RISING_B05, drivingTime);
-      stepCount = 30;
+      train_forward.activate (zeroSpeed, fullSpeed, RISING_B05, AccelTime);
+      stepCount = 10;
     break;
     case 4:
       Serial.println("RISING_B025");
-      train_forward.activate (zeroSpeed, fullSpeed, RISING_B025, drivingTime);
-      stepCount = 40;
+      train_forward.activate (zeroSpeed, fullSpeed, RISING_B025, AccelTime);
+      stepCount = 10;
     break;
     //
-    case 20:
+    case 10:
       if (train_forward.get_processState() == COMPLETE) {
-        Serial.println("FALLING_XY");
-        train_forward.activate (fullSpeed, zeroSpeed, FALLING_XY, drivingTime);
-        stepCount = 50;
-      }
-    case 30:
-      if (train_forward.get_processState() == COMPLETE) {
-        Serial.println("FALLING_B05");
-        train_forward.activate (fullSpeed, zeroSpeed, FALLING_B05, drivingTime);
-        stepCount = 50;
-      }
-    break;
-    case 40:
-      if (train_forward.get_processState() == COMPLETE) {
-        Serial.println("FALLING_B025");
-        train_forward.activate (fullSpeed, zeroSpeed, FALLING_B025, 5);
-        stepCount = 50;
-      }
-    break;
-    case 50:
-      if (train_forward.get_processState() == COMPLETE) {
-        Serial.println("Driving backwards slowly...");
         green_LED.set_pinWriteValue (LOW);
         red_LED.set_pinWriteValue (HIGH);
-        train_backward.activate (snailSpeed, zeroSpeed, NO_CURVE, 12000);
+        Serial.println("Continue driving");
+        train_timer.timer (START_TIMER, driveTime);
+        stepCount = 11;
+      }
+    break;
+    case 11:
+      if (train_timer.get_processState () == COMPLETE) {
+        Serial.println("FALLING_XY");
+        train_forward.activate (fullSpeed, zeroSpeed, FALLING_XY, AccelTime);
+        stepCount = 12;
+      }
+    break;
+    case 12:
+      if (train_forward.get_processState() == COMPLETE) {
+        Serial.println("Driving backwards slowly...");
+        train_backward.activate (snailSpeed, zeroSpeed, NO_CURVE, bacwardTime);
         stepCount = 0;
       }
+    break;
   }
 
   MTD2A_loop_execute();  // Update the state (event) system
