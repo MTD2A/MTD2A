@@ -1,4 +1,4 @@
-// Test and compare lineary and power curves with heavy load and light load
+// Test and compare lineary and power PWM curves with heavy train load and light train load
 // Jørgen Bo Madsen / november 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
