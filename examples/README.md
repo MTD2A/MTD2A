@@ -48,6 +48,11 @@ Use math S-curve to move servo from 0 to 180 degrees and vice versa.
 <br/> Demo shows: 1) No curve 2) linear curve and 3) [Sigmoid S-curve](https://en.wikipedia.org/wiki/Sigmoid_function)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 
+### PWM_power_curves.ino
+Test and compare lineary and power PWM curves with heavy train load and light train load
+https://youtu.be/Fi9D1hrzT9M
+<br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
+
 ### pendulum_relays.ino
 Automatic pendulum operation on model railway system using relays to control track switch, train direction, train power, and one IR sensor to calibrate time and distance offset. When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time. 
 <br/> Short DEMO: https://youtu.be/mffAFvGHrFw
