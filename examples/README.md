@@ -21,8 +21,8 @@ Determining the direction of travel of the train (left / right).
 
 ### stoplight_sound.ino
 Stop light and sound message: The train brakes and temporarily stops at a red light. 
-<br/> Short DEMO: https://youtu.be/I5TYpuBB0eI
 <br/> Speaker announcement is broadcast to the passengers. If the train is passing by, no announcement is broadcast.
+<br/> Short DEMO: https://youtu.be/I5TYpuBB0eI
 <br/> Diagram drawing: [Stoplight sound](/image/stoplight_sound.png)
 
 ### switch_direction.ino
@@ -33,24 +33,28 @@ Automatic switch to the direction the train is coming from (to avoid derailment 
 
 ### railway_crossing.ino
 Danish railway crossing. Read left and right sensor, activate red blinking warning light, start pulsating bell, lower boom slowly. 
-<br/> Wait for the train to pass, raise boom slowly and stop red blink. https://youtu.be/VaXmki2oLrk
+<br/> Wait for the train to pass, raise boom slowly and stop red blink. 
+<br/> Short DEMO: https://youtu.be/VaXmki2oLrk
 <br/> Diagram drawing: [Railway crossing](/image/railway_crossing.png)
 
 ### math_fade_LED.ino
 Two LEDs fading in and fading out using a linear function and a math potence (power) function. 
 <br/> Short DEMO: https://youtu.be/8TV6nOdXBno
+<br/> Diagram drawing: [Math fad LED](/image/math_fade_LED.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
-<br/> Article on difenrent fading lights: [Professor Tom Igoe](https://tigoe.github.io/LightProjects/fading.html)
+<br/> Article on various fading lights: [Professor Tom Igoe](https://tigoe.github.io/LightProjects/fading.html)
 
 ### servo_math_curve.ino
 Use math S-curve to move servo from 0 to 180 degrees and vice versa. 
 <br/> Short DEMO: https://youtu.be/rhQtu0iKFl8
+<br/> Diagram drawing: [Servo math curves](/image/servo_math_curve.png)
 <br/> Demo shows: 1) No curve 2) linear curve and 3) [Sigmoid S-curve](https://en.wikipedia.org/wiki/Sigmoid_function)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 
 ### PWM_power_curves.ino
 Test and compare lineary and power PWM curves with heavy train load and light train load
 https://youtu.be/Fi9D1hrzT9M
+<br/> Diagram drawing: [PMW pwer cirves](/PWM_power_curves.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 
 ### pendulum_relays.ino
@@ -66,7 +70,7 @@ One IR sensor is used to calibrate time and distance offset. Finaly red and gree
 The train route is controlled by advanced mathematical PWM curves that compensate for inertia and 
 friction, and thus ensure smooth acceleration and deceleration.
 <br/> Short DEMO: https://youtu.be/1i-cGc6Dk4E
-<br/> Diagram drawing: [Avanced pendulum H-brige](/image/advanced_pendulum_H_bridge.png)
+<br/> Diagram drawing: [Pendulum H-brige](/image/advanced_pendulum_H_bridge.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 <br/> Driving DC Motors with Microcontrollers https://dronebotworkshop.com/dc-motor-drivers/
 <br/>
