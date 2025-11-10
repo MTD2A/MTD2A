@@ -54,7 +54,7 @@ Use math S-curve to move servo from 0 to 180 degrees and vice versa.
 ### PWM_power_curves.ino
 Test and compare lineary and power PWM curves with heavy train load and light train load
 https://youtu.be/Fi9D1hrzT9M
-<br/> Diagram drawing: [PMW pwer cirves](/PWM_power_curves.png)
+<br/> Diagram drawing: [PMW power curves](/image/PWM_power_curves.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 
 ### pendulum_relays.ino
