@@ -6,6 +6,7 @@
 // friction, and thus ensure smooth acceleration and deceleration.
 // Can easily be expanded with more tracks and sensors. Sensor: https://github.com/MTD2A/FC-51
 // MTD2A_binary_output: https://github.com/MTD2A/MTD2A/tree/main/doc#mtd2a_binary_output
+// Short DEMO: https://youtu.be/1i-cGc6Dk4E
 // Jørgen Bo Madsen / november 2025 / https://github.com/jebmdk  
 
 #include <MTD2A.h>
@@ -24,7 +25,7 @@ MTD2A_binary_output train_backward ("Train backward");
 MTD2A_binary_output switch_right   ("Switch right", 500);
 MTD2A_binary_output switch_left    ("Switch left",  500);
 // Timer
-MTD2A_timer         train_timer    ("Timer"); // Set time when starting
+MTD2A_timer         train_timer    ("Timer"); // Generic timer
 
 // Driving speeds PWM {0 - 255}. 
 // Voltage = actual speed devided by 255 multiplied by power supply voltage

@@ -2,6 +2,7 @@
 // Wait for the train to pass, raise boom and stop red blink.
 // https://docs.arduino.cc/libraries/servo/
 // https://github.com/MTD2A/MTD2A/blob/main/sounds/Bells/railroad-crossing-bell-denmark-1-sec.mp3
+// Short DEMO: https://youtu.be/VaXmki2oLrk
 // Jørgen Bo Madsen / july 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>

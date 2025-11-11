@@ -1,7 +1,9 @@
 
 // Stop light and sound message: The train brakes and temporarily stops at a red light.
 // Speaker announcement is broadcast to the passengers. If the train is passing by, no announcement is broadcast.
-// Jørgen Bo Madsen / june 2025 / https://github.com/jebmdk  Sensor: https://github.com/MTD2A/FC-51
+// Sensor: https://github.com/MTD2A/FC-51
+// Short DEMO: https://youtu.be/I5TYpuBB0eI
+// Jørgen Bo Madsen / june 2025 / https://github.com/jebmdk 
 
 #include <MTD2A.h>
 using namespace MTD2A_const;

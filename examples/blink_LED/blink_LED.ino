@@ -1,4 +1,5 @@
 // Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
+// Short DEMO: https://youtu.be/eyGRazX9Bko
 // Jørgen Bo Madsen / june 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>

@@ -1,7 +1,7 @@
-
 // Determining the direction of travel of the train
-// Jørgen Bo Madsen / may 2025 / https://github.com/jebmdk
 // https://github.com/MTD2A/FC-51
+// Short DEMO: https://youtu.be/BqwTf03yEwQ
+// Jørgen Bo Madsen / may 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 using namespace MTD2A_const;

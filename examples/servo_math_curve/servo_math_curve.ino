@@ -1,6 +1,6 @@
 // Use PWM math S-curve to move servo from 0 to 180 degrees and vice versa
 // https://docs.arduino.cc/libraries/servo/ 
-// https://github.com/MTD2A/MTD2A/tree/main/doc
+// Short DEMO: https://youtu.be/rhQtu0iKFl8
 // Jørgen Bo Madsen / july 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>

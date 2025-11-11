@@ -1,7 +1,9 @@
 
 // Automatic switch to the direction the train is coming from (to avoid derailment)
 // Standard LGB switch (turnout) with position switches for feedback 
-// Jørgen Bo Madsen / june 2025 / https://github.com/jebmdk  Sensor: https://github.com/MTD2A/FC-51
+// Sensor: https://github.com/MTD2A/FC-51
+// Short DEMO: https://youtu.be/oMeD3e_oXEI
+// Jørgen Bo Madsen / june 2025 / https://github.com/jebmdk  
 
 #include <MTD2A.h>
 using namespace MTD2A_const;
