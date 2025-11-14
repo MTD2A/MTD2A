@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_timers.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.3
- * @date    16. september 2025
+ * @version V1.1.4
+ * @date    14. november 2025
  * @brief   functions for MTD2A_base.h base class (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -28,10 +28,6 @@
  *
  ******************************************************************************
  */
-
-
-#ifndef _MTD2A_timer_CPP_
-#define _MTD2A_timer_CPP_
 
 
 #include "Arduino.h"
@@ -210,9 +206,8 @@ uint8_t const &MTD2A_timer::get_phaseNumber () const {
 }
 
 
-uint8_t const &MTD2A_timer::get_reset_error () {
-  static uint8_t tempErrorNumber;
-  tempErrorNumber = errorNumber;
+uint8_t const MTD2A_timer::get_reset_error () {
+  uint8_t tempErrorNumber = errorNumber;
   errorNumber = 0;
   return tempErrorNumber;
 } // get_reset_error
@@ -285,14 +280,19 @@ void MTD2A_timer::loop_fast_pause_end () {
 
 void MTD2A_timer::loop_fast_calc_time () {
   if (phaseNumber != PAUSE_TIMER  &&  stopProcess == true) {
-    // checks for negative numbers
-    elapsedTimeMS = globalSyncTimeMS - pauseTimeMS - startTimeMS;
-    if (elapsedTimeMS  >=  countDownMS) {
-      remainTimeMS = 0;
-      elapsedTimeMS = countDownMS;
-    }
+    if (globalSyncTimeMS >= (pauseTimeMS + startTimeMS)) {
+      elapsedTimeMS = globalSyncTimeMS - pauseTimeMS - startTimeMS;
+      if (elapsedTimeMS >= countDownMS) {
+        remainTimeMS = 0;
+        elapsedTimeMS = countDownMS;
+      } else {
+        remainTimeMS = countDownMS - elapsedTimeMS;
+      }
+    } 
     else {
-      remainTimeMS = countDownMS - elapsedTimeMS;
+      // Underflow condition - should not happen in normal operation
+      elapsedTimeMS = 0;
+      remainTimeMS = countDownMS;
     }
   }
 } // loop_fast_calc_time
@@ -368,4 +368,3 @@ void MTD2A_timer::print_conf () {
   PortPrint  (F("  pauseEndMS   : ")); PortPrintln(pauseEndMS);
 } // print_conf 
 
-#endif

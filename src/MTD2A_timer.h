@@ -252,7 +252,7 @@ class MTD2A_timer: public MTD2A
      * @param none
      * @return uint8_t Error number. Error {1-127} and Warning {128-255}
      */
-    uint8_t const &get_reset_error ();
+    uint8_t const get_reset_error ();
 
     
   private: // Internal functions

@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.7
- * @date    31. august 2025
+ * @version V1.1.8
+ * @date    14. november 2025
  * @brief   functions for MTD2A_base.h base class (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -196,7 +196,12 @@ void MTD2A::MTD2A_print_object_name (const char *printObjectName) {
 
 
 uint8_t MTD2A::MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const uint8_t &checkPinFlags) {
+  #ifdef THREAD_SAFE
+    static std::mutex pinFlagsMutex;
+    std::lock_guard<std::mutex> lock(pinFlagsMutex);
+  #endif
   static uint8_t pinFlags[NUM_DIGITAL_PINS] = {0};
+  //
   uint8_t checkErrorNumber = 0;
   // errorNumber {1-127} Error {128-255} Warning
   if (checkPinNumber == PIN_ERROR_NO) {
@@ -226,10 +231,10 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const
     
   // Analog
   #if defined(NUM_ANALOG_INPUTS)
-    if ((checkPinFlags & ANALOG_FLAG_1)  &&  (NUM_DIGITAL_PINS - checkPinNumber >= NUM_ANALOG_INPUTS)) {
-      checkErrorNumber = 3;
-      return checkErrorNumber;
-    }
+  if ((checkPinFlags & ANALOG_FLAG_1) && (checkPinNumber < (NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS))) {
+    checkErrorNumber = 3;
+    return checkErrorNumber;
+  }
   #else
     checkErrorNumber = 129;  // Warning, but continue processing
   #endif
@@ -268,7 +273,7 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const
 
   #if defined(digitalPinToInterrupt)
     #ifndef NOT_AN_INTERRUPT // Interrupt capability check
-      #define NOT_AN_INTERRUPT MAX_BYTE_VALUE; // Fallback for older Arduino versions
+      #define NOT_AN_INTERRUPT MAX_BYTE_VALUE // Fallback for older Arduino versions
     #endif
     if ((checkPinFlags & INTERRUPT_FLAG_7)  &&  (digitalPinToInterrupt(checkPinNumber) == NOT_AN_INTERRUPT)) {
       checkErrorNumber = 7;
@@ -316,7 +321,7 @@ void MTD2A::MTD2A_print_error_text
       case  15: PortPrintln (F("globalDelayTimeMS must be : 1 - 10 MS")); break;
       case  16: PortPrintln (F("Process state must be ACTIVE"));          break;
       case 128: PortPrintln (F("Digital Pin check not possible"));        break;
-      case 129: PortPrintln (F("Anaog Pin check not possible"));          break;
+      case 129: PortPrintln (F("Analog Pin check not possible"));          break;
       case 130: PortPrintln (F("Pin used more than once"));               break;
       case 131: PortPrintln (F("PWM Pin check not possible"));            break;
       case 132: PortPrintln (F("Interupt Pin check not possible"));       break;
@@ -327,6 +332,7 @@ void MTD2A::MTD2A_print_error_text
       case 153: PortPrint   (F("Undefined PWM curve. Must be <= ")); PortPrintln (MAX_PWM_CURVES); break;
       case 154: PortPrintln (F("Use RISING curve instead of FALLING"));   break;
       case 155: PortPrintln (F("Use FALLING curve instead of RISING"));   break;
+      case 156: PortPrintln (F("PWM curve changed to NO_CURVE"));         break;
       default:
         PortPrint(F("Unknown error: ")); PortPrint(printErrorNumber); PortPrintln(F(" Please report"));
     }

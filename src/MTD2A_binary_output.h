@@ -134,7 +134,8 @@ class MTD2A_binary_output: public MTD2A
     static constexpr double  LEDfactor    {(MAX_BYTE_VALUE * log10(2)) / log10(MAX_BYTE_VALUE + 1)};
 
   public:
-    // Constructor inittializers
+    // Constructor initializers
+    
     /**
      * @class MTD2A_BINARY_output
      * @brief Create object and set configuration parameters or use defaults
@@ -202,14 +203,14 @@ class MTD2A_binary_output: public MTD2A
      * @param ( setPinBeginValue );
      * @param ( setPinBeginValue, setPinEndValue );
      * @param ( setPinBeginValue, setPinEndValue, setPWMcurveType );
+     * @param ( setPinBeginValue, setPinEndValue, setPWMcurveType, setOutputTimeMS );
      * @return none
      */  
     void activate ();
     void activate (const uint8_t &setPinBeginValue);
     void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue);
     void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType);
-
-
+    void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType, const uint32_t &setOutputTimeMS);
     /**
      * @brief Reset all timers and state logic. Ready to start.
      * @name object_name.reset ();

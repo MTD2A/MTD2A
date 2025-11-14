@@ -227,10 +227,9 @@ class MTD2A  // base class
  * @param none
  * @return none
  */
-auto MTD2A_loop_execute = []() {
-  MTD2A::loop_execute ();
+static constexpr auto MTD2A_loop_execute = []() {
+    MTD2A::loop_execute();
 };
-
 
 /**
  * @brief Enable print phase state number and phase state text for all instantiated classes
