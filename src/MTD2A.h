@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A.h
  * @author  Joergen Bo Madsen
- * @version V1.1.2
+ * @version 1.1.2
  * @date    28. august 2025
  * @brief   Abstract main header for MTD2A (Model Train Detection And Action)
  * 

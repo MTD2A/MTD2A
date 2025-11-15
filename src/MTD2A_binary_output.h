@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
- * @version V 1.1.6
+ * @version 1.1.6
  * @date    31. August 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
@@ -211,6 +211,8 @@ class MTD2A_binary_output: public MTD2A
     void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue);
     void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType);
     void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType, const uint32_t &setOutputTimeMS);
+
+
     /**
      * @brief Reset all timers and state logic. Ready to start.
      * @name object_name.reset ();
@@ -265,7 +267,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Configure pin write mode = NORMAL or INVERTED
      * @name object_name.set_pinWriteMode
      * @param ( {NORMAL | INVERTED} );
-     * @return non
+     * @return none
      */
     void set_pinWriteMode (const bool &setPinNomalOrInverted = NORMAL);
 
@@ -335,7 +337,7 @@ class MTD2A_binary_output: public MTD2A
     
     /**
      * @brief Enable error print text.
-     * @name object_name.set_debugPrint
+     * @name object_name.set_errorPrint
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */  
@@ -355,10 +357,10 @@ class MTD2A_binary_output: public MTD2A
 
 
     /**
-     * @brief Get pinWriteMod
+     * @brief Get pinWriteMode
      * @name object_name.get_pinWriteMode (); 
      * @param none
-     * @param ( {NORMAL | INVERTED} );
+     * @return ( {NORMAL | INVERTED} );
      */
     bool const &get_pinWriteMode () const;
 
@@ -376,7 +378,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Get processState  
      * @name object_name.get_processState ();
      * @param none
-     * @return bool {ACTIVE | finnish}
+     * @return bool {ACTIVE | COMPLETE}
      */  
     bool const &get_processState () const;
   
@@ -394,7 +396,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief get phase number. 
      * @name object_name.get_phaseNumber ();
      * @param none
-     * @return uint8_t Rreset = 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4
+     * @return uint8_t Reset = 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4
      */  
     uint8_t const &get_phaseNumber () const;
   
@@ -432,7 +434,7 @@ class MTD2A_binary_output: public MTD2A
      * @param none
      * @return uint8_t Error number. Error {1-127} and Warning {128-255}
      */
-    uint8_t const &get_reset_error ();
+    uint8_t const get_reset_error ();
 
 
   private: // Functions

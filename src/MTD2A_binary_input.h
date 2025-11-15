@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_binary_input.h
  * @author  Joergen Bo Madsen
- * @version V1.1.6
+ * @version 1.1.6
  * @date    31. august 2025
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
@@ -88,7 +88,8 @@ class MTD2A_binary_input: public MTD2A
     bool     inputGoHigh   {false};          // Rising edge
 
   public:
-    // Constructor inittializers
+    // Constructor initializers
+    
     /**
      * @class MTD2A_binary_input
      * @brief Create object and set configuration parameters or use defaults
@@ -335,7 +336,7 @@ class MTD2A_binary_input: public MTD2A
      * @param none
      * @return uint8_t Error number. Error {1-127} and Warning {128-255}
      */
-    uint8_t const &get_reset_error ();
+    uint8_t const get_reset_error ();
 
 
   private: // Functions

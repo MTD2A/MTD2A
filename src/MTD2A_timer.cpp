@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_timers.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.4
+ * @version 1.1.4
  * @date    14. november 2025
  * @brief   functions for MTD2A_base.h base class (Model Train Detection And Action)
  * 
@@ -285,7 +285,8 @@ void MTD2A_timer::loop_fast_calc_time () {
       if (elapsedTimeMS >= countDownMS) {
         remainTimeMS = 0;
         elapsedTimeMS = countDownMS;
-      } else {
+      } 
+      else {
         remainTimeMS = countDownMS - elapsedTimeMS;
       }
     } 

@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_timers.h
  * @author  Joergen Bo Madsen
- * @version V1.1.3
+ * @version 1.1.3
  * @date    7. September 2025
  * @brief   Abstract base Class for MTD2A (Model Train Detection And Action)
  * 

@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_const.h
  * @author  Joergen Bo Madsen
- * @version V1.1.3
+ * @version 1.1.3
  * @date    30. august 2025
  * @brief   Global constants for MTD2A (Model Train Detection And Action)
  * 

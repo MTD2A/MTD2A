@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_base.h
  * @author  Joergen Bo Madsen
- * @version V1.1.8
+ * @version 1.1.8
  * @date    16 october 2025
  * @brief   Abstract base Class for MTD2A (Model Train Detection And Action)
  * 
@@ -227,7 +227,7 @@ class MTD2A  // base class
  * @param none
  * @return none
  */
-static constexpr auto MTD2A_loop_execute = []() {
+auto MTD2A_loop_execute = []() {
     MTD2A::loop_execute();
 };
 

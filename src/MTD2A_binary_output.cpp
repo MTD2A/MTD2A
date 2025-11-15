@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.cpp
  * @author  Joergen Bo Madsen
- * @version V 1.1.8
- * @date    31.august 2025
+ * @version 1.1.9
+ * @date    15. november 2025
  * @brief   functions for MTD2A_binary_output.h (Model Train Detection And Action)
  * 
  * Supporting a vast variety of input sensors and output devices 
@@ -150,7 +150,8 @@ void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue, const uint8
     activate_process ();
   }
 }
-void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType) {
+void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, 
+                                    const uint8_t &setPWMcurveType) {
   if (processState == COMPLETE) {
     pinOutputMode = P_W_M;
     pinBeginValue = check_pin_value (setPinBeginValue);
@@ -160,7 +161,25 @@ void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue, const uint8
       PWM_curve_begin_end ();
     activate_process ();
   }
- }// Activate
+ }
+ void MTD2A_binary_output::activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, 
+                                     const uint8_t &setPWMcurveType, const uint32_t &setOutputTimeMS) {
+  if (processState == COMPLETE) {
+    pinOutputMode = P_W_M;
+    pinBeginValue = check_pin_value (setPinBeginValue);
+    pinEndValue   = check_pin_value (setPinEndValue);
+    PWMcurveType  = check_PWM_curve (setPWMcurveType);
+    set_outputTimeMS (setOutputTimeMS);
+    if ((setPinBeginValue == setPinEndValue)  &&  PWMcurveType != NO_CURVE) {
+      PWMcurveType = NO_CURVE;
+      print_error_text (156);
+    }
+    if (PWMcurveType != NO_CURVE) {
+      PWM_curve_begin_end ();
+    }
+    activate_process ();
+  }
+}// Activate
 
 
 void MTD2A_binary_output::activate_process () {
@@ -191,6 +210,7 @@ void MTD2A_binary_output::activate_process () {
 void MTD2A_binary_output::set_PinOutputMode (const bool &setPinOutputMode) {
   pinOutputMode = setPinOutputMode;
 } // set_PinOutputMode
+
 
 void MTD2A_binary_output::set_pinWriteValue (const uint8_t &setPinWriteValue ) {
   if (pinWriteToggl == ENABLE) {
@@ -376,9 +396,8 @@ uint32_t const &MTD2A_binary_output::get_setEndMS () const {
 }
 
 
-uint8_t const &MTD2A_binary_output::get_reset_error () {
-  static uint8_t tempErrorNumber;
-  tempErrorNumber = errorNumber;
+uint8_t const MTD2A_binary_output::get_reset_error () {
+  uint8_t tempErrorNumber = errorNumber;
   errorNumber = 0;
   return tempErrorNumber;
 } // get_reset_error
@@ -543,26 +562,28 @@ uint8_t MTD2A_binary_output::PWM_curve_point (const uint8_t &curvePointX, const 
 double MTD2A_binary_output::PWM_sigmoid_5 (const uint8_t &curvePointX5) {
   double scalePointX5;
   scalePointX5  = ((double)curvePointX5 * expoScale5) - sigmoid5;
-  return          (double)MAX_BYTE_VALUE / (1.0 + exp(-scalePointX5))
-              - (((double)MAX_BYTE_VALUE /  2.0) - (double)curvePointX5) * expoAlign5;
+  return           (double)MAX_BYTE_VALUE / (1.0 + exp(-scalePointX5))
+               - (((double)MAX_BYTE_VALUE /  2.0) - (double)curvePointX5) * expoAlign5;
 } // PWM_sigmoid_5
 
 
 double MTD2A_binary_output::PWM_sigmoid_8 (const uint8_t &curvePointX8) { 
   double scalePointX8;
   scalePointX8 = ((double)curvePointX8 * expoScale8) - sigmoid8;
-  return         (double)MAX_BYTE_VALUE / (1.0 + exp(-scalePointX8));
+  return          (double)MAX_BYTE_VALUE / (1.0 + exp(-scalePointX8));
 } // PWM_sigmoid_8
 
 
 uint8_t MTD2A_binary_output::PWM_scale_point (const double &curvePointY) {
 int16_t scalePointY; 
-  scalePointY = (int16_t)PWMoffstePoint + (int16_t)round(curvePointY * PWMscaleFactor);
-  if (scalePointY > MAX_BYTE_VALUE)
-    return MAX_BYTE_VALUE; 
-    // inaccuracy in the calculation formula
+  scalePointY = static_cast<int16_t>(PWMoffstePoint) + static_cast<int16_t>(round(curvePointY * PWMscaleFactor));
+  // Range safety check
+  if (scalePointY < 0)
+    return 0;
+  else if (scalePointY > MAX_BYTE_VALUE)
+    return MAX_BYTE_VALUE;
   else
-    return (uint8_t) scalePointY;
+    return static_cast<uint8_t>(scalePointY); 
 } // PWM_scale_point
 
 

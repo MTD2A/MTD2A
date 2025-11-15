@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_base.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.8
+ * @version 1.1.8
  * @date    14. november 2025
  * @brief   functions for MTD2A_base.h base class (Model Train Detection And Action)
  * 
@@ -28,10 +28,6 @@
  *
  ******************************************************************************
  */
-
-
-#ifndef _MTD2A_base_CPP_
-#define _MTD2A_base_CPP_
 
 
 #include "Arduino.h"
@@ -178,11 +174,15 @@ void MTD2A::loop_execute () {
 char *MTD2A::MTD2A_set_object_name (const char *setObjectName) {
   if (setObjectName == nullptr) {
     char *emptyObjectName = new char[1];
-    emptyObjectName[0] = '\0';
+    if (emptyObjectName != nullptr) {
+      emptyObjectName[0] = '\0';
+    }
     return emptyObjectName;
   } 
   char *newObjectName = new char[strlen(setObjectName) + 1];
-  strcpy(newObjectName, setObjectName);
+  if (newObjectName != nullptr) {
+    strcpy(newObjectName, setObjectName);
+  }
   return newObjectName;
 } // MTD2A_set_object_name
 
@@ -196,13 +196,14 @@ void MTD2A::MTD2A_print_object_name (const char *printObjectName) {
 
 
 uint8_t MTD2A::MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const uint8_t &checkPinFlags) {
-  #ifdef THREAD_SAFE
-    static std::mutex pinFlagsMutex;
-    std::lock_guard<std::mutex> lock(pinFlagsMutex);
+  // https://github.com/arduino/ArduinoCore-avr/blob/master/variants/standard/pins_arduino.h
+  // https://github.com/espressif/arduino-esp32/blob/master/variants/nano32/pins_arduino.h
+  uint8_t checkErrorNumber = 0;
+  #ifndef NUM_DIGITAL_PINS
+    #define NUM_DIGITAL_PINS 100  // Safe default for most Arduino boards
+    checkErrorNumber = 128;  // Warning, but continue processing
   #endif
   static uint8_t pinFlags[NUM_DIGITAL_PINS] = {0};
-  //
-  uint8_t checkErrorNumber = 0;
   // errorNumber {1-127} Error {128-255} Warning
   if (checkPinNumber == PIN_ERROR_NO) {
     checkErrorNumber = 1;
@@ -218,16 +219,11 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (const uint8_t &checkPinNumber, const
   // bit 6 [64] : tone()
   // bit 7 [128]: Interrupt
 
-  // https://github.com/arduino/ArduinoCore-avr/blob/master/variants/standard/pins_arduino.h
-  // https://github.com/espressif/arduino-esp32/blob/master/variants/nano32/pins_arduino.h
-  #if defined(NUM_DIGITAL_PINS)
-    if ((checkPinFlags & DIGITAL_FLAG_0)  &&  (checkPinNumber >= NUM_DIGITAL_PINS)) {
-      checkErrorNumber = 2;
-      return checkErrorNumber;
-    }
-  #else
-    checkErrorNumber = 128;  // Warning, but continue processing
-  #endif
+  // Digital 
+  if ((checkPinFlags & DIGITAL_FLAG_0)  &&  (checkPinNumber >= NUM_DIGITAL_PINS)) {
+    checkErrorNumber = 2;
+    return checkErrorNumber;
+  }
     
   // Analog
   #if defined(NUM_ANALOG_INPUTS)
@@ -421,5 +417,3 @@ void MTD2A::print_conf () {
   PortPrintln(F("  MS/US = Milli/Microseconds"));
 }
 
-
-#endif

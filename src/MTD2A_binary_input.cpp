@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_binary_input.cpp
  * @author  Joergen Bo Madsen
- * @version V1.1.7
+ * @version 1.1.7
  * @date    31. august 2025
  * @brief   functions for MTD2A_binary_input.h (Model Train Detection And Action)
  * 
@@ -82,7 +82,7 @@ void MTD2A_binary_input::initialize (const uint8_t &setPinNumber, const bool &se
     pinReadToggl = ENABLE;
     pinNumber = setPinNumber;
     pinReadMode = setPinNomalOrInverted;
-    if (setPinPullupOrInput == INPUT  ||  setPinPullupOrInput == INPUT_PULLUP) 
+    if (setPinPullupOrInput == (uint8_t)INPUT  ||  setPinPullupOrInput == (uint8_t)INPUT_PULLUP) 
       pinType = setPinPullupOrInput;
     else {
       print_error_text (8);
@@ -216,9 +216,8 @@ bool const &MTD2A_binary_input::get_inputGoHigh () const {
 }
 
 
-uint8_t const &MTD2A_binary_input::get_reset_error () {
-  static uint8_t tempErrorNumber;
-  tempErrorNumber = errorNumber;
+uint8_t const MTD2A_binary_input::get_reset_error () {
+  uint8_t tempErrorNumber = errorNumber;
   errorNumber = 0;
   return tempErrorNumber;
 } // get_reset_error
