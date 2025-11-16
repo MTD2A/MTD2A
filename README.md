@@ -1,6 +1,10 @@
 ### Model Train Detection And Action - NEW Arduino library
 
-Work in progress
+![](https://img.shields.io/github/v/release/MTD2A/MTD2A)
+![](https://www.ardu-badge.com/badge/MTD2A.svg)
+![](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
+![](https://img.shields.io/github/license/MTD2A/MTD2A)
+![](https://img.shields.io/badge/YouTube-FF0000?style=flat&logo=youtube&logoColor=white)
 
 MTD2A is a collection of user friendly advanced and functional C++ classes - building blocks - for time-controlled handling of input and output. The library is intended for Arduino enthusiasts without much programming experience, who are interested in electronics control and automation, and model trains as a hobby. The library support parallel processing and asynchronous execution.
 
