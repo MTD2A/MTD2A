@@ -38,12 +38,10 @@ Further explanation: [Finite-state machine - Wikipedia](https://en.wikipedia.org
 https://makeabilitylab.github.io/physcomp/
 
 # Installation for Arduino IDE
-Download the entire MTD2A repository as a ZIP file.
+MTD2A is part of the official Arduino library, and can be downloaded directly from the Arduino IDE (Integrated Development Environment) via the Library Manager
 
-![](/image/MTD2A-download.png)
+![](/image/Arduino-IDE-MTD2A.png)
 
-Unzip the ZIP file and rename the directory name to MTD2A. <br/>
-Move everything to the Arduino home directory under libraries: **Arduino/libraries/MTD2A** <br/>
-The examples can now be selected from the list of examples in the Arduino IDE **Examples** <br/>
+MTD2A examples <br/>
 
-![](/image/Arduino-examples.png)
+![](/image/Arduino-IDE-MTD2A-examples.png)
