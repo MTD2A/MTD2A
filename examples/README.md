@@ -78,4 +78,4 @@ friction, and thus ensure smooth acceleration and deceleration.
 
 ### Activate examples directly from Arduino IDE
 
-![](/examples/Arduino-examples.png)
+![](/image/Arduino-IDE-MTD2A-library-examples.png)
