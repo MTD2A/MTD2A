@@ -40,8 +40,6 @@ https://makeabilitylab.github.io/physcomp/
 # Installation for Arduino IDE
 MTD2A is part of the official Arduino library, and can be downloaded directly from the Arduino IDE (Integrated Development Environment) via the Library Manager
 
-![](/image/Arduino-IDE-MTD2A.png)
+![](/image/Arduino-IDE-MTD2A-library-examples.png)
 
-MTD2A examples <br/>
 
-![](/image/Arduino-IDE-MTD2A-examples.png)
