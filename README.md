@@ -1,4 +1,4 @@
-### Model Train Detection And Action - NEW Arduino library
+# <ins>M</ins>odel <ins>T</ins>rain <ins>D</ins>etection <ins>A</ins>nd <ins>A</ins>ction - Arduino library
 
 ![](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![](https://img.shields.io/github/v/release/MTD2A/MTD2A)
