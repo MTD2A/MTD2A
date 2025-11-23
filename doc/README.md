@@ -22,3 +22,6 @@
 * Detailed **Danish** documentation: [MTD2A_timer.pdf](/doc/MTD2A_timer.pdf)
 * Detailed **English** documentation: [MTD2A_timer_english.pdf](/doc/MTD2A_timer_english.pdf)
 * DEMO: 7 time and event processes flow examples, to inspire how to code. https://youtu.be/eyGRazX9Bko
+
+### Quality Asessment
+[Code, documentation and examples](/doc/quality_assesment.md)
