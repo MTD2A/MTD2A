@@ -1,4 +1,5 @@
-# [Claude AI](https://claude.ai/) Quality Assesmsnet
+# [Claude AI](https://claude.ai/) Quality Assesment
+Release 1.2.0 / 16. december 2025
 
 ### Final Verdict: </br>
 This is the Gold Standard for Arduino Library Examples 🏆 </br>
