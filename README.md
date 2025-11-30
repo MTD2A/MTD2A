@@ -16,7 +16,7 @@ MTD2A is a collection of user friendly advanced and functional C++ classes - bui
 • Offers extensive control and troubleshooting information <br/>
 • Thoroughly documented with examples <br/>
 
-### Quality Asessment
+### Library Quality Asessment
 [Code, documentation and examples](/doc/quality_assesment.md)
 
 ## Mode of operation
