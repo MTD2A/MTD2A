@@ -12,7 +12,7 @@ MTD2A is a collection of user friendly advanced and functional C++ classes - bui
 • Build on a state machine system for parallel processing and synchronous timing <br/>
 • Support a wide range of input sensors and output devices <br/>
 • Are simple to use to build complex solutions with few commands <br/>
-• They operate non-blocking, process-oriented and state-driven <br/>
+• Operate non-blocking, process-oriented and time controlled <br/>
 • Offers extensive control and troubleshooting information <br/>
 • Thoroughly documented with examples <br/>
 
