@@ -1,6 +1,6 @@
-* text=auto
-*.png binary
-*.jpg binary
-*.pdf binary
-*.mp3 binary
-*.wav binary
+.DS_Store
+Thumbs.db
+desktop.ini
+*.bak
+*~
+.vscode/
