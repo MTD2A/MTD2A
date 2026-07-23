@@ -4,6 +4,7 @@ MTD2A.h
 ### Global constants, base class and common functions
 * MTD2A_const.h
 * MTD2A_base.h
+* MTD2A_print.h
 * MTD2A_base.cpp
 
 ### Classes and doxygen documentation
@@ -16,7 +17,5 @@ MTD2A.h
 
 ### Additional planned building blocks
 *	MTD2A_tone
-*	MTD2A_sound	
-*	MTD2A_display
 *	MTD2A_DCC_input
 *	Suggestions are welcome
