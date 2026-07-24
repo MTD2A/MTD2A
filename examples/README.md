@@ -1,7 +1,7 @@
 # Arduino examples
 
 ### blink_LED.ino
-Two blinking LEDs. One with symmetric interval and another with asymetric interval. 
+Two blinking LEDs. One with symmetric interval and another with asymmetric interval. 
 <br/> Short DEMO: https://youtu.be/eyGRazX9Bko
 <br/> Diagram drawing: [Blink LED](/image/blink_LED.png)
 
@@ -38,9 +38,9 @@ Danish railway crossing. Read left and right sensor, activate red blinking warni
 <br/> Diagram drawing: [Railway crossing](/image/railway_crossing.png)
 
 ### math_fade_LED.ino
-Two LEDs fading in and fading out using a linear function and a math potence (power) function. 
+Two LEDs fading in and fading out using a linear function and a math power function. 
 <br/> Short DEMO: https://youtu.be/8TV6nOdXBno
-<br/> Diagram drawing: [Math fad LED](/image/math_fade_LED.png)
+<br/> Diagram drawing: [Math fade LED](/image/math_fade_LED.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 <br/> Article on various fading lights: [Professor Tom Igoe](https://tigoe.github.io/LightProjects/fading.html)
 
@@ -52,25 +52,25 @@ Use math S-curve to move servo from 0 to 180 degrees and vice versa.
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 
 ### PWM_power_curves.ino
-Test and compare lineary and power PWM curves with heavy train load and light train load
+Test and compare linear and power PWM curves with heavy train load and light train load
 <br/> Short DEMO: https://youtu.be/Fi9D1hrzT9M
-<br/> Diagram drawing: [PMW power curves](/image/PWM_power_curves.png)
+<br/> Diagram drawing: [PWM power curves](/image/PWM_power_curves.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 
 ### pendulum_relays.ino
 Automatic pendulum operation on model railway system using relays to control track switch, train direction, train power, and one IR sensor to calibrate time and distance offset. When the train reaches its holding area, it is sent back in the opposite direction after the set waiting time. 
 <br/> Short DEMO: https://youtu.be/mffAFvGHrFw
-<br/> Diagram drawing: [Pendulum realys](/image/pendulum_relays.png)
+<br/> Diagram drawing: [Pendulum relays](/image/pendulum_relays.png)
 <br/> H-bridge relays: 4 relays instead of 6 relays: https://www.talkingelectronics.com/projects/H-Bridge/H-Bridge-1.html
 
 ### pendulum_H_bridge.ino
 Advanced automatic pendulum operation on model railway system using PWM controlled H-bridge
 to power train engine and direction. A simple H-bridge is used to control track switch and direction. 
-One IR sensor is used to calibrate time and distance offset. Finaly red and green train station signal.
+One IR sensor is used to calibrate time and distance offset. Finally red and green train station signal.
 The train route is controlled by advanced mathematical PWM curves that compensate for inertia and 
 friction, and thus ensure smooth acceleration and deceleration.
 <br/> Short DEMO: https://youtu.be/1i-cGc6Dk4E
-<br/> Diagram drawing: [Pendulum H-brige](/image/advanced_pendulum_H_bridge.png)
+<br/> Diagram drawing: [Pendulum H-bridge](/image/advanced_pendulum_H_bridge.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 <br/> Driving DC Motors with Microcontrollers https://dronebotworkshop.com/dc-motor-drivers/
 <br/>
