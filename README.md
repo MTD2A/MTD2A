@@ -42,6 +42,9 @@ Further explanation: [Finite-state machine - Wikipedia](https://en.wikipedia.org
 ### Documentation 
 [https://github.com/MTD2A/MTD2A/tree/main/doc](https://github.com/MTD2A/MTD2A/blob/main/doc/README.md)
 
+### Youtube examples
+https://www.youtube.com/playlist?list=PL6f3tWLrOJKaAb7Nt4AY5u9Ce0tWQq4VJ
+
 ### New to electronics and Arduino?
 https://makeabilitylab.github.io/physcomp/
 
