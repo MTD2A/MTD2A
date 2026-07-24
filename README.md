@@ -16,7 +16,7 @@ MTD2A is a collection of user friendly advanced and functional C++ classes - bui
 • Offers extensive control and troubleshooting information <br/>
 • Thoroughly documented with examples <br/>
 
-### Library Quality Asessment
+### Library Quality Assessment
 [Code, documentation and examples](/doc/quality_assesment.md)
 
 ## Mode of operation
@@ -42,7 +42,7 @@ Further explanation: [Finite-state machine - Wikipedia](https://en.wikipedia.org
 ### documentation 
 [https://github.com/MTD2A/MTD2A/tree/main/doc](https://github.com/MTD2A/MTD2A/blob/main/doc/README.md)
 
-### New to eletronics and Arduino?
+### New to electronics and Arduino?
 https://makeabilitylab.github.io/physcomp/
 
 # Installation for Arduino IDE
