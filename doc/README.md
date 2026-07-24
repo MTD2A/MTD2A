@@ -1,27 +1,27 @@
 # Documentation
 
 ### MTD2A
-* Source files contains doxygen documentation.
+* Source files contain doxygen documentation.
 * Detailed **Danish** documentation: [MTD2A_base.pdf](/doc/MTD2A.pdf)
 * Detailed **English** documentation: [MTD2A_base_english.pdf](/doc/MTD2A_english.pdf)
 
 ### MTD2A_binary_input 
-* Source files contains doxygen documentation.
+* Source files contain doxygen documentation.
 * Detailed **Danish** documentation: [MTD2A_binary_input.pdf](/doc/MTD2A_binary_input.pdf)
 * Detailed **English** documentation: [MTD2A_binary_input_english.pdf](/doc/MTD2A_binary_input_english.pdf)
 * DEMO: Read sensor and write phase state information to Arduino IDE serial monitor. https://youtu.be/RDFgEbhYUzE
 
 ### MTD2A_binary_output
-* Source files contains doxygen documentation.
+* Source files contain doxygen documentation.
 * Detailed **Danish** documentation: [MTD2A_binary_output.pdf](/doc/MTD2A_binary_output.pdf)
 * Detailed **English** documentation: [MTD2A_binary_output_english.pdf](/doc/MTD2A_binary_output_english.pdf)
-* DEMO: Two blinking LEDs. One with symmetric interval and another with asymetric interval. https://youtu.be/eyGRazX9Bko
+* DEMO: Two blinking LEDs. One with symmetric interval and another with asymmetric interval. https://youtu.be/eyGRazX9Bko
 
 ### MTD2A_timer
-* Source files contains doxygen documentation.
+* Source files contain doxygen documentation.
 * Detailed **Danish** documentation: [MTD2A_timer.pdf](/doc/MTD2A_timer.pdf)
 * Detailed **English** documentation: [MTD2A_timer_english.pdf](/doc/MTD2A_timer_english.pdf)
 * DEMO: 7 time and event processes flow examples, to inspire how to code. https://youtu.be/eyGRazX9Bko
 
-### Quality Asessment
-[Code, documentation and examples](/doc/quality_assesment.md)
+### Quality Assessment
+[Code, documentation and examples](/doc/quality_assessment.md)
