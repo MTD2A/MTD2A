@@ -1,4 +1,4 @@
-# ![](/image/MTDAA-heading-blue.png)
+# ![](/image/MTD2A-heading-blue.png)
 
 ![](https://img.shields.io/badge/C%2B%2B-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![](https://img.shields.io/github/v/release/MTD2A/MTD2A)
@@ -35,11 +35,11 @@ In this way, an approximate parallelization is achieved, where several functions
 The MTD2A library can be mixed with custom code and other libraries without further ado, as long as the execution is done non-blocking. But it requires a slightly different mindset when developing code, as it must always be taken into account that the infinite and fast loop must not be delayed, but also that user code is not executed more times than what is intended. It is often necessary to use different types of logic control flags. 
 
 ### Non-blocking execution 
-It is absolutely crucial that no delaying or blocking code is used with the MTD2A library. Do not use delaying functions such as `delay();` as well as bibliographies that prevent rapid passages of the infinite loop. However, by default, delays up to a maximum of 10 milliseconds are allowed per pass. In most cases, this is sufficient of time to execute custom code and different types of libraries simultaneously. See further explanation [MTD2A_englsh.pdf](https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_english.pdf) <br/>
+It is absolutely crucial that no delaying or blocking code is used with the MTD2A library. Do not use delaying functions such as `delay();` as well as libraries that prevent rapid passages of the infinite loop. However, by default, delays up to a maximum of 10 milliseconds are allowed per pass. In most cases, this is sufficient time to execute custom code and different types of libraries simultaneously. See further explanation [MTD2A_english.pdf](https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_english.pdf) <br/>
 
 Further explanation: [Finite-state machine - Wikipedia](https://en.wikipedia.org/wiki/Finite-state_machine) and here: [Real-time operating system - Wikipedia](https://en.wikipedia.org/wiki/Real-time_operating_system)
 
-### documentation 
+### Documentation 
 [https://github.com/MTD2A/MTD2A/tree/main/doc](https://github.com/MTD2A/MTD2A/blob/main/doc/README.md)
 
 ### New to electronics and Arduino?
