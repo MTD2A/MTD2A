@@ -17,7 +17,7 @@ MTD2A is a collection of user friendly advanced and functional C++ classes - bui
 • Thoroughly documented with examples <br/>
 
 ### Library Quality Assessment
-[Code, documentation and examples](/doc/quality_assesment.md)
+[Code, documentation and examples](/doc/quality_assessment.md)
 
 ## Mode of operation
 MTD2A is a so-called state machine. This means MTD2A objects are quickly traversed in an infinite loop, and each traversal is divided into two phases:
