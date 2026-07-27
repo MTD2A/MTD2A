@@ -4,6 +4,7 @@
 ![](https://img.shields.io/github/v/release/MTD2A/MTD2A)
 ![](https://www.ardu-badge.com/badge/MTD2A.svg)
 ![](https://img.shields.io/github/license/MTD2A/MTD2A)
+![](https://img.shields.io/badge/Docs-Doxygen-blue.svg)
 ![](https://img.shields.io/badge/YouTube-FF0000?style=flat&logo=youtube&logoColor=white)
 
 MTD2A is a collection of user friendly advanced and functional C++ classes - building blocks - for time-controlled handling of input and output. The library is intended for Arduino enthusiasts without much programming experience, who are interested in electronics control and automation, and model trains as a hobby. 
