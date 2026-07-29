@@ -73,6 +73,11 @@ friction, and thus ensure smooth acceleration and deceleration.
 <br/> Diagram drawing: [Pendulum H-bridge](/image/advanced_pendulum_H_bridge.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 <br/> Driving DC Motors with Microcontrollers https://dronebotworkshop.com/dc-motor-drivers/
+
+### advanced_servo_curves
+Advanced PWM control of servo with mathematical functions, using two differencnt servos: SG92A and 9imod 2065 waterproof. There are 5 different examples to choose from. The last example is using the Adafruit PCA9685 with I2C communication.
+<br/> Short DEMO: 
+<br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 <br/>
 <br/>
 
