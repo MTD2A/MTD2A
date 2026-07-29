@@ -77,7 +77,7 @@ friction, and thus ensure smooth acceleration and deceleration.
 ### advanced_servo_curves
 Advanced PWM control of servo with mathematical functions, using two differencnt servos: SG92A and 9imod 2065 waterproof. There are 5 different examples to choose from. The last example is using the Adafruit PCA9685 with I2C communication.
 <br/> Short DEMO: 
-<br/> Diagram drawing: [Pendulum relays](/image/pendulum_relays.png)
+<br/> Diagram drawing: [I2C PC9685 and servo](/image/advanced_servo_curves.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
 <br/>
 <br/>
