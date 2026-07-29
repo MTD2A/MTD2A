@@ -1,4 +1,5 @@
-// Use PWM kinetic math curves to move servo from 0 to 180 degrees and vice versa
+// Advanced PWM control of servo with mathematical functions, using two differencnt servos: SG92A and 9imod 2065 waterproof
+// There are 5 different examples to choose from. The last example is using the Adafruit PCA9685 with I2C communication.
 // https://docs.arduino.cc/libraries/servo/ 
 // Short DEMO: 
 // Jørgen Bo Madsen / July 2026 / https://github.com/jebmdk
