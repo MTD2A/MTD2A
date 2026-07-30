@@ -1,7 +1,7 @@
 // Use PWM math S-curve to move servo from 0 to 180 degrees and vice versa
 // https://docs.arduino.cc/libraries/servo/ 
 // Short DEMO: https://youtu.be/rhQtu0iKFl8
-// Jørgen Bo Madsen / july 2025 / https://github.com/jebmdk
+// Jørgen Bo Madsen / update 2 june 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 #include <Servo.h>
@@ -46,7 +46,7 @@ void loop() {
   }
   else {
     // Move servo left-right-pause-right-left-pause ....
-    boom_servo.write(boom_angel.get_pinOutputValue()); 
+    boom_servo.write(boom_angel.get_outputValue()); 
   }
  
   MTD2A_loop_execute();  // Update the state (event) system

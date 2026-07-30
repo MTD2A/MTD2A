@@ -1,7 +1,7 @@
 // Two LEDs fading in and fading out using a linear function and a math potence function
 // https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_output_english.pdf
 // Short DEMO: https://youtu.be/8TV6nOdXBno
-// Jørgen Bo Madsen / August 2025 / https://github.com/jebmdk
+// Jørgen Bo Madsen / update Maj 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 using namespace MTD2A_const;
@@ -35,7 +35,7 @@ void loop() {
   if (changeFlag == false) {
     if (red_LED_1.get_processState() == COMPLETE  && red_LED_2.get_processState() == COMPLETE) {
       if (loopCount == 0) {
-        Serial.println ("RED: RISING/FALLING XY and RISING/FALLING LED5");
+        Serial.println ("RED: RISING/FALLING XY and RISING/FALLING LED");
       }
       if (LEDchangeFlag == true) {
         red_LED_1.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_XY);
@@ -57,7 +57,7 @@ void loop() {
   else { // changeFlag = true
     if (green_LED_1.get_processState() == COMPLETE  && green_LED_2.get_processState() == COMPLETE) {
       if (loopCount == 0) {
-        Serial.println ("GREEN: RISING/FALLING XY and RISING/FALLING E05");
+        Serial.println ("GREEN: RISING/FALLING XY and RISING/FALLING LED");
       }
       if (LEDchangeFlag == true) {
         green_LED_1.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_XY);
