@@ -11,7 +11,7 @@ using namespace MTD2A_const;
 MTD2A_binary_input  FC_51_stop  ("Stop train",  2000);   
 // continuous active time. No incorrect reactivation due to gaps between the train wagons.
 MTD2A_binary_output train_sound ("Sound", 100, 8000, 8000); 
-// Trigger "DFplayer mini" "Buton activation" method for duraten of 0,1 seconds. Not less - not more.
+// Trigger "DFplayer mini" "ton activation" method for duraten of 0,1 seconds. Not less - not more.
 // Check if the train is stationary for 8 seconds or more after detection. waith 8 seconds to complete.
 
 void setup() {

@@ -11,9 +11,9 @@ using namespace MTD2A_const;
 
 MTD2A_binary_input  FC_51_left  ("FC-51 left" , 3000); // 3 seconds LAST_TIME delay
 MTD2A_binary_input  FC_51_right ("FC-51 right", 3000); // 3 seconds LAST_TIME delay
-MTD2A_binary_output red_LED_1   ("Red LED 1"  ,   500, 500); // 0,5 sec on, 0,5 sec off
-MTD2A_binary_output red_LED_2   ("Red LED 2"  ,   500, 500); // 0,5 sec on, 0,5 sec off
-MTD2A_binary_output bell_sound  ("Bell sound" ,   100, 900); // 0,1 sec activation and wait 0,9 sec 
+MTD2A_binary_output red_LED_1   ("Red LED 1"  , 500, 500); // 0,5 sec on, 0,5 sec off
+MTD2A_binary_output red_LED_2   ("Red LED 2"  , 500, 500); // 0,5 sec on, 0,5 sec off
+MTD2A_binary_output bell_sound  ("Bell sound" , 100, 900); // 0,1 sec activation and wait 0,9 sec 
 MTD2A_binary_output boom_angel  ("Boom angel" , 3000); // 3 seconds slow movement UP and DOWN
 Servo boom_servo_1; // SG92R front
 Servo boom_servo_2; // SG92R back

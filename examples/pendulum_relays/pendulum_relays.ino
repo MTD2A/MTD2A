@@ -22,7 +22,7 @@ MTD2A_binary_output actuator_right ("Right switch actuator", 500);
 // Track switch actuator power relay. Wait 0,1 second and send 0,4 seconds pulse
 MTD2A_binary_output actuator_power ("Power switch actuator", 400, 100);
 // Timer
-unsigned int backwardFromSide  = 6200; // Milliseconds to move bacward from side end of track
+unsigned int backwardFromSide  = 6200; // Milliseconds to move backward from side end of track
 unsigned int forwarFromRear    = 6200; // Milliseconds to move forward from rear end of track
 unsigned int backwardFromFront = 5600; // Milliseconds to move backward from front end of track
 unsigned int sideFromRear      = 6800; // Milliseconds to move to side from rear end of track

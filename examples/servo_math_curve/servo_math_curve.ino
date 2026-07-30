@@ -22,7 +22,7 @@ void setup() {
   boom_angel.set_pinWriteToggl (DISABLE);
   boom_angel.initialize ();  // pin not used
 
-  boom_servo.attach (BOOM_SERVO_PIN);  // Attach servo to borad pin
+  boom_servo.attach (BOOM_SERVO_PIN);  // Attach servo to board pin
   // SG92R standard micro servo. Range: 0 - 180 degrees
   for (byte loopIndex = 0; loopIndex < 2; loopIndex++) {
     boom_servo.write  (0);   // Left

@@ -77,7 +77,7 @@ void setup() {
 
 void loop() {
   if (loopStart) {
-    Serial.println(F("(1) 180 degress step resolution"));
+    Serial.println(F("(1) 180 degrees step resolution"));
     boom_angel.set_timers (3000, 100, 0);  // Output, begin, end
     loopStart = false;
   }
@@ -351,7 +351,7 @@ void loop() {
 # endif
 
 
-// helper funtion -------------------------------------------------------------------------------------------
+// helper function -------------------------------------------------------------------------------------------
 
 
 void select_curve () {

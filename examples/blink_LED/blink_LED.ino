@@ -38,7 +38,7 @@ void loop() {
   }
 
   MTD2A_loop_execute ();
-} // Two flashing LEDs. One with symmetric interval and another with asymetric interval.
+} // Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
 
 // ----------------------------------------------------------------------------------------
 
@@ -65,6 +65,6 @@ void loop() {
 
   loopCount++;
   MTD2A_loop_execute();
-} // Two flashing LEDs. One with symmetric interval and another with asymetric interval.
+} // Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
 
 #endif

@@ -41,7 +41,7 @@ void loop() {
     // equivalent to: if (FC_51_left < FC_51_right) {
       if (FC_51_right.get_phaseChange() == true  &&  FC_51_right.get_phaseNumber() == FIRST_TIME_PHASE) {
         green_LED_right.activate();
-        Serial.println("Moving rigth");
+        Serial.println("Moving right");
       }
     }
   }
