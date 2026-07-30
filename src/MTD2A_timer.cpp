@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_timer.cpp
  * @author  Joergen Bo Madsen
- * @version 1.2.1
+ * @version 1.3.1
  * @date    15. july 2026
  * @brief   functions for MTD2A_timer.h base class (Model Train Detection And Action)
  * 

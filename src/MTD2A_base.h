@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_base.h
  * @author  Joergen Bo Madsen
- * @version 1.2.1
+ * @version 1.3.1
  * @date    15. july 2026
  * @brief   Base class for common functions (Model Train Detection And Action)
  * 

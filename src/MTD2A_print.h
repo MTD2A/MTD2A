@@ -2,7 +2,7 @@
  ******************************************************************************
  * @file    MTD2A_print.h
  * @author  Joergen Bo Madsen
- * @version 1.2.0
+ * @version 1.3.1
  * @date    15. july 2026
  * @brief   Development / Production setup for MTD2A (Model Train Detection And Action)
  * 
