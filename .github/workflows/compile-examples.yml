@@ -25,6 +25,8 @@ jobs:
           - arduino:avr:nano
           - arduino:avr:mega
           - esp32:esp32:esp32
+          - arduino:esp32:nano_nora    # Original Arduino Nano ESP32
+          - esp32:esp32:esp32          # generic ESP32 Dev Module
 
     steps:
       - name: Checkout repository
