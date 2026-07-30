@@ -39,6 +39,7 @@ jobs:
           libraries: |
             - source-path: ./
             - name: Servo
+            - name: ESP32Servo
             - name: Adafruit PWM Servo Driver Library
           enable-deltas-report: false
           verbose: false
