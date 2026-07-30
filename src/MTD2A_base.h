@@ -278,7 +278,7 @@ class MTD2A  // base class
 
 
 /**
- * @brief Update state mashine for all instantiated classes
+ * @brief Update state machine for all instantiated classes
  * @name MTD2A_loop_execute();
  * @param none
  * @return none

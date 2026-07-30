@@ -146,7 +146,7 @@ class MTD2A_binary_output: public MTD2A
     uint8_t  PWMcurveType     {NO_CURVE};       // PWM curve selection   
     uint8_t  PWMoffsetPoint   {0};              // PWM start (rising) or end (falling) value
     uint8_t  PWMCurrPinValue  {0};              // Final curve calculated pin value    
-    uint8_t  PWMlastPinValue  {0};              // Last to check for dublicates (don't write)
+    uint8_t  PWMlastPinValue  {0};              // Last to check for duplicates (don't write)
     float    PWMtimedPoint_F  {0.0F};           // Current calculated timed point {0-255}
     float    PWMscaleFactor_F {0.0F};           // PWM scaling factor {-1 - 1} Zero results in a straight line
 

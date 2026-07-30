@@ -667,7 +667,7 @@ void MTD2A_binary_output::PWM_curve_step () {
       PWMtimedPoint_F = MAX_BYTE_VALUE_F;
     }
 
-    // Calculate PWM value and write PIN if theres is a difference from last value.
+    // Calculate PWM value and write PIN if there is a difference from last value.
     PWMCurrPinValue = PWM_curve_point (PWMtimedPoint_F, PWMcurveType);
     if (outputOptimize == ENABLE) {
       if (PWMCurrPinValue != PWMlastPinValue) {
