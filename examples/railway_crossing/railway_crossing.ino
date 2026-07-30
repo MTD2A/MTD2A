@@ -23,8 +23,8 @@ Servo boom_servo_1; // SG92R front
 Servo boom_servo_2; // SG92R back
 
 // Arduino board pins
-byte FC_51_LEFT_PIN    = A0; // input
-byte FC_51_RIGHT_PIN   = A1; // input
+byte FC_51_LEFT_PIN    = 14; // A0 input
+byte FC_51_RIGHT_PIN   = 15; // A1 input
 byte BOOM_SERVO_1_PIN  = 3;  // output
 byte BOOM_SERVO_2_PIN  = 5;  // output
 byte RED_LED_1_PIN     = 8;  // Two LED in parallel (220 Ohm ~ 30 mA)
