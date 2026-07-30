@@ -148,7 +148,7 @@ if (endFlag == true) { // End phase
     boom_servo_1.write( boom_angel.get_pinOutputValue() ); 
     boom_servo_2.write( boom_angel.get_pinOutputValue() ); 
   }
-  // Finish end phase and redy to start
+  // Finish end phase and ready to start
   if (endCount == 300) {
     endFlag     = false;
     leftActive  = false;

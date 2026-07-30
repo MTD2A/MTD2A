@@ -1,7 +1,7 @@
 
 // Advanced automatic pendulum operation on model railway system using PWM controlled H-bridge
 // to power train engine and direction. A simple H-bridge is used to control track switch and direction. 
-// One IR sensor is used to calibrate time and distance offset. Finaly red and green train station signal.
+// One IR sensor is used to calibrate time and distance offset. Finally red and green train station signal.
 // The train route is controlled by advanced mathematical PWM curves that compensate for inertia and 
 // friction, and thus ensure smooth acceleration and deceleration.
 // Can easily be expanded with more tracks and sensors. Sensor: https://github.com/MTD2A/FC-51
@@ -32,7 +32,7 @@ MTD2A_binary_output switch_left    ("Switch left",  500);
 MTD2A_timer         train_timer    ("Timer"); // Generic timer
 
 // Driving speeds PWM {0 - 255}. 
-// Voltage = actual speed devided by 255 multiplied by power supply voltage. Default 18 Volts.
+// Voltage = actual speed divided by 255 multiplied by power supply voltage. Default 18 Volts.
 const byte zeroSpeed   =   0; //   0% voltage
 const byte snailSpeed  =  51; //  20% voltage
 const byte slowSpeed   = 102; //  40% voltage
@@ -209,7 +209,7 @@ void loop() {
     case 15:
       red_LED.set_pinWriteValue (HIGH);
       if (train_forward.get_processState () == COMPLETE) {
-        Serial.println (F("15: Drive forward towards track switch. Time: Until sesnor stop"));
+        Serial.println (F("15: Drive forward towards track switch. Time: Until sensor stop"));
         set_switch_direction_right ();
         // The train continues to run at the last defined speed
         red_LED.set_pinWriteValue (LOW);  // No red signal
@@ -233,14 +233,14 @@ void loop() {
 void set_switch_direction_right () {
   Serial.println(F("   Set track switch direction to the RIGHT"));
   switch_left.set_pinWriteValue (0);
-  switch_right.activate (); // Send 500 milliseconds puls
+  switch_right.activate (); // Send 500 milliseconds pulse
 } // set_switch_direction_right
 
 
 void set_switch_direction_left () {
   Serial.println(F("   Set track switch direction to the LEFT"));
   switch_right.set_pinWriteValue (0);
-  switch_left.activate (); // Send 500 milliseconds puls
+  switch_left.activate (); // Send 500 milliseconds pulse
 } // set_switch_direction_left
 
 
@@ -295,7 +295,7 @@ void loop() {
         loop_case ();
       } while (train_forward.get_processState() == ACTIVE);
     }
-    else { // BACWARD
+    else { // BACKWARD
       train_backward.set_timers (stepArray[stepCount].curveMS, stepArray[stepCount].delayMS, stepArray[stepCount].maintainMS);
       train_backward.activate (stepArray[stepCount].beginValue, stepArray[stepCount].endValue, stepArray[stepCount].PWMcurveType);
       do {  

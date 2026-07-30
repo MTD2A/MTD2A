@@ -75,7 +75,7 @@ void loop() {
 
 #if section == 2
 
-  // Timed cascading (round robin) 4 LEDs. Precission time controlled.
+  // Timed cascading (round robin) 4 LEDs. Precision time controlled.
   // Suitable for predictable process flows where procison timing is important / follows a precise timeline
   if (loopCount == 0) {
     timer_GL1.timer (START_TIMER,  500); // Complete after 0,5 second
@@ -183,7 +183,7 @@ void loop() {
         stepCount = 2;
         // do something once
       }
-      // do something while wating on COMLPETE
+      // do something while waiting on COMLPETE
     break;
     case 2:
       green_LED_2.activate();
@@ -195,7 +195,7 @@ void loop() {
         stepCount = 0;
         // do something once
       }
-      // do something while wating on COMLPETE
+      // do something while waiting on COMLPETE
     break;
   }
 
@@ -234,7 +234,7 @@ void loop() {
         Serial.println ("Object detected");
         stepCount = 1;
       }
-      // do something while wating on ACTIVE
+      // do something while waiting on ACTIVE
     break;
     case 1:
       // Add 500 milliseconds pause delay to blink LED
@@ -247,14 +247,14 @@ void loop() {
         green_LED_1.activate();
         stepCount = 3;
       }
-      // do something while wating on ACTIVE
+      // do something while waiting on ACTIVE
     break;
     case 3:
       if (green_LED_1.get_processState() == COMPLETE) {
         // do something once
         stepCount = 0;
       }
-      // do something while wating on COMLPETE
+      // do something while waiting on COMLPETE
     break;
   }
 
