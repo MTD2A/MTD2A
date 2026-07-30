@@ -2,15 +2,26 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
- * @version 1.1.6
- * @date    31. August 2025
+ * @version 1.2.1
+ * @date    15. july 2026
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
- * Supporting a vast variety of input sensors and output devices 
- * Simple to use to build complex solutions 
- * Non blocking, simple, yet efficient event-driven state machine
- * Comprehensive control, state and debug information
- *
+ * MTD2A is a collection of user friendly advanced and functional C++ classes - 
+ * building blocks - for time-controlled handling of input and output. 
+ * The library is intended for Arduino enthusiasts without much programming experience, 
+ * who are interested in electronics control and automation, and model trains as a hobby.
+
+ * Common to all building blocks are:
+ * ----------------------------------
+ * - Built on a state machine system for parallel processing and synchronous time management
+ * - Support a wide range of input sensors and output devices
+ * - Are simple to use to build complex solutions with few commands
+ * - Operate non-blocking, process-oriented and time controlled
+ * - Offers extensive control and troubleshooting information
+ * - Thoroughly documented with many examples
+ * *
+ * Do not call MTD2A_binary_output from an interrupt handler (ISR)
+ * 
  ******************************************************************************
  * @attention
  *
@@ -30,139 +41,170 @@
  */
 
  
-#ifndef _MTD2A_binary_output_H_
-#define _MTD2A_binary_output_H_
+#ifndef MTD2A_BINARY_OUTPUT_H_
+#define MTD2A_BINARY_OUTPUT_H_
+
+#include "MTD2A_base.h"
 
 
 class MTD2A_binary_output: public MTD2A
 {
   private:
-    // Specific global constants from MTD2A_binary_output.h (MTD2A_const.h)
-    static constexpr bool    P_W_M          {MTD2A_const::P_W_M};
-    static constexpr bool    BINARY         {MTD2A_const::BINARY};
+    // Specific global constants from MTD2A_const.h
+    static constexpr uint32_t MAX_TIME_MS     {MTD2A_const::MAX_TIME_MS};
+    //
+    static constexpr bool     P_W_M           {MTD2A_const::P_W_M};
+    static constexpr bool     BINARY          {MTD2A_const::BINARY};
     // Timers
-    static constexpr uint8_t STOP_TIMER     {MTD2A_const::STOP_TIMER};
-    static constexpr uint8_t RESET_TIMER    {MTD2A_const::RESET_TIMER};
+    static constexpr uint8_t  STOP_TIMER      {MTD2A_const::STOP_TIMER};
+    static constexpr uint8_t  RESET_TIMER     {MTD2A_const::RESET_TIMER};
     // Phases 
-    static constexpr uint8_t RESET_PHASE    {MTD2A_const::RESET_PHASE}; 
-    static constexpr uint8_t BEGIN_PHASE    {MTD2A_const::BEGIN_PHASE};
-    static constexpr uint8_t OUTPUT_PHASE   {MTD2A_const::OUTPUT_PHASE}; 
-    static constexpr uint8_t END_PHASE      {MTD2A_const::END_PHASE};
-    static constexpr uint8_t COMPLETE_PHASE {MTD2A_const::COMPLETE_PHASE};
+    static constexpr uint8_t  RESET_PHASE     {MTD2A_const::RESET_PHASE}; 
+    static constexpr uint8_t  BEGIN_PHASE     {MTD2A_const::BEGIN_PHASE};
+    static constexpr uint8_t  OUTPUT_PHASE    {MTD2A_const::OUTPUT_PHASE}; 
+    static constexpr uint8_t  END_PHASE       {MTD2A_const::END_PHASE};
+    static constexpr uint8_t  COMPLETE_PHASE  {MTD2A_const::COMPLETE_PHASE};
     // PWM curves
-    static constexpr uint8_t NO_CURVE       {MTD2A_const::NO_CURVE};
+    static constexpr uint8_t  NO_CURVE        {MTD2A_const::NO_CURVE};
     // Rising
-    static constexpr uint8_t RISING_XY      {MTD2A_const::RISING_XY};
-    static constexpr uint8_t RISING_B05     {MTD2A_const::RISING_B05};
-    static constexpr uint8_t RISING_B025    {MTD2A_const::RISING_B025};
-    static constexpr uint8_t RISING_E05     {MTD2A_const::RISING_E05};
-    static constexpr uint8_t RISING_E025    {MTD2A_const::RISING_E025};
-    static constexpr uint8_t RISING_SM8     {MTD2A_const::RISING_SM8};
-    static constexpr uint8_t RISING_SM5     {MTD2A_const::RISING_SM5};
-    static constexpr uint8_t RISING_LED     {MTD2A_const::RISING_LED};
+    static constexpr uint8_t  RISING_XY       {MTD2A_const::RISING_XY};
+    static constexpr uint8_t  RISING_B05      {MTD2A_const::RISING_B05};
+    static constexpr uint8_t  RISING_B025     {MTD2A_const::RISING_B025};
+    static constexpr uint8_t  RISING_E05      {MTD2A_const::RISING_E05};
+    static constexpr uint8_t  RISING_E025     {MTD2A_const::RISING_E025};
+    static constexpr uint8_t  RISING_SM8      {MTD2A_const::RISING_SM8};
+    static constexpr uint8_t  RISING_SM5      {MTD2A_const::RISING_SM5};
+    static constexpr uint8_t  RISING_BZ1      {MTD2A_const::RISING_BZ1};
+    static constexpr uint8_t  RISING_BZ2      {MTD2A_const::RISING_BZ2};
+    static constexpr uint8_t  RISING_SIN0     {MTD2A_const::RISING_SIN0};
+    static constexpr uint8_t  RISING_SIN270   {MTD2A_const::RISING_SIN270};
+    static constexpr uint8_t  RISING_LED      {MTD2A_const::RISING_LED};
     // Falling
-    static constexpr uint8_t FALLING_XY     {MTD2A_const::FALLING_XY};
-    static constexpr uint8_t FALLING_B05    {MTD2A_const::FALLING_B05};
-    static constexpr uint8_t FALLING_B025   {MTD2A_const::FALLING_B025};
-    static constexpr uint8_t FALLING_E05    {MTD2A_const::FALLING_E05};
-    static constexpr uint8_t FALLING_E025   {MTD2A_const::FALLING_E025};
-    static constexpr uint8_t FALLING_SM8    {MTD2A_const::FALLING_SM8};
-    static constexpr uint8_t FALLING_SM5    {MTD2A_const::FALLING_SM5};
-    static constexpr uint8_t FALLING_LED    {MTD2A_const::FALLING_LED};
+    static constexpr uint8_t  FALLING_XY      {MTD2A_const::FALLING_XY};
+    static constexpr uint8_t  FALLING_B05     {MTD2A_const::FALLING_B05};
+    static constexpr uint8_t  FALLING_B025    {MTD2A_const::FALLING_B025};
+    static constexpr uint8_t  FALLING_E05     {MTD2A_const::FALLING_E05};
+    static constexpr uint8_t  FALLING_E025    {MTD2A_const::FALLING_E025};
+    static constexpr uint8_t  FALLING_SM8     {MTD2A_const::FALLING_SM8};
+    static constexpr uint8_t  FALLING_SM5     {MTD2A_const::FALLING_SM5};
+    static constexpr uint8_t  FALLING_BZ1     {MTD2A_const::FALLING_BZ1};
+    static constexpr uint8_t  FALLING_BZ2     {MTD2A_const::FALLING_BZ2};
+    static constexpr uint8_t  FALLING_SIN90   {MTD2A_const::FALLING_SIN90};
+    static constexpr uint8_t  FALLING_SIN180  {MTD2A_const::FALLING_SIN180};
+    static constexpr uint8_t  FALLING_LED     {MTD2A_const::FALLING_LED};
     // Base
-    static constexpr uint8_t MAX_PWM_CURVES {MTD2A::MAX_PWM_CURVES};
+    static constexpr uint8_t  MAX_PWM_CURVES  {MTD2A::MAX_PWM_CURVES};
 
     // Arguments
-    char    *objectName     {nullptr};        // Constructor default argument (User defined name to display identification)
-    uint32_t outputTimeMS   {0};              // Constructor default argument (Milliseconds) 
-    uint32_t beginDelayMS   {0};              // Constructor default argument (Milliseconds)  
-    uint32_t endDelayMS     {0};              // Constructor default argument (Milliseconds)
-    bool     pinOutputMode  {BINARY};         // Constructor default argument (BINARY/P_W_M)
-    uint8_t  pinBeginValue  {HIGH};           // Constructor default argument BINARY {HIGH | LOW} / P_W_M {0-255} 
-    uint8_t  pinEndValue    {LOW};            // Constructor default argument BINARY {HIGH | LOW} / P_W_M {0-255}
-    // pin and input setup
-    uint8_t  pinNumber      {PIN_ERROR_NO};   // initialize () default argument
-    uint8_t  pinOutputValue {LOW};            // Current value to write to output. get_pinOuputValue ()
-    bool     pinWriteToggl  {ENABLE};         // set_pinWriteToggl ()
-    bool     pinWriteMode   {NORMAL};         // initialize () and set_pinWriteMode () default argument / INVERTED
-    uint8_t  pinStartValue  {LOW};            // initialize () default argument BINARY {HIGH | LOW} / P_W_M {0-255}
-    uint8_t  pinWriteValue  {LOW};            // set_pinWriteValue () default argument BINARY {HIGH | LOW} / P_W_M {0-255}
-    bool     processState   {COMPLETE};       // process state / ACTIVE
+    char    *objectName       {nullptr};        // Constructor default argument (User defined name to display identification)
+    uint32_t outputTimeUS     {0UL};            // Constructor default argument (Microseconds) 
+    uint32_t beginDelayUS     {0UL};            // Constructor default argument (Microseconds)  
+    uint32_t endDelayUS       {0UL};            // Constructor default argument (Microseconds)
+    bool     outputMode       {BINARY};         // Constructor default argument (BINARY/P_W_M)
+    uint8_t  beginValue       {HIGH};           // Constructor default argument BINARY {HIGH | LOW} / P_W_M {0-255} 
+    uint8_t  endValue         {LOW};            // Constructor default argument BINARY {HIGH | LOW} / P_W_M {0-255}
+    bool     loopActivate     {DISABLE};        // Constructor default argument {ENABLE | DISABLE}
+        // pin and input setup
+    uint8_t  pinNumber        {NO_PIN};         // initialize () default argument
+    bool     pinWriteToggl    {DISABLE};        // set_pinWriteToggl ()
+    bool     pinWriteMode     {NORMAL};         // initialize () and set_pinWriteMode () default argument / INVERTED
+    uint8_t  pinStartValue    {LOW};            // initialize () default argument BINARY {HIGH | LOW} / P_W_M {0-255}
+    uint8_t  pinWriteValue    {LOW};            // set_pinWriteValue () default argument BINARY {HIGH | LOW} / P_W_M {0-255}
+    bool     processState     {COMPLETE};       // Total process state period get_processState (); { ACTIVE | COMPLETE }
+    // Output value
+    uint8_t  outputValue      {LOW};            // Current value to write to output. get_outputValue (); {HIGH | LOW} / P_W_M {0-255}
+    bool     outputOptimize   {ENABLE};         // If the same value occurs several times in a row, only output the first time
+    bool     outputState      {false};          // Data ready. Indicates when to call get_outputValue (); { true | false }
+    bool     outputProcess    {COMPLETE};       // Output process state period get_outputProcess { ACTIVE | COMPLETE }
     // Timers
-    uint32_t setOutputMS    {0};              // Milliseconds (output start time)
-    uint32_t setBeginMS     {0};              // Milliseconds (begin start time)
-    uint32_t setEndMS       {0};              // Milliseconds (end start time)
+    uint32_t setOutputUS      {0UL};            // Microseconds (output start time)
+    uint32_t setBeginUS       {0UL};            // Microseconds (begin start time)
+    uint32_t setEndUS         {0UL};            // Microseconds (end start time)
     // Stop timer
-    bool     stopOutputTM   {DISABLE};        // stop output timer process when executing MTD2A_loop_execute ();
-    bool     stopBeginTM    {DISABLE};        // stop begin delay timer proces when executing MTD2A_loop_execute ();
-    bool     stopEndTM      {DISABLE};        // stop end delay timer proces when executing MTD2A_loop_execute ();
+    bool     stopOutputTimer  {DISABLE};        // stop output timer process when executing MTD2A_loop_execute ();
+    bool     stopBeginTimer   {DISABLE};        // stop begin delay timer process when executing MTD2A_loop_execute ();
+    bool     stopEndTimer     {DISABLE};        // stop end delay timer process when executing MTD2A_loop_execute ();
     // sync time control
-    bool     resetOutputTM  {DISABLE};          // Reset outputTimeMS when executing MTD2A_loop_execute ();
-    bool     resetBeginTM   {DISABLE};          // Reset beginDelayMS when executing MTD2A_loop_execute ();
-    bool     resetEndTM     {DISABLE};          // Reset endDelayMS when executing MTD2A_loop_execute ();
+    bool     resetOutputTimer {DISABLE};        // Reset outputTimeUS when executing MTD2A_loop_execute ();
+    bool     resetBeginTimer  {DISABLE};        // Reset beginDelayUS when executing MTD2A_loop_execute ();
+    bool     resetEndTimer    {DISABLE};        // Reset endDelayUS when executing MTD2A_loop_execute ();
     // Debug and error
-    bool     errorPrint     {DISABLE};        // set_errorPrint () default argument ENABLE
-    bool     debugPrint     {DISABLE};        // set_debugPrint () print debug & error. default argument ENABLE
-    uint8_t  errorNumber    {0};              // get_reset_error () Error {1-127} and Warning {128-255}
+    bool     errorPrint       {DISABLE};        // set_errorPrint () default argument ENABLE
+    bool     debugPrint       {DISABLE};        // set_debugPrint () print debug & error. default argument ENABLE
+    uint8_t  errorNumber      {0};              // get_reset_error () Error {1-127} and Warning {128-255}
+    bool     initializedOnce  {false};          // Initialize () called (in Arduino void setup())
+    bool     objInstantiated  {false};          // Object instantiated
+    uint8_t  objectError      {0};              // Object instantiation error / warning   
     // state control
-    bool     startPhase     {false};          // Start phase procedure execution
-    bool     setStartPhase  {false};          // Activate start phase procedure execution
-    bool     phaseChange    {false};          // true = change in timing state
-    uint8_t  phaseNumber    {COMPLETE_PHASE}; // reset = 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4
-    uint8_t  setPhaseNumber {COMPLETE_PHASE}; // Set phase number to execute (loop_fast ();)
-
+    bool     startPhase       {false};          // Start phase procedure execution
+    bool     setStartPhase    {false};          // Activate start phase procedure execution
+    bool     phaseChange      {false};          // true = change in timing state
+    uint8_t  phaseNumber      {COMPLETE_PHASE}; // reset = 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4
+    uint8_t  setPhaseNumber   {COMPLETE_PHASE}; // Set phase number to execute (loop_fast ();)
     // PWM curves
-    uint8_t  PWMcurveType   {NO_CURVE};       // PWM curve selection   
-    uint8_t  PWMoffstePoint {0};              // PWM start (rising) or end (falling) value
-    uint8_t  PWMcurrPoint   {0};              // Current calculatede point {0-255}
-    uint8_t  PWMlastPoint   {MAX_BYTE_VALUE}; // Last to tjek for dublets (don't write)
-    uint8_t  PWMpinValue    {0};              // Final curve calculated pin vallue    
-    double   PWMscaleFactor {0.0};            // PWM scaling factor {-1 - 1} Zero results in a straight line
-    double   PWMtimeStep    {0.0};            // PWM curve time stepping factor
+    uint32_t PWMloopCount     {0UL};            // PWM Step calculation
+    uint8_t  PWMcurveType     {NO_CURVE};       // PWM curve selection   
+    uint8_t  PWMoffsetPoint   {0};              // PWM start (rising) or end (falling) value
+    uint8_t  PWMCurrPinValue  {0};              // Final curve calculated pin value    
+    uint8_t  PWMlastPinValue  {0};              // Last to check for dublicates (don't write)
+    float    PWMtimedPoint_F  {0.0F};           // Current calculated timed point {0-255}
+    float    PWMscaleFactor_F {0.0F};           // PWM scaling factor {-1 - 1} Zero results in a straight line
 
     // PWM power curve calculations
-    static constexpr double  powPotens05  {0.50};
-    static constexpr double  powFactor05  {15.96843885};
-    static constexpr double  powPotens025 {0.25};
-    static constexpr double  powFactor025 {63.81240830};
+    static constexpr float   MAX_BYTE_VALUE_F {MAX_BYTE_VALUE};
+    static constexpr float   power05_F        {0.50F};
+    static constexpr float   powFactor05_F    {15.96844F}; // {15.96843885};
+    static constexpr float   power025_F       {0.25F};
+    static constexpr float   powFactor025_F   {63.81241F}; // {63.81240830};
     // PWM sigmoid curve S-curve calculation
-    static constexpr double  sigmoid5     {5.0};
-    static constexpr double  sigmoid8     {8.0};
-    static constexpr double  expoAlign5   {1.0/78};
-    static constexpr double  expoScale5   {sigmoid5 * 2.0 / MAX_BYTE_VALUE};
-    static constexpr double  expoScale8   {sigmoid8 * 2.0 / MAX_BYTE_VALUE};
-    static constexpr double  LEDfactor    {(MAX_BYTE_VALUE * log10(2)) / log10(MAX_BYTE_VALUE + 1)};
+    static constexpr float   sigmoidConst5_F  {5.0F};
+    static constexpr float   sigmoidConst8_F  {8.0F};
+    static constexpr float   expoAlign5_F     {1.0F/78.0F};
+    static constexpr float   expoScale5_F     {sigmoidConst5_F * 2.0F / MAX_BYTE_VALUE_F};
+    static constexpr float   expoScale8_F     {sigmoidConst8_F * 2.0F / MAX_BYTE_VALUE_F};
+    static constexpr float   halfPI_F         {1.570796F};
+    static constexpr float   bezierConst1_F   {0.667F};
+    static constexpr float   bezierConst2_F   {6.75F};
+    static constexpr float   LEDfactor_F      {31.87500F};  // {(MAX_BYTE_VALUE * log10(2)) / log10(MAX_BYTE_VALUE_F + 1)};
 
   public:
     // Constructor initializers
     
+    // The default / no-args constructor is implicit in the constructor below. Do not use MTD2A_binary_output ();
+    
     /**
-     * @class MTD2A_BINARY_output
+     * @class MTD2A_binary_output
      * @brief Create object and set configuration parameters or use defaults
-     * @param ( "Object Name", outputTimeMS, beginDelayMS, endDelayMS, {BINARY | P_W_M}, pinBeginValue, pinEndValue );
-     * @param outputTimeMS, beginDelayMS, endDelayMS {0 - 4294967295} milliseconds. pinValue {0 - 255}
+     * @param ( "Object Name", setOutputTimeMS, setBeginDelayMS, setEndDelayMS,
+     * @param setOutputMode {BINARY | P_W_M}, setBeginValue, setEndValue, setLoopActivate {ENABLE | DISABLE});
+     * @param Timers {0 - MAX_TIME_MS} and Values {0 - 255}
      * @return none
      */
     MTD2A_binary_output (
-      const char    *setObjectName    = "Object name",
-      const uint32_t setOutputTimeMS  = 0,
-      const uint32_t setBeginDelayMS  = 0,
-      const uint32_t setEndDelayMS    = 0,
-      const bool     setPinOutputMode = BINARY,
-      const uint8_t  setPinBeginValue = HIGH, 
-      const uint8_t  setPinEndValue   = LOW
+      const char *setObjectName   = "Object name",
+      uint32_t    setOutputTimeMS = 0,
+      uint32_t    setBeginDelayMS = 0,
+      uint32_t    setEndDelayMS   = 0,
+      bool        setOutputMode   = BINARY,
+      uint8_t     setBeginValue   = HIGH, 
+      uint8_t     setEndValue     = LOW,
+      bool        setLoopActivate = DISABLE
     );
+
+
     // Destructor
     ~MTD2A_binary_output () { 
       if (objectName != nullptr) {
         delete [] objectName; 
         objectName = nullptr;
       }
-      if (globalObjectCount > 0 )
-        globalObjectCount--;
-    };
+    }
 
-    // Operator oveloading
+
+    // Operator overloading
+    explicit operator bool() const {
+      return (phaseChange == true  &&  phaseNumber == COMPLETE_PHASE);
+    }
     bool operator==(const MTD2A_binary_output &obj) const {
       return (processState == obj.processState);
     }
@@ -175,42 +217,38 @@ class MTD2A_binary_output: public MTD2A
     bool operator<(const MTD2A_binary_output &obj) const {
       return (processState == COMPLETE && obj.processState == ACTIVE);
     }
-    bool operator>>(const MTD2A_binary_output &obj) const {
-      return (setOutputMS > obj.setOutputMS);
-    }
-    bool operator<<(const MTD2A_binary_output &obj) const {
-      return (setOutputMS < obj.setOutputMS);
-    }
+
 
   public: // Functions
 
   
     /**
-     * @brief Initalize and configure output pin.
-     * @brief If setPinNumber > NUM_DIGITAL_PINS, pin writing is disabled!
-     * @brief If P_W_M is selected and pin does not support PWM, pin writing is disabled!
+     * @brief Initialize and configure output pin.
+     * @brief If setPinNumber is invalid, pin writing is disabled! (pinWriteToggl = DISABLE)
+     * @brief If P_W_M is selected and pin does not support PWM, pin writing is disabled! (pinWriteToggl = DISABLE)
      * @name object_name.initialize 
-     * @param ( {0 - NUM_DIGITAL_PINS | 255}, {NORMAL| INVERTED}, BINARY {HIGH | LOW} / P_W_M {0-255} );
+     * @param ( {0 - NUM_DIGITAL_PINS | NO_PIN}, {NORMAL| INVERTED}, setPinStartValue );
      * @return none
      */
-    void initialize (const uint8_t &setPinNumber = PIN_ERROR_NO, const bool &setPinNomalOrInverted = NORMAL, const uint8_t &setPinStartValue = LOW);
+    void initialize (uint8_t setPinNumber = NO_PIN, bool setPinNormalOrInverted = NORMAL, uint8_t setPinStartValue = LOW);
   
 
     /**
-     * @brief Activate process. PWM curve selection activates PWM mode.
-     * @name object_name.activate
+     * @brief Activate process. {HIGH | LOW} / P_W_M {0 - 255} PWM curve selection activates PWM mode.
+     * @name object_name.activate - overloaded
      * @param ( );
-     * @param ( setPinBeginValue );
-     * @param ( setPinBeginValue, setPinEndValue );
-     * @param ( setPinBeginValue, setPinEndValue, setPWMcurveType );
-     * @param ( setPinBeginValue, setPinEndValue, setPWMcurveType, setOutputTimeMS );
+     * @param ( setBeginValue );
+     * @param ( setBeginValue, setEndValue );
+     * @param ( setBeginValue, setEndValue, setPWMcurveType {NO_CURVE / Curve number});
+     * @param ( setBeginValue, setEndValue, setPWMcurveType, setOutputTimeMS {0 - MAX_TIME_MS} Milliseconds);
      * @return none
      */  
     void activate ();
-    void activate (const uint8_t &setPinBeginValue);
-    void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue);
-    void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType);
-    void activate (const uint8_t &setPinBeginValue, const uint8_t &setPinEndValue, const uint8_t &setPWMcurveType, const uint32_t &setOutputTimeMS);
+    void activate (uint8_t setBeginValue);
+    void activate (uint8_t setBeginValue, uint8_t setEndValue);
+    void activate (uint8_t setBeginValue, uint8_t setEndValue, uint8_t setPWMcurveType);
+    void activate (uint8_t setBeginValue, uint8_t setEndValue, uint8_t setPWMcurveType, uint32_t setOutputTimeMS);
+    // Timers
 
 
     /**
@@ -236,11 +274,19 @@ class MTD2A_binary_output: public MTD2A
 
     /**
      * @brief Select to write binary or PWM value to pin.
-     * @name object_name.set_pinOutputmode
+     * @name object_name.set_outputMode
      * @param ( {BINARY | P_W_M} );
      * @return none
      */  
-    void set_PinOutputMode (const bool &setPinOutputMode = BINARY);
+    void set_outputMode (bool setBinaryOrPWM = BINARY);
+
+    /**
+     * @brief Select PMW curve type to write binary or PWM value to pin.
+     * @name object_name.set_PWMcurveType
+     * @param ( {CURVE NO | NO_CURVE} );
+     * @return none
+     */
+    void set_PWMcurveType (uint8_t setPWMcurveType = NO_CURVE);
 
 
     /**
@@ -250,8 +296,8 @@ class MTD2A_binary_output: public MTD2A
      * @param (BINARY {HIGH | LOW} / P_W_M {0-255}, {BINARY | P_W_M} );
      * @return none
      */  
-    void set_pinWriteValue (const uint8_t &setPinWriteValue = LOW);
-    void set_pinWriteValue (const uint8_t &setPinWriteValue, const bool &setPinOutputMode);
+    void set_pinWriteValue (uint8_t setPinWriteValue = LOW);
+    void set_pinWriteValue (uint8_t setPinWriteValue, bool setPinBinaryOrPWM);
 
   
     /**
@@ -260,7 +306,7 @@ class MTD2A_binary_output: public MTD2A
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */ 
-    void set_pinWriteToggl (const bool &setPinEnableOrDisable = ENABLE);
+    void set_pinWriteToggl (bool setPinEnableOrDisable = ENABLE);
   
 
     /**
@@ -269,34 +315,47 @@ class MTD2A_binary_output: public MTD2A
      * @param ( {NORMAL | INVERTED} );
      * @return none
      */
-    void set_pinWriteMode (const bool &setPinNomalOrInverted = NORMAL);
+    void set_pinWriteMode (bool setPinNormalOrInverted = NORMAL);
 
     
     /**
      * @brief Set new output delay time in milliseconds.
      * @name object_name.set_outputTimeMS
-     * @param ( {0 - 4294967295} );
+     * @param ( {0 - MAX_TIME_MS} );
      * @return none
      */  
-    void set_outputTimeMS (const uint32_t &setOutputTimeMS);
+    void set_outputTimeMS (uint32_t setOutputTimeMS);
 
 
     /**
      * @brief Set new begin delay time in milliseconds.
      * @name object_name.set_beginDelayMS
-     * @param ( {0 - 4294967295} );
+     * @param ( {0 - MAX_TIME_MS} );
      * @return none
      */  
-    void set_beginDelayMS (const uint32_t &setBeginDelayMS);
+    void set_beginDelayMS (uint32_t setBeginDelayMS);
 
     
     /**
      * @brief Set new end delay time in milliseconds.
      * @name object_name.set_endDelayMS
-     * @param ( {0 - 4294967295} );
+     * @param ( {0 - MAX_TIME_MS} );
      * @return none
      */  
-    void set_endDelayMS (const uint32_t &setEndDelayMS);
+    void set_endDelayMS (uint32_t setEndDelayMS);
+
+    
+    /**
+     * @brief set one, two or three timers in milliseconds {0 - MAX_TIME_MS}
+     * @name object_name.set_timers - overloaded
+     * @param ( setOutputTimeMS );
+     * @param ( setOutputTimeMS, setBeginDelayMS );
+     * @param ( setOutputTimeMS, setBeginDelayMS, setEndDelayMS );
+     * @return none
+     */
+    void set_timers (uint32_t setOutputTimeMS);
+    void set_timers (uint32_t setOutputTimeMS, uint32_t setBeginDelayMS);
+    void set_timers (uint32_t setOutputTimeMS, uint32_t setBeginDelayMS, uint32_t setEndDelayMS);
 
 
     /**
@@ -305,7 +364,7 @@ class MTD2A_binary_output: public MTD2A
      * @param ( STOP_TIMER | RESET_TIMER );
      * @return none
      */
-    void set_outputTimer (const uint8_t &setOutputTimer = STOP_TIMER);
+    void set_outputTimer (uint8_t setStopOrReset = STOP_TIMER);
   
 
     /**
@@ -314,7 +373,7 @@ class MTD2A_binary_output: public MTD2A
      * @param ( STOP_TIMER | RESET_TIMER );
      * @return none
      */
-    void set_beginTimer (const uint8_t &setBeginTimer = STOP_TIMER);
+    void set_beginTimer (uint8_t setStopOrReset = STOP_TIMER);
   
 
     /**
@@ -323,8 +382,26 @@ class MTD2A_binary_output: public MTD2A
      * @param ( STOP_TIMER | RESET_TIMER );
      * @return none
      */
-    void set_endTimer (const uint8_t &setEndTimer = STOP_TIMER);
-    
+    void set_endTimer (uint8_t setStopOrReset = STOP_TIMER);
+  
+
+    /**
+     * @brief Repeats a process started with activate(); enabling it does not start the process.
+     * @name object_name.set_loopActivate
+     * @param ( ENABLE | DISABLE );
+     * @return none
+     */    
+    void set_loopActivate (bool setEnableOrDisable = ENABLE); 
+
+
+    /**
+     * @brief If the same value occurs several times in a row, only output the first time
+     * @name object_name.set_outputOptimize
+     * @param ( ENABLE | DISABLE );
+     * @return none
+     */    
+    void set_outputOptimize (bool setEnableOrDisable = ENABLE);
+
 
     /**
      * @brief Enable print phase state number, phase state text and error text.
@@ -332,7 +409,7 @@ class MTD2A_binary_output: public MTD2A
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */  
-    void set_debugPrint (const bool &setEnableOrDisable = ENABLE);
+    void set_debugPrint (bool setEnableOrDisable = ENABLE);
     
     
     /**
@@ -341,7 +418,7 @@ class MTD2A_binary_output: public MTD2A
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */  
-    void set_errorPrint (const bool &setEnableOrDisable = ENABLE);
+    void set_errorPrint (bool setEnableOrDisable = ENABLE);
 
 
     // Getters -----------------------------------------------
@@ -353,7 +430,7 @@ class MTD2A_binary_output: public MTD2A
      * @param none
      * @return bool {ENABLE | DISABLE} );
      */  
-    bool const &get_pinWriteToggl () const;
+    bool get_pinWriteToggl () const;
 
 
     /**
@@ -362,16 +439,70 @@ class MTD2A_binary_output: public MTD2A
      * @param none
      * @return ( {NORMAL | INVERTED} );
      */
-    bool const &get_pinWriteMode () const;
+    bool get_pinWriteMode () const;
 
 
     /**
-     * @brief Get pinOutputValue value
-     * @name object_name.get_pinOutputValue (); 
+     * @brief Get outputMode
+     * @name object_name.get_outputMode
+     * @param none
+     * @return ( {BINARY | P_W_M} );
+     */  
+    bool get_outputMode () const;
+
+    
+    /**
+     * @brief Get PMW curve type number
+     * @name object_name.get_PWMcurveType
+     * @param ( {CURVE NO | NO_CURVE} );
+     * @return none
+     */
+    uint8_t get_PWMcurveType () const;
+
+  
+    /**
+     * @brief Get outputValue value
+     * @name object_name.get_outputValue (); 
      * @param none
      * @return uint8_t {0 - 255);
      */      
-    uint8_t const &get_pinOutputValue () const;
+    uint8_t get_outputValue () const;
+
+
+    /**
+     * @brief Get outputState indicates when to call get_outputValue ()
+     * @name object_name.get_outputState (); 
+     * @param none
+     * @return bool {true | false}
+     */      
+    bool get_outputState () const;
+
+
+    /**
+     * @brief Get outputProcess
+     * @name object_name.get_outputProcess ();
+     * @param none
+     * @return bool {ACTIVE | COMPLETE}
+     */  
+    bool get_outputProcess () const;
+
+
+    /**
+     * @brief get output value optimize setting (all values or only changed values) 
+     * @name object_name.get_outputOptimize
+     * @param none
+     * @return bool {ENABLE | DISABLE} );
+     */    
+    bool get_outputOptimize () const;
+
+
+    /**
+     * @brief get repeating activation setting 
+     * @name object_name.get_loopActivate
+     * @param none
+     * @return bool {ENABLE | DISABLE} );
+     */    
+    bool get_loopActivate () const;
 
 
     /**
@@ -380,7 +511,7 @@ class MTD2A_binary_output: public MTD2A
      * @param none
      * @return bool {ACTIVE | COMPLETE}
      */  
-    bool const &get_processState () const;
+    bool get_processState () const;
   
 
     /**
@@ -389,7 +520,7 @@ class MTD2A_binary_output: public MTD2A
      * @param none
      * @return bool {true | false}
      */  
-    bool const &get_phaseChange () const;
+    bool get_phaseChange () const;
   
 
     /**
@@ -398,7 +529,7 @@ class MTD2A_binary_output: public MTD2A
      * @param none
      * @return uint8_t Reset = 0, Begin delay = 1, Output = 2, End delay = 3, Complete = 4
      */  
-    uint8_t const &get_phaseNumber () const;
+    uint8_t get_phaseNumber () const;
   
 
     /**
@@ -407,7 +538,7 @@ class MTD2A_binary_output: public MTD2A
      * @param none
      * @return uint32_t Milliseconds 
      */
-    uint32_t const &get_setBeginMS () const;
+    uint32_t get_setBeginMS () const;
 
 
     /**
@@ -416,7 +547,7 @@ class MTD2A_binary_output: public MTD2A
      * @param none
      * @return uint32_t Milliseconds
      */
-    uint32_t const &get_setOutputMS () const;
+    uint32_t get_setOutputMS () const;
 
 
     /**
@@ -425,7 +556,7 @@ class MTD2A_binary_output: public MTD2A
      * @param none
      * @return uint32_t Milliseconds
      */
-    uint32_t const &get_setEndMS () const;
+    uint32_t get_setEndMS () const;
 
 
     /**
@@ -434,23 +565,34 @@ class MTD2A_binary_output: public MTD2A
      * @param none
      * @return uint8_t Error number. Error {1-127} and Warning {128-255}
      */
-    uint8_t const get_reset_error ();
+    uint8_t get_reset_error ();
+
+    // -- Backward compatibility aliases - will be removed over timer -------------------------------------------
+    uint8_t get_pinOutputValue     () const { return get_outputValue (); }
+    bool    get_pinOutputMode      () const { return get_outputMode  (); }
+    void    set_pinOutputMode      (bool setBinaryOrPWM = BINARY) { set_outputMode (setBinaryOrPWM); }
 
 
-  private: // Functions
+  private: // Internal functions
 
     void     loop_fast             ();
-    uint32_t check_set_time        (const uint32_t &setCheckTimeMS);
-    void     check_pin_init        (const uint8_t  &checkPinNumber);
-    void     activate_process      ();
-    uint8_t  check_pin_value       (const uint8_t  &checkPinValue);
-    void     write_pin_value       (const uint8_t  &writePinValue);
-    uint8_t  check_PWM_curve       (const uint8_t  &checkPWMcurveType);
+    uint32_t check_set_MS_to_US    (uint32_t setCheckTimeMS);
+    void     check_pin_init        (uint8_t  checkPinNumber, uint8_t checkpinStartValue);
+    void     activate_check        ();
+    void     activate_process      (bool userActivate = true);
+    bool     check_PWM_pin_mode    ();
+    uint8_t  check_pin_value       (uint8_t  checkPinValue);
+    void     write_pin_value       (uint8_t  writePinValue);
+    uint8_t  check_PWM_curve       (uint8_t  checkPWMcurveType);
     void     PWM_curve_begin_end   ();
-    uint8_t  PWM_scale_point       (const double   &curvePointY);
-    double   PWM_sigmoid_5         (const uint8_t  &curvePointX5);
-    double   PWM_sigmoid_8         (const uint8_t  &curvePointX8);
-    uint8_t  PWM_curve_point       (const uint8_t  &curvePointX, const uint8_t &curveType);
+    uint8_t  PWM_scale_point       (const float    &curvePointY);
+    float    PWM_sigmoid_5         (const float    &curvePointX5_F);
+    float    PWM_sigmoid_8         (const float    &curvePointX8_F);
+    float    PWM_rising_BZ1        (const float    &curvePointX1_F);
+    float    PWM_rising_BZ2        (const float    &curvePointX1_F);
+    float    PWM_falling_BZ1       (const float    &curvePointX2_F);
+    float    PWM_falling_BZ2       (const float    &curvePointX2_F);
+    uint8_t  PWM_curve_point       (const float    &curvePointX_F, uint8_t curveType);
     void     PWM_curve_step        ();
     void     loop_fast_begin_start ();
     void     loop_fast_begin_timer ();
@@ -459,12 +601,10 @@ class MTD2A_binary_output: public MTD2A
     void     loop_fast_end_start   ();
     void     loop_fast_end_timer   ();
     void     loop_fast_complete    ();
-    void     print_error_text      (const uint8_t setErrorNumber);
+    void     print_error_text      (uint8_t setErrorNumber);
     void     print_phase_text      ();
-    void     print_phase_line      (const uint8_t  &printRestartTimer = MAX_BYTE_VALUE);
-    
+    void     print_phase_line      (uint8_t printRestartTimer = MAX_BYTE_VALUE); // Dummy value
+
 }; // class MTD2A_binary_output 
-
-
 
 #endif

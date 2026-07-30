@@ -1,16 +1,27 @@
 /*
  ******************************************************************************
- * @file    MTD2A_timers.h
+ * @file    MTD2A_timer.h
  * @author  Joergen Bo Madsen
- * @version 1.1.3
- * @date    7. September 2025
- * @brief   Abstract base Class for MTD2A (Model Train Detection And Action)
+ * @version 1.2.1
+ * @date    15. july 2026
+ * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
- * Supporting a vast variety of input sensors and output devices 
- * Simple to use to build complex solutions 
- * Non blocking, simple, yet efficient event-driven state machine
- * Comprehensive control, state and debug information
- *
+ * MTD2A is a collection of user friendly advanced and functional C++ classes - 
+ * building blocks - for time-controlled handling of input and output. 
+ * The library is intended for Arduino enthusiasts without much programming experience, 
+ * who are interested in electronics control and automation, and model trains as a hobby.
+
+ * Common to all building blocks are:
+ * ----------------------------------
+ * - Built on a state machine system for parallel processing and synchronous time management
+ * - Support a wide range of input sensors and output devices
+ * - Are simple to use to build complex solutions with few commands
+ * - Operate non-blocking, process-oriented and time controlled
+ * - Offers extensive control and troubleshooting information
+ * - Thoroughly documented with many examples
+ * 
+ * Do not call MTD2A_timer from an interrupt handler (ISR)
+ * 
  ******************************************************************************
  * @attention
  *
@@ -30,63 +41,79 @@
  */
 
 
-#ifndef _MTD2A_timers_H_
-#define _MTD2A_timers_H_
+#ifndef MTD2A_TIMER_H_
+#define MTD2A_TIMER_H_
 
-
-#include "Arduino.h"
 #include "MTD2A_base.h"
-
 
 class MTD2A_timer: public MTD2A
 { 
   private:
-    // Specific global constants from MTD2A_binary_output.h (MTD2A_const.h)
+  
+    // Specific global constants from MTD2A_const.h
+    static constexpr uint32_t MAX_TIME_MS  {MTD2A_const::MAX_TIME_MS};
+    // Timer phases
     static constexpr uint8_t  RESET_TIMER  {MTD2A_const::RESET_TIMER};
     static constexpr uint8_t  START_TIMER  {MTD2A_const::START_TIMER};
     static constexpr uint8_t  PAUSE_TIMER  {MTD2A_const::PAUSE_TIMER};
     static constexpr uint8_t  STOP_TIMER   {MTD2A_const::STOP_TIMER};
-    // MTD2A_base
-    static constexpr uint8_t  NO_PRINT_PIN {MTD2A::NO_PRINT_PIN};
+    // Error and warning handling
+    static constexpr uint8_t  ERR_OBJECT_INSTANT     {MTD2A_const::ERR_OBJECT_INSTANT};
+    static constexpr uint8_t  ERR_TIME_BELOW_DELAY   {MTD2A_const::ERR_TIME_BELOW_DELAY};
+    static constexpr uint8_t  ERR_TIME_ABOVE_MAX     {MTD2A_const::ERR_TIME_ABOVE_MAX};
+    static constexpr uint8_t  ERR_NOT_COMPLETE       {MTD2A_const::ERR_NOT_COMPLETE};
+    static constexpr uint8_t  ERR_TIMER_ARGUMENT     {MTD2A_const::ERR_TIMER_ARGUMENT};
+    static constexpr uint8_t  ERR_NOT_ACTIVE         {MTD2A_const::ERR_NOT_ACTIVE};
+    static constexpr uint8_t  WARN_TIMER_ZERO        {MTD2A_const::WARN_TIMER_ZERO};
+    static constexpr uint8_t  WARN_TIME_PAUSE_MAX    {MTD2A_const::WARN_TIME_PAUSE_MAX};
+    static constexpr uint8_t  WARN_COUNTDOWN_IGNORED {MTD2A_const::WARN_COUNTDOWN_IGNORED};
+    static constexpr uint8_t  WARN_PAUSE_ACTIVE      {MTD2A_const::WARN_PAUSE_ACTIVE};
 
     // Arguments
-    char    *objectName    {nullptr};     // Constructor initialized (User defined name to display identification)
-    uint32_t countDownMS   {0};           // Constructor default argument. Milliseconds
-    // Timers
-    uint32_t startTimeMS   {0};           // get_startTimeMS   () Milliseconds
-    uint32_t stopTimeMS    {0};           // get_stopTimeMS    () Milliseconds
-    uint32_t remainTimeMS  {0};           // get_remainTimeMS  () Milliseconds
-    uint32_t elapsedTimeMS {0};           // get_elapsedTimeMS () Milliseconds
-    uint32_t pauseTimeMS   {0};           // get_pauseTimeMS   () Milliseconds
+    char    *objectName      {nullptr};     // Constructor initialized (User defined name to display identification)
+    uint32_t countDownUS     {0UL};         // Constructor default argument. setCountDownMS [Milliseconds] * MS_to_US
+      // Timers
+    uint32_t startTimeUS     {0UL};         // get_startTimeUS   () Microseconds
+    uint32_t stopTimeUS      {0UL};         // get_stopTimeUS    () Microseconds
+    uint32_t remaingTimeUS   {0UL};         // get_remaingTimeUS () Microseconds
+    uint32_t elapsedTimeUS   {0UL};         // get_elapsedTimeUS () Microseconds
+    uint32_t pauseTimeUS     {0UL};         // get_pauseTimeUS   () Microseconds
     // Debug and error
-    bool     debugPrint    {DISABLE};     // set_debugPrint  () default argument / ENABLE
-    bool     errorPrint    {DISABLE};     // set_errorPrint  () default argument / ENABLE
-    uint8_t  errorNumber   {0};           // get_reset_error () Error {1-127} and Warning {128-255}    
+    bool     debugPrint      {DISABLE};     // set_debugPrint  () default argument / ENABLE
+    bool     errorPrint      {DISABLE};     // set_errorPrint  () default argument / ENABLE
+    uint8_t  errorNumber     {0};           // get_reset_error () Error {1-127} and Warning {128-255}
+    bool     objInstantiated {false};       // Object instantiated
+    uint8_t  objectError     {0};           // Object instantiation error / warning       
     // State control
-    bool     processState  {COMPLETE};    // get_processState () / ACTIVE 
-    bool     phaseChange   {false};       // true = change in timing state (one loop)
-    uint8_t  phaseNumber   {STOP_TIMER};  // RESET_TIMER = 0, START_TIMER = 1, PAUSE_TIMER = 2, STOP_TIMER = 3
-    uint8_t  setPhaseNumber{STOP_TIMER};  // Set phase number to execute (loop_fast ();)
+    bool     processState    {COMPLETE};    // get_processState () / ACTIVE 
+    bool     phaseChange     {false};       // true = change in timing state (one loop)
+    uint8_t  phaseNumber     {STOP_TIMER}; // RESET_TIMER = 0, START_TIMER = 1, PAUSE_TIMER = 2, STOP_TIMER = 3
+    uint8_t  setPhaseNumber  {STOP_TIMER}; // Set phase number to execute (loop_fast ())
     // Pause timers
-    uint32_t pauseBeginMS  {0};           // Timer begin pause milliseconds
-    uint32_t pauseEndMS    {0};           // Timer end pause milliseconds
+    uint32_t pauseBeginUS    {0UL};         // Timer begin pause microseconds
+    uint32_t pauseEndUS      {0UL};         // Timer end pause microseconds
     // Time control
-    bool     startProcess  {false};       // Control executing flags
-    bool     stopProcess   {false};       // Control executing flags
-    bool     beginPause    {false};       // Control executing flags
-    bool     endPause      {false};       // Control executing flags
+    bool     startProcess    {false};       // Control executing flags
+    bool     calcProcess     {false};       // Control executing flags
+    bool     stopProcess     {false};       // Control executing flags
+    bool     beginPause      {false};       // Control executing flags
+    bool     endPause        {false};       // Control executing flags
 
  public:
-    // Constructor inittializers
+    // Constructor initializers
+
+    // The default / no-arags constructor is implicit in the constructor below. Do not use MTD2A_timer ();
+    
     /**
      * @class MTD2A_timer
      * @brief Create object and set configuration parameter or use defaults
-     * @param ( "Object Name", delayTimeMS {0 - 4294967295} );
+     * @param ( "Object Name", delayTimeMS {0 - MAX_TIME_MS} ); // approx 72 minutes
+     * NOTE: countdown time + accumulated pause time must not exceed MAX_TIME_MS
      * @return none
      */
     MTD2A_timer (
-      const char    *setObjectName  = "Object name", 
-      const uint32_t setCountDownMS = 0
+      const char *setObjectName  = "Object name", 
+      uint32_t    setCountDownMS = 0
     );
 
     // Destructor
@@ -95,11 +122,12 @@ class MTD2A_timer: public MTD2A
         delete [] objectName; 
         objectName = nullptr;
       }
-      if (globalObjectCount > 0 )
-        globalObjectCount--;
-    };    
+    }  
   
-    // Operator oveloading
+    // Operator overloading
+    explicit operator bool() const {
+      return (phaseChange == true  &&  phaseNumber == STOP_TIMER); 
+    }
     bool operator==(const MTD2A_timer &obj) const {
       return (processState == obj.processState);
     }
@@ -112,26 +140,21 @@ class MTD2A_timer: public MTD2A
     bool operator<(const MTD2A_timer &obj) const {
       return (processState == COMPLETE && obj.processState == ACTIVE);
     }
-    bool operator>>(const MTD2A_timer &obj) const {
-      return (stopTimeMS > obj.stopTimeMS);
-    }
-    bool operator<<(const MTD2A_timer &obj) const {
-      return (stopTimeMS < obj.stopTimeMS);
-    }
+
 
     public: // Functions
 
     // Function overloading
     
     /**
-     * @brief countdown to zero and change process state to COMPLETE
+     * @brief Count down to zero and change process state to COMPLETE
      * @name timer
      * @param ( {START_TIMER | PAUSE_TIMER | STOP_TIMER | RESET_TIMER} );
      * @param ( {START_TIMER | PAUSE_TIMER | STOP_TIMER | RESET_TIMER}, setCountDownMS );
      * @return none
      */
-    void timer (const uint8_t &setStartStopPauseReset = START_TIMER);
-    void timer (const uint8_t &setStartStopPauseReset, const uint32_t &SetCountDownMS);
+    void timer (uint8_t setStartStopPauseReset = START_TIMER);
+    void timer (uint8_t setStartStopPauseReset, uint32_t setCountDownMS);
 
 
     /**
@@ -146,12 +169,13 @@ class MTD2A_timer: public MTD2A
 
 
     /**
-     * @brief set countdown time i milliseconds
+     * @brief set countdown time in milliseconds
      * @name set_countDownMS
-     * @param ( {0 - 4294967295} );
+     * @param ( {0 - MAX_TIME_MS } ); // 72 minutes
+     * NOTE: countdown time + accumulated pause time must not exceed MAX_TIME_MS 
      * @return none
      */    
-    void set_countDownMS (const uint32_t &setCountDownMS);
+    void set_countDownMS (uint32_t setCountDownMS);
 
 
     /**
@@ -160,7 +184,7 @@ class MTD2A_timer: public MTD2A
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */  
-    void set_debugPrint (const bool &setEnableOrDisable = ENABLE);
+    void set_debugPrint (bool setEnableOrDisable = ENABLE);
     
     
     /**
@@ -169,54 +193,54 @@ class MTD2A_timer: public MTD2A
      * @param ( {ENABLE | DISABLE} );
      * @return none
      */  
-    void set_errorPrint (const bool &setEnableOrDisable = ENABLE);
+    void set_errorPrint (bool setEnableOrDisable = ENABLE);
 
 
     // getters -------------------------------------------------------------
 
 
     /**
-     * @brief get start time in milliseconds (first if no pause was initated)
-     * @name object_name.startTimeMS ();
+     * @brief get start time in milliseconds (first if no pause was initiated)
+     * @name object_name.get_startTimeMS ();
      * @param none
-     * @return unit32_t milliseconds
+     * @return uint32_t milliseconds
      */    
-    uint32_t const &get_startTimeMS () const;
+    uint32_t get_startTimeMS () const;
 
 
     /**
      * @brief get stop time in milliseconds
      * @name object_name.get_stopTimeMS ();
      * @param none
-     * @return unit32_t milliseconds
+     * @return uint32_t milliseconds
      */    
-    uint32_t const &get_stopTimeMS () const;
+    uint32_t get_stopTimeMS () const;
 
 
     /**
-     * @brief get acuumulated pause time in milliseconds (sum of all pause periods)
+     * @brief get accumulated pause time in milliseconds (sum of all pause periods)
      * @name object_name.get_pauseTimeMS ();
      * @param none
-     * @return unit32_t milliseconds
+     * @return uint32_t milliseconds
      */    
-    uint32_t const &get_pauseTimeMS () const;
+    uint32_t get_pauseTimeMS () const;
 
     /**
-     * @brief get remaning time in milliseconds
-     * @name object_name.get_remainTimeMS ();
+     * @brief get remaining time in milliseconds
+     * @name object_name.get_remaingTimeMS ();
      * @param none
-     * @return unit32_t milliseconds
+     * @return uint32_t milliseconds
      */
-    uint32_t const &get_remainTimeMS () const;
+    uint32_t get_remaingTimeMS () const;
 
 
     /**
      * @brief get elapsed time in milliseconds
      * @name object_name.get_elapsedTimeMS ();
      * @param none
-     * @return unit32_t milliseconds
+     * @return uint32_t milliseconds
      */
-    uint32_t const &get_elapsedTimeMS () const;
+    uint32_t get_elapsedTimeMS () const;
 
 
     /**
@@ -225,7 +249,7 @@ class MTD2A_timer: public MTD2A
      * @param none
      * @return bool {ACTIVE | COMPLETE}
      */
-    bool const &get_processState () const;
+    bool get_processState () const;
 
 
     /**
@@ -234,7 +258,7 @@ class MTD2A_timer: public MTD2A
      * @param none
      * @return bool {true | false}
      */
-    bool const &get_phaseChange () const;
+    bool get_phaseChange () const;
   
 
     /**
@@ -243,7 +267,7 @@ class MTD2A_timer: public MTD2A
      * @param none
      * @return uint8_t RESET_TIMER = 0, START_TIMER = 1, PAUSE_TIMER = 2, STOP_TIMER = 3
      */  
-    uint8_t const &get_phaseNumber () const;
+    uint8_t get_phaseNumber () const;
 
 
     /**
@@ -252,29 +276,30 @@ class MTD2A_timer: public MTD2A
      * @param none
      * @return uint8_t Error number. Error {1-127} and Warning {128-255}
      */
-    uint8_t const get_reset_error ();
+    uint8_t get_reset_error ();
 
     
   private: // Internal functions
-  
-    void     start_timer       ();
-    void     reset_timer       ();
-    void     pause_timer       ();    
-    void     stop_timer        ();
-    bool     check_timer_arg   (const uint8_t  &argStartStopPauseReset);
-    void     set_timer_state   (const uint8_t  &setStartRestPauseStop);
-    uint32_t check_set_time    (const uint32_t &setCheckTimeMS);
+
+    bool     pending_state      () const;   
+    void     start_timer        ();
+    void     reset_timer        ();
+    void     pause_timer        ();    
+    void     stop_timer         ();
+    void     set_timer_state    (uint8_t  setStartResetPauseStop);
+    uint32_t check_set_MS_to_US (uint32_t setCheckTimeMS);
     // Execute
     void     loop_fast             ();
     void     loop_fast_start_reset ();
     void     loop_fast_pause_begin ();
+    void     loop_fast_pause_guard (); 
     void     loop_fast_pause_end   ();
     void     loop_fast_calc_time   ();
     void     loop_fast_timer_stop  ();
     // print
     void     print_phase_line ();
     void     print_phase_text ();
-    void     print_error_text (const uint8_t setErrorNumber);
+    void     print_error_text (uint8_t setErrorNumber);
 
 };  // MTD2A_timer
 

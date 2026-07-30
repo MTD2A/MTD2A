@@ -1,10 +1,10 @@
-/*
+/**
  ******************************************************************************
- * @file    MTD2A.h
+ * @file    MTD2A_print.h
  * @author  Joergen Bo Madsen
- * @version 1.2.1
+ * @version 1.2.0
  * @date    15. july 2026
- * @brief   Abstract main header for MTD2A (Model Train Detection And Action)
+ * @brief   Development / Production setup for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
  * building blocks - for time-controlled handling of input and output. 
@@ -19,7 +19,7 @@
  * - Operate non-blocking, process-oriented and time controlled
  * - Offers extensive control and troubleshooting information
  * - Thoroughly documented with many examples
- *
+ * 
  ******************************************************************************
  * @attention
  *
@@ -35,22 +35,20 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * Do not call MTD2A object from an interrupt handler (ISR)
- * 
  ******************************************************************************
  */
 
-#ifndef MTD2A_H_
-#define MTD2A_H_
+
+#ifndef MTD2A_PRINT_H_
+#define MTD2A_PRINT_H_
 
 
-#include "Arduino.h"
-#include "MTD2A_print.h"
-#include "MTD2A_const.h"
-#include "MTD2A_base.h"
-#include "MTD2A_timer.h"
-#include "MTD2A_binary_input.h"
-#include "MTD2A_binary_output.h"
+// Development and debug
+#define PortPrint(x)   Serial.print(x)
+#define PortPrintln(x) Serial.println(x)
+// Optimized production
+// #define PortPrint(x)
+// #define PortPrintln(x)
 
 
 #endif
