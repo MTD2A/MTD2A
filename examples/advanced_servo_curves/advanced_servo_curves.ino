@@ -5,7 +5,11 @@
 // Jørgen Bo Madsen / July 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
-#include <Servo.h>
+#if defined(ESP32)
+  #include <ESP32Servo.h>
+#else
+  #include <Servo.h>
+#endif
 #include <Adafruit_PWMServoDriver.h> // Adafruit PCA9685 PWM Servo Driver Library
 using namespace MTD2A_const;
 

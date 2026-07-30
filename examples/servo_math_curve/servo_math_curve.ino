@@ -4,7 +4,11 @@
 // Jørgen Bo Madsen / update 2 june 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
-#include <Servo.h>
+#if defined(ESP32)
+  #include <ESP32Servo.h>
+#else
+  #include <Servo.h>
+#endif
 using namespace MTD2A_const;
 
  // 3 seconds slow movement and 1 second pause

@@ -6,7 +6,11 @@
 // Jørgen Bo Madsen / july 2025 / https://github.com/jebmdk
 
 #include <MTD2A.h>
-#include <Servo.h>
+#if defined(ESP32)
+  #include <ESP32Servo.h>
+#else
+  #include <Servo.h>
+#endif
 using namespace MTD2A_const;
 
 MTD2A_binary_input  FC_51_left  ("FC-51 left" , 3000); // 3 seconds LAST_TIME delay

@@ -24,10 +24,10 @@ void setup() {
   Serial.begin(9600);
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   MTD2A_globalDebugPrint     ();    // Enable debug print for all instantiated classes
-  FC_51_left.initialize      (A0);  // Pin input no: Sensor detection moving train left
-  FC_51_right.initialize     (A1);  // Pin input no: Sensor detection moving train right
-  position_left.initialize   (A3);  // Pin input no: Read switch position left
-  position_right.initialize  (A4);  // Pin input no: Read switch position right
+  FC_51_left.initialize      (14);  // A0 Pin input no: Sensor detection moving train left
+  FC_51_right.initialize     (15);  // A1 Pin input no: Sensor detection moving train right
+  position_left.initialize   (16);  // A3 Pin input no: Read switch position left
+  position_right.initialize  (17);  // A4 Pin input no: Read switch position right
   actuator_power.initialize  (9,  INVERTED);  // Pin output no: Relay power on rail switch actuator
   actuator_right.initialize  (10, INVERTED);  // Pin output no: Relay output rail switch actuator right
 }
