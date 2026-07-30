@@ -1,0 +1,21 @@
+name: Spell Check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  spellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Spell check
+        uses: codespell-project/actions-codespell@v2
+        with:
+          check_filenames: true
+          check_hidden: false
+          skip: ./.git,./doc,./image,./sounds,*.pdf,*.png,*.jpg,*.mp3
+          ignore_words_file: .codespellrc-ignore
