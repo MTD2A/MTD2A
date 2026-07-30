@@ -1,4 +1,4 @@
-Releas 1.2.1 
+Release 1.2.1 
 
 New two stage cadence loop timing algorithm with reference time calculation that ensures precise time synchronization and that self-corrects accumulated drift, interrupts and unforeseen delays.
 
