@@ -1,60 +1,61 @@
 #######################################
 # Syntax Coloring Map For MTD2A
+# (Model Train Detection And Action)
+#
+# Fields must be separated by a single
+# true TAB character (not spaces)
 #######################################
 
 #######################################
-# Datatypes (KEYWORD1)
+# Datatypes / Classes (KEYWORD1)
 #######################################
+MTD2A	KEYWORD1
+MTD2A_timer	KEYWORD1
+MTD2A_binary_input	KEYWORD1
+MTD2A_binary_output	KEYWORD1
+MTD2A_const	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-MTD2A	KEYWORD2
-MTD2A_const	KEYWORD2
-
+# Global functions / user friendly aliases (MTD2A_base.h)
+MTD2A_loop_execute	KEYWORD2
+MTD2A_globalDebugPrint	KEYWORD2
+MTD2A_globalErrorPrint	KEYWORD2
+MTD2A_print_conf	KEYWORD2
+MTD2A_reset_stats	KEYWORD2
 loop_execute	KEYWORD2
 set_globalDebugPrint	KEYWORD2
 set_globalErrorPrint	KEYWORD2
 set_globalDelayTimeMS	KEYWORD2
-
 get_globalDelayTimeMS	KEYWORD2
 get_globalSyncTimeMS	KEYWORD2
+get_globalObjectCount	KEYWORD2
 get_maxElapsedTimeMS	KEYWORD2
 get_timeOverrunCount	KEYWORD2
-get_objectCount	KEYWORD2
-
-MTD2A_loop_execute	KEYWORD2
-MTD2A_globalDebugPrint	KEYWORD2
-MTD2A_globalErrorPrint	KEYWORD2
-MTD2A_globalDelayTimeMS	KEYWORD2
-MTD2A_print_conf	KEYWORD2
-
-MTD2A_binary_input	KEYWORD2
-MTD2A_binary_output	KEYWORD2
-
-initialize	KEYWORD2
-activate	KEYWORD2
-reset	KEYWORD2
-loop_fast	KEYWORD2
+get_totalLoopCount	KEYWORD2
 print_conf	KEYWORD2
+reset_stats	KEYWORD2
 
-get_processtState	KEYWORD2
+# Common member functions
+initialize	KEYWORD2
+reset	KEYWORD2
+set_debugPrint	KEYWORD2
+set_errorPrint	KEYWORD2
+get_processState	KEYWORD2
 get_phaseChange	KEYWORD2
 get_phaseNumber	KEYWORD2
 get_reset_error	KEYWORD2
-set_debugPrint	KEYWORD2
-set_errorPrint	KEYWORD2
 
+# MTD2A_binary_input
 set_pinReadToggl	KEYWORD2
 set_pinReadMode	KEYWORD2
-set_InputState	KEYWORD2
-
+set_inputState	KEYWORD2
 set_delayTimeMS	KEYWORD2
 set_pinBlockMS	KEYWORD2
 set_stopDelayTimer	KEYWORD2
 set_stopBlockTimer	KEYWORD2
-
 get_pinState	KEYWORD2
 get_firstTimeMS	KEYWORD2
 get_lastTimeMS	KEYWORD2
@@ -62,57 +63,82 @@ get_endTimeMS	KEYWORD2
 get_inputGoLow	KEYWORD2
 get_inputGoHigh	KEYWORD2
 
-set_PinOutputMode	KEYWORD2
+# MTD2A_timer
+timer	KEYWORD2
+set_countDownMS	KEYWORD2
+get_startTimeMS	KEYWORD2
+get_stopTimeMS	KEYWORD2
+get_pauseTimeMS	KEYWORD2
+get_remainTimeMS	KEYWORD2
+get_elapsedTimeMS	KEYWORD2
+
+# MTD2A_binary_output
+activate	KEYWORD2
+set_outputMode	KEYWORD2
+set_PWM_curve_type	KEYWORD2
 set_pinWriteValue	KEYWORD2
 set_pinWriteToggl	KEYWORD2
 set_pinWriteMode	KEYWORD2
 set_outputTimeMS	KEYWORD2
 set_beginDelayMS	KEYWORD2
 set_endDelayMS	KEYWORD2
+set_timers	KEYWORD2
 set_outputTimer	KEYWORD2
 set_beginTimer	KEYWORD2
 set_endTimer	KEYWORD2
-
+set_loopActivate	KEYWORD2
+set_outputOptimize	KEYWORD2
 get_pinWriteToggl	KEYWORD2
 get_pinWriteMode	KEYWORD2
-get_PinWriteValue	KEYWORD2
-get_pinOutputValue	KEYWORD2
+get_outputMode	KEYWORD2
+get_PWM_curve_type	KEYWORD2
+get_outputValue	KEYWORD2
+get_outputState	KEYWORD2
+get_outputProcess	KEYWORD2
+get_outputOptimize	KEYWORD2
+get_loopActivate	KEYWORD2
+get_setBeginMS	KEYWORD2
 get_setOutputMS	KEYWORD2
-get_setBeginMS	KEYWORD2
 get_setEndMS	KEYWORD2
-get_setBeginMS	KEYWORD2
-get_setEndMS	KEYWORD2
-
-MTD2A_timer	KEYWORD2
-timer	KEYWORD2
-set_countDownMS	KEYWORD2
-get_startTimeMS	KEYWORD2
-get_stopTimeMS	KEYWORD2
-get_pauseTimeMS	KEYWORD2 
-get_remainTimeMS	KEYWORD2
-get_elapsedTimeMS	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
 
-ENABLE	LITERAL1
-DISABLE	LITERAL1
+# State and configuration
 ACTIVE	LITERAL1
 COMPLETE	LITERAL1
 FIRST_TRIGGER	LITERAL1
 LAST_TRIGGER	LITERAL1
 TIME_DELAY	LITERAL1
 MONO_STABLE	LITERAL1
+ENABLE	LITERAL1
+DISABLE	LITERAL1
 NORMAL	LITERAL1
 INVERTED	LITERAL1
-PULSE	LITERAL1 
+PULSE	LITERAL1
 FIXED	LITERAL1
 BINARY	LITERAL1
-PWM	LITERAL1
+P_W_M	LITERAL1
+
+# Global timer
+DELAY_10MS	LITERAL1
+DELAY_5MS	LITERAL1
+DELAY_2MS	LITERAL1
+DELAY_1MS	LITERAL1
+MAX_TIME_MS	LITERAL1
+
+# Pin
+MAX_BYTE_VALUE	LITERAL1
+NO_PIN	LITERAL1
+
+# Timer control
 RESET_TIMER	LITERAL1
+START_TIMER	LITERAL1
+PAUSE_TIMER	LITERAL1
 STOP_TIMER	LITERAL1
 
+# Process phases
 RESET_PHASE	LITERAL1
 FIRST_TIME_PHASE	LITERAL1
 LAST_TIME_PHASE	LITERAL1
@@ -122,9 +148,7 @@ OUTPUT_PHASE	LITERAL1
 END_PHASE	LITERAL1
 COMPLETE_PHASE	LITERAL1
 
-DELAY_1MS	LITERAL1
-DELAY_10MS	LITERAL1
-
+# PWM values and curves
 MIN_PWM_VALUE	LITERAL1
 MAX_PWM_VALUE	LITERAL1
 NO_CURVE	LITERAL1
@@ -135,6 +159,10 @@ RISING_E05	LITERAL1
 RISING_E025	LITERAL1
 RISING_SM8	LITERAL1
 RISING_SM5	LITERAL1
+RISING_BZ1	LITERAL1
+RISING_BZ2	LITERAL1
+RISING_SIN0	LITERAL1
+RISING_SIN270	LITERAL1
 RISING_LED	LITERAL1
 FALLING_XY	LITERAL1
 FALLING_B05	LITERAL1
@@ -143,5 +171,8 @@ FALLING_E05	LITERAL1
 FALLING_E025	LITERAL1
 FALLING_SM8	LITERAL1
 FALLING_SM5	LITERAL1
+FALLING_BZ1	LITERAL1
+FALLING_BZ2	LITERAL1
+FALLING_SIN90	LITERAL1
+FALLING_SIN180	LITERAL1
 FALLING_LED	LITERAL1
-
