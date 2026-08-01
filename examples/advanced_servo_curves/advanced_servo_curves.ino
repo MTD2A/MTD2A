@@ -1,7 +1,7 @@
 // Advanced PWM control of servo with mathematical functions, using two differencnt servos: SG92A and 9imod 2065 waterproof
 // There are 5 different examples to choose from. The last example is using the Adafruit PCA9685 with I2C communication.
 // https://docs.arduino.cc/libraries/servo/ 
-// Short DEMO: https://youtu.be/QZfl1yiNEog
+// Short DEMO: https://youtu.be/parVpl98mDk
 // Jørgen Bo Madsen / July 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
