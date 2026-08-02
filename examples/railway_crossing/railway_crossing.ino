@@ -3,7 +3,7 @@
 // https://docs.arduino.cc/libraries/servo/
 // https://github.com/MTD2A/MTD2A/blob/main/sounds/Bells/railroad-crossing-bell-denmark-1-sec.mp3
 // Short DEMO: https://youtu.be/VaXmki2oLrk
-// Jørgen Bo Madsen / july 2025 / https://github.com/jebmdk
+// Jørgen Bo Madsen / Updated july 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 #if defined(ESP32)
@@ -70,7 +70,7 @@ void loop() {
     // LEFT sensor detect first car / locomotive. Set values one time.
     if (FC_51_left.get_processState() == ACTIVE  &&  FC_51_right.get_processState() == COMPLETE) {
       if (leftActive == false) {
-        Serial.println ("Train coming from the LEFT!");
+        Serial.println (F("Train coming from the LEFT!"));
         leftActive = true;
         beginFlag  = true;
         endFlag    = false;
@@ -79,7 +79,7 @@ void loop() {
     }
     // Last car / locomotive passede RIGHT sensor. Set values one time.
     if (leftActive == true  && FC_51_right.get_phaseChange() == true && FC_51_right.get_phaseNumber() == COMPLETE_PHASE) {
-      Serial.println ("Train from the LEFT has passed");
+      Serial.println (F("Train from the LEFT has passed"));
       beginFlag = false;
       endFlag   = true;
       endCount  = 0;
@@ -91,7 +91,7 @@ void loop() {
     // RIGHT sensor detect first car / locomotive. Set values one time.
     if (FC_51_right.get_processState() == ACTIVE  &&  FC_51_left.get_processState() == COMPLETE) {
       if (rightActive == false) {
-        Serial.println ("Train coming from the RIGHT");
+        Serial.println (F("Train coming from the RIGHT"));
         rightActive = true;
         beginFlag   = true;
         endFlag     = false;
@@ -100,7 +100,7 @@ void loop() {
     }
     // Last car / locomotive passede LEFT sensor. Set values one time.
     if (rightActive == true  && FC_51_left.get_phaseChange() == true && FC_51_left.get_phaseNumber() == COMPLETE_PHASE) {
-      Serial.println ("Train from the RIGHT has passed");
+      Serial.println (F("Train from the RIGHT has passed"));
       beginFlag = false;
       endFlag   = true;
       endCount  = 0;
@@ -109,26 +109,36 @@ void loop() {
 
 
   if (beginFlag == true) {  // Begin phase
+    if (beginCount == 0) {
+      Serial.println (F("Enable repeating bell sound"));
+      bell_sound.set_loopActivate (ENABLE);
+      bell_sound.activate ();
+    }
     // Default MTD2A loop time step is 10 milliseconds.
     // Red LED blink every second
-    if (beginCount >= 80) { // compensate for the MP3 player's slow response to start
+    if (beginCount == 80) { // syncronize with the MP3 player
+      Serial.println (F("Enable RED blink"));
+      red_LED_1.set_loopActivate (ENABLE);
+      red_LED_2.set_loopActivate (ENABLE);
       red_LED_1.activate();
       red_LED_2.activate();
     }
-    // play sound for 6 seconds and stop when boom is down
-    if (beginCount <= 600) { // 600 * 10 = 6000 Milliseconds or 6 seconds.
-      bell_sound.activate ();
-    }
     // wait 3 seconds and raise the boom over a period of 3 seconds
     if (beginCount == 300) {
+      Serial.println (F("Lower the boom slowly"));
       boom_angel.activate (BOOM_UP, BOOM_DOWN, RISING_XY); // Alternatively: RISING_SM8
     }
     if (boom_angel.get_processState() == ACTIVE) {
       boom_servo_1.write( boom_angel.get_pinOutputValue() ); 
       boom_servo_2.write( boom_angel.get_pinOutputValue() ); 
     }
+    // play sound for 6 seconds and stop when boom is down
+    if (beginCount == 600) { // 600 * 10 = 6000 Milliseconds or 6 seconds.
+      bell_sound.set_loopActivate (DISABLE);
+    }
     // Check if the train has been removed or if the "begin" sensor has been activated by mistake
     if (beginCount == 30000) { // 5 minutes delay
+      Serial.println (F("ERROR! End sensor has not detected a train"));
       beginFlag = false;
       endFlag   = true;
       endCount  = 0;
@@ -137,29 +147,25 @@ void loop() {
   } // beginFlag == true
 
 
-if (endFlag == true) { // End phase
-  // Default MTD2A loop time step is 10 milliseconds.
-  // Red LED blink until boom is up
-  if (endCount <= 300) {  // 300 * 10 = 3000 Milliseconds or 3 seconds.
-    red_LED_1.activate();
-    red_LED_2.activate();
-  }
-  // Lower the boom over a period of 3 seconds
-  if (endCount == 0) {  // start immediately
-    boom_angel.activate (BOOM_DOWN, BOOM_UP, FALLING_XY); //  Alternatively: FALLING_SM8
-  }
-  if (boom_angel.get_processState() == ACTIVE) {
-    boom_servo_1.write( boom_angel.get_pinOutputValue() ); 
-    boom_servo_2.write( boom_angel.get_pinOutputValue() ); 
-  }
-  // Finish end phase and ready to start
-  if (endCount == 300) {
-    endFlag     = false;
-    leftActive  = false;
-    rightActive = false;
-  }
-  endCount++; // 10 Millisecond step
-} // endFlag == true
+  if (endFlag == true) { // End phase
+    // Raise the boom over a period of 3 seconds
+    if (endCount == 0) {  // start immediately
+      boom_angel.activate (BOOM_DOWN, BOOM_UP, FALLING_XY); //  Alternatively: FALLING_SM8
+    }
+    if (boom_angel.get_processState() == ACTIVE) {
+      boom_servo_1.write( boom_angel.get_pinOutputValue() ); 
+      boom_servo_2.write( boom_angel.get_pinOutputValue() ); 
+    }
+    // Finish end phase and ready to start
+    if (endCount == 300) {
+      red_LED_1.set_loopActivate (DISABLE);
+      red_LED_2.set_loopActivate (DISABLE);
+      endFlag     = false;
+      leftActive  = false;
+      rightActive = false;
+    }
+    endCount++; // 10 Millisecond step
+  } // endFlag == true
 
   MTD2A_loop_execute();  // Update the state (event) system
 } // Realway crossing
