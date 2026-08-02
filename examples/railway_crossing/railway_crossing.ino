@@ -116,7 +116,7 @@ void loop() {
     }
     // Default MTD2A loop time step is 10 milliseconds.
     // Red LED blink every second
-    if (beginCount == 80) { // syncronize with the MP3 player
+    if (beginCount == 80) { // synchronize with the MP3 player
       Serial.println (F("Enable RED blink"));
       red_LED_1.set_loopActivate (ENABLE);
       red_LED_2.set_loopActivate (ENABLE);
