@@ -24,7 +24,7 @@ jobs:
           - arduino:avr:nano
           - arduino:avr:uno
           - arduino:avr:mega
-          - arduino:megaavr:nona4809      # Nano Every
+          - arduino:megaavr:nona4809   # Nano Every
           - arduino:esp32:nano_nora    # Original Arduino Nano ESP32
           - esp32:esp32:esp32          # generic ESP32 Dev Module
 
@@ -35,6 +35,9 @@ jobs:
       - name: Compile all examples
         uses: arduino/compile-sketches@v1
         with:
+          cli-compile-flags: |
+             - --warnings    # extended control
+             - all           # extended control
           fqbn: ${{ matrix.fqbn }}
           sketch-paths: |
             - examples
