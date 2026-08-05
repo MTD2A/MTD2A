@@ -1,0 +1,69 @@
+name: Compile Examples
+
+on:
+  push:
+    paths:
+      - ".github/workflows/compile-examples.yml"
+      - "examples/**"
+      - "src/**"
+  pull_request:
+    paths:
+      - ".github/workflows/compile-examples.yml"
+      - "examples/**"
+      - "src/**"
+  workflow_dispatch:
+
+env:
+  SKETCHES_REPORTS_PATH: sketches-reports
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        fqbn:
+          - arduino:avr:nano
+          - arduino:avr:uno
+          - arduino:avr:mega
+          - arduino:megaavr:nona4809   # Nano Every
+          - arduino:esp32:nano_nora    # Original Arduino Nano ESP32
+          - esp32:esp32:esp32          # generic ESP32 Dev Module
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Compile all examples
+        uses: arduino/compile-sketches@v1
+        with:
+          cli-compile-flags: |
+            - --warnings    # extended control
+            - all           # extended control
+          fqbn: ${{ matrix.fqbn }}
+          sketch-paths: |
+            - examples
+          libraries: |
+            - source-path: ./
+            - name: Servo
+            - name: ESP32Servo
+            - name: Adafruit PWM Servo Driver Library
+          enable-deltas-report: true
+          sketches-report-path: ${{ env.SKETCHES_REPORTS_PATH }}
+          verbose: false
+
+      # Artifact names may not contain ':' so convert the FQBN
+      # (e.g. arduino:avr:uno -> arduino-avr-uno)
+      - name: Make FQBN safe for artifact name
+        id: artifact
+        env:
+          FQBN: ${{ matrix.fqbn }}
+        run: echo "name=sketches-report-${FQBN//:/-}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload sketches report
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: ${{ steps.artifact.outputs.name }}
+          path: ${{ env.SKETCHES_REPORTS_PATH }}
