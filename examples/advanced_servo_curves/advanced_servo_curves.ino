@@ -1,5 +1,6 @@
 // Advanced PWM control of servo with mathematical functions, using two differencnt servos: SG92A and 9imod 2065 waterproof
 // There are 5 different examples to choose from. The last example is using the Adafruit PCA9685 with I2C communication.
+// Examples are written for the Arduino Nano pinout (Nano family, Uno, Mega)
 // https://docs.arduino.cc/libraries/servo/ 
 // Short DEMO: https://youtu.be/parVpl98mDk
 // Jørgen Bo Madsen / July 2026 / https://github.com/jebmdk
@@ -25,15 +26,15 @@ using namespace MTD2A_const;
 // 9IMOD 7kg 2065 Digital Servo. Stainless steel gear. Water resistant IP66. Range: 0 - 180 & 50 - 330 Hz. Deadband ~2 us
 // DS3118 PRO 20kg Digitalservo. Stainless steel gear. Water resistant IP66. Range: 0 - 180 & 50 - 330 Hz. Deadband ~2 us
 
-const unsigned int SERVO_MIN_US =  520;
-const unsigned int SERVO_MAX_US = 2480;
+const unsigned int SERVO_MIN_US =  520; // Depends on the current servo
+const unsigned int SERVO_MAX_US = 2480; // Depends on the current servo
 const unsigned int PCA9685_MIN  =  140; // This is the 'minimum' pulse length count (out of 4096)
 const unsigned int PCA9685_MAX  =  590; // This is the 'maximum' pulse length count (out of 4096)
 
 // Arduino board pins
 const byte NANO_PIN_1  = 5;  // Nano Servo output PIN
 const byte NANO_PIN_2  = 6;  // Nano Servo output PIN
-const byte PCA9685_PIN = 0;  // Adadfruit I2C PCA9685 board servo PIN
+const byte PCA9685_PIN = 0;  // Adadfruit I2C PCA9685 board servo PIN no
 
 MTD2A_binary_output boom_angel ("Boom angel");
 Servo Nano_servo_1;
