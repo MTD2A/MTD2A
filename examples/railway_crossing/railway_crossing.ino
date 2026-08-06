@@ -1,9 +1,10 @@
 // Danish railway crossing. Read two sensors, activate red blinking warning light, start bell, lower boom. 
 // Wait for the train to pass, raise boom and stop red blink.
+// Examples are written for the Arduino Nano pinout (Nano family, Uno, Mega)
 // https://docs.arduino.cc/libraries/servo/
 // https://github.com/MTD2A/MTD2A/blob/main/sounds/Bells/railroad-crossing-bell-denmark-1-sec.mp3
 // Short DEMO: https://youtu.be/VaXmki2oLrk
-// Jørgen Bo Madsen / Updated july 2026 / https://github.com/jebmdk
+// Jørgen Bo Madsen / Updated august 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 #if defined(ESP32)
@@ -12,6 +13,11 @@
   #include <Servo.h>
 #endif
 using namespace MTD2A_const;
+
+
+// choose between hard (binary) blink and soft (like an incandescent bulb) blink using PWM
+bool softBlink = true; // false = hard (normal) blink
+
 
 MTD2A_binary_input  FC_51_left  ("FC-51 left" , 3000); // 3 seconds LAST_TIME delay
 MTD2A_binary_input  FC_51_right ("FC-51 right", 3000); // 3 seconds LAST_TIME delay
@@ -25,11 +31,14 @@ Servo boom_servo_2; // SG92R back
 // Arduino board pins
 byte FC_51_LEFT_PIN    = 14; // A0 input
 byte FC_51_RIGHT_PIN   = 15; // A1 input
-byte BOOM_SERVO_1_PIN  = 3;  // output
-byte BOOM_SERVO_2_PIN  = 5;  // output
-byte RED_LED_1_PIN     = 8;  // Two LED in parallel (220 Ohm ~ 30 mA)
-byte RED_LED_2_PIN     = 9;  // Two LED in parallel (220 Ohm ~ 30 mA)
+byte BOOM_SERVO_1_PIN  =  3; // output
+byte BOOM_SERVO_2_PIN  =  5; // output
+byte RED_LED_1_PIN     =  6; // Two LED in parallel (220 Ohm ~ 30 mA)
+//byte RED_LED_2_PIN     =  9; // Two LED in parallel (220 Ohm ~ 30 mA)
 byte BELL_SOUND_PIN    = 10; // output
+// Servo is disabling PWM on PIN 9 and 10 (timer 1) on NANO.
+// Change wiring from PIN 9 to 11 when using soft blink. 
+byte RED_LED_2_PIN     =  11; 
 // Boom on servo
 byte BOOM_UP     = 0;  // degrees
 byte BOOM_DOWN   = 90; // degrees
@@ -38,6 +47,10 @@ bool leftActive  = false;
 bool rightActive = false;
 bool beginFlag   = false;
 bool endFlag     = false;
+bool softStop    = false;
+int  softStep    = 0;
+int  waitStep    = 0;
+
 // Time counters
 long beginCount  = 0; // Default MTD2A loop time step is 10 milliseconds
 long endCount    = 0; // Default MTD2A loop time step is 10 milliseconds
@@ -52,7 +65,6 @@ void setup() {
   red_LED_2.initialize   (RED_LED_2_PIN);
   bell_sound.initialize  (BELL_SOUND_PIN, INVERTED);
 
-  boom_angel.set_pinWriteToggl (DISABLE);
   boom_angel.initialize ();  // pin not used
 
   // Two SG92R standard micro servo. Range: 0 - 180 degrees
@@ -64,8 +76,18 @@ void setup() {
   delay(1000);  // Give time for servo to find UP position
 }
 
-void loop() {
 
+void loop() {
+  detect_train_direction ();
+  begin_process ();
+  end_process ();
+  soft_blink ();
+
+  MTD2A_loop_execute();  // Update the state (event) system
+} // Realway crossing
+
+
+void detect_train_direction () {
   if (rightActive == false) {
     // LEFT sensor detect first car / locomotive. Set values one time.
     if (FC_51_left.get_processState() == ACTIVE  &&  FC_51_right.get_processState() == COMPLETE) {
@@ -106,29 +128,26 @@ void loop() {
       endCount  = 0;
     }
   } // leftActive == false
+} // detect_train_direction
 
 
+void begin_process () {
   if (beginFlag == true) {  // Begin phase
     if (beginCount == 0) {
       Serial.println (F("Enable repeating bell sound"));
       bell_sound.set_loopActivate (ENABLE);
       bell_sound.activate ();
     }
-    // Default MTD2A loop time step is 10 milliseconds.
     // Red LED blink every second
-    if (beginCount == 80) { // synchronize with the MP3 player
-      Serial.println (F("Enable RED blink"));
-      red_LED_1.set_loopActivate (ENABLE);
-      red_LED_2.set_loopActivate (ENABLE);
-      red_LED_1.activate();
-      red_LED_2.activate();
+    if (beginCount == 100) { // synchronize with the MP3 player
+      soft_or_hard_blink (ENABLE);
     }
     // wait 3 seconds and raise the boom over a period of 3 seconds
     if (beginCount == 300) {
       Serial.println (F("Lower the boom slowly"));
-      boom_angel.activate (BOOM_UP, BOOM_DOWN, RISING_XY); // Alternatively: RISING_SM8
+      boom_angel.activate (BOOM_UP, BOOM_DOWN, RISING_XY); // Rising due to opposite direction (0 -> 90)
     }
-    if (boom_angel.get_processState() == ACTIVE) {
+    if (boom_angel.get_outputState () == true) {
       boom_servo_1.write( boom_angel.get_pinOutputValue() ); 
       boom_servo_2.write( boom_angel.get_pinOutputValue() ); 
     }
@@ -145,27 +164,84 @@ void loop() {
     }
     beginCount++; // 10 Millisecond step
   } // beginFlag == true
+} // begin_process
 
 
+void end_process () {
   if (endFlag == true) { // End phase
     // Raise the boom over a period of 3 seconds
     if (endCount == 0) {  // start immediately
-      boom_angel.activate (BOOM_DOWN, BOOM_UP, FALLING_XY); //  Alternatively: FALLING_SM8
+      boom_angel.activate (BOOM_DOWN, BOOM_UP, FALLING_XY); //  Falling due to opposite direction (90 -> 0)
     }
-    if (boom_angel.get_processState() == ACTIVE) {
+    if (boom_angel.get_outputState () == true) {
       boom_servo_1.write( boom_angel.get_pinOutputValue() ); 
       boom_servo_2.write( boom_angel.get_pinOutputValue() ); 
     }
     // Finish end phase and ready to start
     if (endCount == 300) {
-      red_LED_1.set_loopActivate (DISABLE);
-      red_LED_2.set_loopActivate (DISABLE);
+      soft_or_hard_blink (DISABLE);
       endFlag     = false;
       leftActive  = false;
       rightActive = false;
     }
     endCount++; // 10 Millisecond step
   } // endFlag == true
+} // end_process
 
-  MTD2A_loop_execute();  // Update the state (event) system
-} // Realway crossing
+
+void soft_or_hard_blink (bool enableOrDisable) {
+  if (enableOrDisable == ENABLE) {
+    Serial.print (F("Start RED blink: "));
+    if (softBlink == true) {
+      Serial.println (F("SOFT"));
+      softStep = 1;
+      softStop = false;
+    }
+    else {
+      Serial.println (F("HARD"));
+      red_LED_1.set_loopActivate (ENABLE);
+      red_LED_2.set_loopActivate (ENABLE);
+      red_LED_1.activate();
+      red_LED_2.activate();
+    }
+  }
+  else {
+    if (softBlink == true) {
+      softStop = true;
+    }
+    else {
+      red_LED_1.set_loopActivate (DISABLE);
+      red_LED_2.set_loopActivate (DISABLE);
+    }
+  }
+} // soft_or_hard_blink
+
+
+void soft_blink () {
+ switch (softStep) {
+    case 0:  break;
+    case 1:
+        red_LED_2.set_timers (200, 0, 0); // Output, begin, end
+        red_LED_2.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
+        softStep = 2; 
+        waitStep = 0;
+    case 2:
+      if (waitStep == 45) { // wait 450 milliseconds starting from activation (globalDelayTimeMS = DELAY_10MS * 45)
+        softStep = 3;
+      }
+      waitStep++;
+      break;
+    case 3:
+      red_LED_2.set_timers (200, 0, 0); // Output, begin, end
+      red_LED_2.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
+      softStep = 4;
+      waitStep = 0;
+      break;
+    case 4:
+      if (waitStep == 55) { // wait 550 milliseconds starting from activation (globalDelayTimeMS = DELAY_10MS * 55)
+        softStep = (softStop) ? 0 : 1;
+      }
+      waitStep++;
+      break;
+  }
+} // Soft blink
