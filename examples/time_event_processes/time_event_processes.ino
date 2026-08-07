@@ -1,7 +1,8 @@
 // 7 time and event processes examples, to inspire how to code state machine process flows.
+// Examples are written for the Arduino Nano pinout (Nano family, Uno, Mega)
 // https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_english.pdf
 // Short DEMO: https://youtu.be/UU4k4_8GWfM
-// Joergen Bo Madsen / September 2025 / https://github.com/jebmdk
+// Joergen Bo Madsen / Updatede August 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 using namespace MTD2A_const;
@@ -28,7 +29,7 @@ unsigned long testTime  = 0;
 
 
 void setup() {
-  // Serial.begin(9600); // Writing to Serial Output can cause time delays. choose the fastest speed possible!
+  // Serial.begin(9600); // Writing to Serial Output can cause undesirable time delays. choose the fastest speed possible!
   Serial.begin(250000); 
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
 
@@ -59,10 +60,10 @@ void loop() {
   // ATmega328: 1% - 5% and ESP32 below 1%. Use MTD2A_timer () for precision timing.
 
   switch (loopCount) {
-    case   0: green_LED_1.activate(); break;  // Start at once
-    case  50: green_LED_2.activate(); break;  // 0.5 second
-    case 100: red_LED_1.activate();   break;  // 1   second
-    case 150: red_LED_2.activate();   break;  // 1.5 second
+    case   0: green_LED_1.activate();   Serial.println (F("Green LED 1"));   break;  // Start at once
+    case  50: green_LED_2.activate();   Serial.println (F("Green LED 2"));   break;  // 0.5 second
+    case 100: red_LED_1.activate();     Serial.println (F("Red LED 1"));     break;  // 1   second
+    case 150: red_LED_2.activate();     Serial.println (F("Red LED 2"));     break;  // 1.5 second
   }
   loopCount++;
   if (loopCount >= 200) {
@@ -86,16 +87,16 @@ void loop() {
   }
   //
   if (timer_GL1.get_phaseChange () == true  &&  timer_GL1.get_phaseNumber () == STOP_TIMER) {
-    green_LED_1.activate();
+    green_LED_1.activate();   Serial.println (F("Green LED 1"));
   }
   if (timer_GL2.get_phaseChange () == true  &&  timer_GL2.get_phaseNumber () == STOP_TIMER) {
-    green_LED_2.activate();
+    green_LED_2.activate();   Serial.println (F("Green LED 2"));
   }
   if (timer_RL1.get_phaseChange () == true  &&  timer_RL1.get_phaseNumber () == STOP_TIMER) {
-    red_LED_1.activate();
+    red_LED_1.activate();   Serial.println (F("Red LED 1"));
   }
   if (timer_RL2.get_phaseChange () == true  &&  timer_RL2.get_phaseNumber () == STOP_TIMER) {
-    red_LED_2.activate();
+    red_LED_2.activate();   Serial.println (F("Red LED 2"));
     loopCount = 0;
   }
 
@@ -111,22 +112,22 @@ void loop() {
   // Will NOT always be completely in sync with MTD2A_loop_execute () 
   // due to 10 millisecon loop time and minor time deviations
 
-  if (millis() - startTime > (2000 + DELAY_10MS)) {  // 2 seconds
-    startTime = millis();
+  if (millis() - startTime > 2000) {  // Above 2 seconds
+    startTime = ((millis() + 5) / 10) * 10;  // round to nearest 10 (10 milliseconds loop time)
   }
   //
-  testTime = millis() - startTime;
-  if (testTime >= 0  &&  testTime <= DELAY_10MS) { // Start at once
-    green_LED_1.activate();
+  testTime = (((millis() + 5) / 10) * 10) - startTime; // round to nearest 10
+  if (testTime == 0) { // Start at once
+    green_LED_1.activate();   Serial.println (F("Green LED 1"));
   }
-  if (testTime >= 500  &&  testTime <= (500 + DELAY_10MS)) { // 0.5 second
-    green_LED_2.activate();
+  if (testTime == 500) { // 0.5 second
+    green_LED_2.activate();   Serial.println (F("Green LED 2"));
   }
-  if (testTime >= 1000  &&  testTime <= (1000 + DELAY_10MS)) { // 1 second
-    red_LED_1.activate();
+  if (testTime == 1000) { // 1 second
+    red_LED_1.activate();   Serial.println (F("Red LED 1"));
   }
-  if (testTime >= 1500  &&  testTime <= (1500 + DELAY_10MS)) { // 1.5 second
-    red_LED_2.activate();
+  if (testTime == 1500) { // 1.5 second
+    red_LED_2.activate();   Serial.println (F("Red LED 2"));
   }
 
 #endif
@@ -144,19 +145,19 @@ void loop() {
   //
   if (red_LED_1.get_processState () == COMPLETE) {
    if (red_LED_1.get_phaseChange () == true  &&  red_LED_1.get_phaseNumber () == COMPLETE_PHASE) {
-      red_LED_2.activate ();
+      red_LED_2.activate ();   Serial.println (F("Red LED 2"));
     }
     if (red_LED_2.get_processState () == COMPLETE) {
       if (red_LED_2.get_phaseChange () == true  &&  red_LED_2.get_phaseNumber () == COMPLETE_PHASE) {
-        green_LED_1.activate ();
+        green_LED_1.activate ();   Serial.println (F("Green LED 1"));
       }
       if (green_LED_1.get_processState () == COMPLETE) {
         if (green_LED_1.get_phaseChange () == true  &&  green_LED_1.get_phaseNumber () == COMPLETE_PHASE) {
-          green_LED_2.activate ();
+          green_LED_2.activate ();  Serial.println (F("Green LED 2"));
         }
         if (green_LED_2.get_processState () == COMPLETE) {
           if (green_LED_2.get_phaseChange () == true  &&  green_LED_2.get_phaseNumber () == COMPLETE_PHASE) {
-            red_LED_1.activate (); 
+            red_LED_1.activate ();   Serial.println (F("Red LED 1"));
           }
         } // green_LED_2
       } // green_LED_1
@@ -174,6 +175,7 @@ void loop() {
   // Suitable for predictable and unpredictable process flows and unexpected loop delays
   switch (stepCount) {
     case 0:
+      Serial.println (F("Green LED 1"));
       green_LED_1.activate();
       stepCount = 1;
       // do something once
@@ -186,6 +188,7 @@ void loop() {
       // do something while waiting on COMLPETE
     break;
     case 2:
+      Serial.println (F("Green LED 2"));
       green_LED_2.activate();
       stepCount = 3;
       // do something once
@@ -207,13 +210,14 @@ void loop() {
 
   // Event if-condition controlled. Recommended for simple solutions
   // Read infrared sensor. Short detection: One LED blink. 
-  // continuously detection: continuously LED blink
+  // Continuously detection: continuously LED blink
   // Suitable for Unpredictable process flows such as object detection with a sensor 
   if (IR_sensor.get_processState() == ACTIVE) {
     Serial.println ("Object detected");
     if (timer_GL1.get_processState() == COMPLETE) { 
       timer_GL1.timer (START_TIMER, 1000); // 1   second
       green_LED_1.activate ();             // 0,5 second
+      Serial.println (F("Green LED 1"));
     }
   }
 
@@ -244,6 +248,7 @@ void loop() {
     case 2:
       if (timer_GL1.get_processState() == COMPLETE) {
         // do something once
+        Serial.println (F("Green LED 1"));
         green_LED_1.activate();
         stepCount = 3;
       }
@@ -262,5 +267,5 @@ void loop() {
 
 
   MTD2A_loop_execute();
-}
+} // End loop
 
