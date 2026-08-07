@@ -567,6 +567,7 @@ class MTD2A_binary_output: public MTD2A
      */
     uint8_t get_reset_error ();
 
+    
     // -- Backward compatibility aliases - will be removed over timer -------------------------------------------
     uint8_t get_pinOutputValue     () const { return get_outputValue (); }
     bool    get_pinOutputMode      () const { return get_outputMode  (); }

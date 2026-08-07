@@ -647,18 +647,17 @@ void MTD2A_binary_output::PWM_curve_begin_end () {
 
 void MTD2A_binary_output::PWM_curve_step () {
   if (outputMode == P_W_M  &&  PWMcurveType != NO_CURVE) {
-    // Use deterministic loop count instead of system clock elapsed time.
-    // This eliminates jitter-induced interrupts, serial printing etc.
-
     // Gap correction: catches delays > globalDelayTimeMS that happened mid-output.
+    // Round to nearest loop period (+ half period) to tolerate MCU scheduling
+    // jitter (ESP32 FreeRTOS/WiFi can shift micros() readings by tens of us).
+    uint32_t PWMloopPeriodUS  = globalDelayTimeMS * MS_to_US;
     uint32_t PWMelapsedTimeUS = globalSyncTimeUS - setOutputUS;
-    uint32_t PWMexpectedLoops = PWMelapsedTimeUS / (globalDelayTimeMS * MS_to_US);
+    uint32_t PWMexpectedLoops = (PWMelapsedTimeUS + (PWMloopPeriodUS / 2)) / PWMloopPeriodUS;
     if (PWMexpectedLoops > PWMloopCount) {
         PWMloopCount = PWMexpectedLoops;
     }
- 
     // Multiply first, divide second — avoids float precision loss.
-    float elapsedTimeUS_F = static_cast<float>(PWMloopCount) * static_cast<float>(globalDelayTimeMS * MS_to_US);
+    float elapsedTimeUS_F = static_cast<float>(PWMloopCount) * static_cast<float>(PWMloopPeriodUS);
     float totalTimeUS_F   = static_cast<float>(outputTimeUS);
     PWMtimedPoint_F = roundf(elapsedTimeUS_F * MAX_BYTE_VALUE_F / totalTimeUS_F);
 
