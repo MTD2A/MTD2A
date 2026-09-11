@@ -14,6 +14,11 @@ Read sensor and write phase state information to Arduino IDE serial monitor.
 7 time and event processes examples, to inspire how to code state machine process flows. 
 <br/> Short DEMO: https://youtu.be/UU4k4_8GWfM
 
+### Push button detection and debounce handling.
+Demonstration of debounce counting, measuring button down time and button down counter within time period.
+<br/> Short DEMO: PREPARING
+<br/> Diagram drawing: [PREPARING](/image/Concept-Diagram.png)
+
 ### train_direction.ino
 Determining the direction of travel of the train (left / right). 
 <br/> Short DEMO: https://youtu.be/BqwTf03yEwQ
