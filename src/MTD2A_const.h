@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_const.h
  * @author  Joergen Bo Madsen
- * @version 1.3.1
- * @date    15. july 2026
+ * @version 1.3.2
+ * @date    10. september 2026
  * @brief   Global constants for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -64,6 +64,11 @@ namespace MTD2A_const {
   constexpr uint8_t  FIRST_TIME_PHASE = 1,  LAST_TIME_PHASE = 2,  BLOCKING_PHASE = 3; // binary_input
   constexpr uint8_t  BEGIN_PHASE      = 1,  OUTPUT_PHASE    = 2,  END_PHASE      = 3; // binary_output
   constexpr uint8_t  COMPLETE_PHASE   = 4;
+  // Button default timing
+  constexpr uint8_t  DEBOUNCE_MS      = 50;
+  constexpr uint16_t SHORT_PRESS_MS   = 200;
+  constexpr uint16_t LONG_PRESS_MS    = 1000;
+
   // PWM rising curves - binary_output
   constexpr uint8_t  MIN_PWM_VALUE = 0,   MAX_PWM_VALUE = 255;  
   constexpr uint8_t  NO_CURVE      = 0; 

@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_input.h
  * @author  Joergen Bo Madsen
- * @version 1.3.1
- * @date    15. july 2026
+ * @version 1.3.5
+ * @date    8. september 2026
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -65,6 +65,8 @@ class MTD2A_binary_input: public MTD2A
     static constexpr uint8_t  LAST_TIME_PHASE  {MTD2A_const::LAST_TIME_PHASE}; 
     static constexpr uint8_t  BLOCKING_PHASE   {MTD2A_const::BLOCKING_PHASE};
     static constexpr uint8_t  COMPLETE_PHASE   {MTD2A_const::COMPLETE_PHASE};
+    // Button control
+    static constexpr uint8_t  DEBOUNCE_MS      {MTD2A_const::DEBOUNCE_MS};
     
     // Arguments
     char    *objectName      {nullptr};        // Constructor initialized (User defined name to display identification)
@@ -89,10 +91,14 @@ class MTD2A_binary_input: public MTD2A
     uint32_t firstTimeUS     {0UL};            // Microseconds (FIRST_TRIGGER)
     uint32_t lastTimeUS      {0UL};            // Microseconds (LAST_TRIGGER)
     uint32_t endTimeUS       {0UL};            // Microseconds (delay end time)
-    uint32_t blockTimeUS     {0UL};            // Microseconds (pin input blocking time)
+    uint32_t blockTimeUS     {0UL};            // Microseconds (PIN input blocking time)
     // Timer process stop
     bool     stopDelayTM     {DISABLE};        // stop first or last timer process and go to next phase
     bool     stopBlockTM     {DISABLE};        // stop blocking timer process and go to next phase
+    // Button control
+    bool     countState      {false};          // Start counting process and wait DEBOUNCE_MS milliseconds before counting.
+    uint8_t  inputCount      {0};              // Count the number of times a button is pressed (input is LOW (or INVERTED HIGH)
+    uint32_t countTimeUS     {0UL};            // Check if the DEBOUNCE_MS time has elapsed
     // State control
     bool     inputState      {HIGH};           // set_inputState () / LOW (manual program trigger)
     bool     pinState        {HIGH};           // get_pinState () / LOW (trigger)
@@ -306,7 +312,7 @@ class MTD2A_binary_input: public MTD2A
 
 
     /**
-     * @brief Get firstTimeMS
+     * @brief Get first trigger Time
      * @name object_name.get_firstTimeMS ();
      * @param none
      * @return uint32_t Milliseconds 
@@ -315,7 +321,7 @@ class MTD2A_binary_input: public MTD2A
 
 
     /**
-     * @brief Get lastTimeMS
+     * @brief Get last trigger time
      * @name object_name.get_lastTimeMS ();
      * @param none
      * @return uint32_t Milliseconds
@@ -324,7 +330,7 @@ class MTD2A_binary_input: public MTD2A
 
 
     /**
-     * @brief  Get endTimeMS Milliseconds 
+     * @brief Get end delay time / complete time
      * @name object_name.get_endTimeMS ();
      * @param none
      * @return uint32_t Milliseconds
@@ -332,6 +338,24 @@ class MTD2A_binary_input: public MTD2A
     uint32_t get_endTimeMS () const;
 
 
+    /**
+     * @brief Get active time (the ACTIVE process time)
+     * @name object_name.get_activeTimeMS ();
+     * @param none
+     * @return uint32_t Milliseconds
+     */
+    uint32_t get_activeTimeMS () const;
+
+
+    /**
+     * @brief Get number of button presses within "delayTimeMS" milliseconds
+     * @name object_name.get_inputCount ();
+     * @param none
+     * @return uint8_t Count
+     */
+    uint32_t get_inputCount () const;
+
+    
     /**
      * @brief get inputGoHigh
      * @name object_name.get_inputGoHigh ();
@@ -366,6 +390,8 @@ class MTD2A_binary_input: public MTD2A
     void     loop_fast_binary   ();
     void     loop_fast_first    ();
     void     loop_fast_last     ();
+    void     begin_input_count  ();
+    void     timer_input_count  ();
     void     begin_state        ();
     void     end_state          ();
     void     complete_state     ();
