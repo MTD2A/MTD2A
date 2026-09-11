@@ -1,0 +1,21 @@
+Release 1.3.5
+
+New button press functionality which takes into account debouncing.
+Sort press, long press and extra long press.
+Number of button presses - skipping debounces.
+
+New MTD2A_binary_input functionality:
+-------------------------------------
+get_activeTimeMS (); {Milliseconds)  // Get active time (the ACTIVE process time)
+get_inputCount   (); {number);       // Get number of button presses within "delayTimeMS" milliseconds
+
+New MTD2A_binary_output functionality:
+-------------------------------------
+get_activeTimeMS   (); {Milliseconds)  // Get active time (the ACTIVE process time)
+
+
+
+
+
+
+
