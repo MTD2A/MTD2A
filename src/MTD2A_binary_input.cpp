@@ -251,7 +251,7 @@ uint32_t MTD2A_binary_input::get_endTimeMS () const {
 
 
 uint32_t MTD2A_binary_input::get_activeTimeMS () const {
-  return MTD2A_round_US_to_MS (endTimeUS - firstTimeUS);
+  return calc_active_time_MS ();
 }
 
 
@@ -471,6 +471,16 @@ void MTD2A_binary_input::complete_state () {
 } // complete_state
 
 
+uint32_t MTD2A_binary_input::calc_active_time_MS () {
+  if (processState == ACTIVE) {
+    return MTD2A_round_US_to_MS (globalSyncTimeUS - firstTimeUS);
+  }
+  else {
+    return MTD2A_round_US_to_MS (endTimeUS - firstTimeUS);
+  }
+}
+
+
 void MTD2A_binary_input::reset () {
   firstTimeUS    = 0;
   lastTimeUS     = 0;
@@ -556,7 +566,7 @@ void MTD2A_binary_input::print_conf () {
   PortPrint  (F("  inputMode    : ")); MTD2A_print_pulse_fixed     (inputMode);
   // Button press
   PortPrint  (F("  inputCount   : ")); PortPrintln (inputCount);
-  PortPrint  (F("  ActiveTimeMS : ")); PortPrintln (MTD2A_round_US_to_MS (endTimeUS - firstTimeUS));
+  PortPrint  (F("  ActiveTimeMS : ")); PortPrintln (calc_active_time_MS ());
   // timers
   PortPrint  (F("  delayTimeMS  : ")); PortPrintln (MTD2A_round_US_to_MS (delayTimeUS));
   PortPrint  (F("  firstTimeMS  : ")); PortPrintln (MTD2A_round_US_to_MS (firstTimeUS));

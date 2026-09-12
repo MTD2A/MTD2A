@@ -3,7 +3,7 @@
  * @file    MTD2A_binary_input.h
  * @author  Joergen Bo Madsen
  * @version 1.3.5
- * @date    8. september 2026
+ * @date    12. september 2026
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -93,8 +93,8 @@ class MTD2A_binary_input: public MTD2A
     uint32_t endTimeUS       {0UL};            // Microseconds (delay end time)
     uint32_t blockTimeUS     {0UL};            // Microseconds (PIN input blocking time)
     // Timer process stop
-    bool     stopDelayTM     {DISABLE};        // stop first or last timer process and go to next phase
-    bool     stopBlockTM     {DISABLE};        // stop blocking timer process and go to next phase
+    bool     stopDelayTimer  {DISABLE};        // stop first or last timer process and go to next phase
+    bool     stopBlockTimer  {DISABLE};        // stop blocking timer process and go to next phase
     // Button control
     bool     countState      {false};          // Start counting process and wait DEBOUNCE_MS milliseconds before counting.
     uint8_t  inputCount      {0};              // Count the number of times a button is pressed (input is LOW (or INVERTED HIGH)
@@ -385,21 +385,22 @@ class MTD2A_binary_input: public MTD2A
 
   private: // Functions
   
-    void     loop_fast          ();
-    void     loop_fast_input    ();
-    void     loop_fast_binary   ();
-    void     loop_fast_first    ();
-    void     loop_fast_last     ();
-    void     begin_input_count  ();
-    void     timer_input_count  ();
-    void     begin_state        ();
-    void     end_state          ();
-    void     complete_state     ();
-    uint32_t check_set_MS_to_US (uint32_t setCheckTimeMS);
-    void     check_pin_init     (uint8_t  checkPinNumber, uint8_t checkPinPullupOrInput);
-    void     print_error_text   (uint8_t  setErrorNumber);
-    void     print_phase_text   ();
-    void     print_phase_line   ();
+    void     loop_fast           ();
+    void     loop_fast_input     ();
+    void     loop_fast_binary    ();
+    void     loop_fast_first     ();
+    void     loop_fast_last      ();
+    void     begin_input_count   ();
+    void     timer_input_count   ();
+    void     begin_state         ();
+    void     end_state           ();
+    void     complete_state      ();
+    uint32_t calc_active_time_MS ();
+    uint32_t check_set_MS_to_US  (uint32_t setCheckTimeMS);
+    void     check_pin_init      (uint8_t  checkPinNumber, uint8_t checkPinPullupOrInput);
+    void     print_error_text    (uint8_t  setErrorNumber);
+    void     print_phase_text    ();
+    void     print_phase_line    ();
     
 }; // class MTD2A_binary_input
 
