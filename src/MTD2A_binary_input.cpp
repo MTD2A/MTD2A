@@ -471,7 +471,7 @@ void MTD2A_binary_input::complete_state () {
 } // complete_state
 
 
-uint32_t MTD2A_binary_input::calc_active_time_MS () {
+uint32_t MTD2A_binary_input::calc_active_time_MS () const {
   if (processState == ACTIVE) {
     return MTD2A_round_US_to_MS (globalSyncTimeUS - firstTimeUS);
   }

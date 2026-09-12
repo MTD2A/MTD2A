@@ -395,7 +395,7 @@ class MTD2A_binary_input: public MTD2A
     void     begin_state         ();
     void     end_state           ();
     void     complete_state      ();
-    uint32_t calc_active_time_MS ();
+    uint32_t calc_active_time_MS () const;
     uint32_t check_set_MS_to_US  (uint32_t setCheckTimeMS);
     void     check_pin_init      (uint8_t  checkPinNumber, uint8_t checkPinPullupOrInput);
     void     print_error_text    (uint8_t  setErrorNumber);
