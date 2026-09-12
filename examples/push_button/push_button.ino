@@ -159,6 +159,7 @@ void loop() {
   if (buttonCounter) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
     printCount++; 
     Serial.print (printCount); Serial.print (F("  Number of button presses: ")); Serial.println (buttonCounter.get_inputCount ());
+    // buttonCounter.print_conf ();
   }
   MTD2A_loop_execute ();
 } // loop
