@@ -3,7 +3,7 @@
 // Examples are written for the Arduino Nano pinout (Nano family, Uno, Mega)
 // https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_input_english.pdf
 // Short DEMO: 
-// Joergen Bo Madsen / Updatede August 2026 / https://github.com/jebmdk
+// Joergen Bo Madsen / September 2026 / https://github.com/jebmdk
 #include <MTD2A.h>
 using namespace MTD2A_const;
 
@@ -57,7 +57,7 @@ void loop() {
       timerState = false;
       buttonDown = false;
       printCount++;
-      Serial.print (printCount); Serial.print (F("  Numer of button changes = ")); Serial.println(changeCount);
+      Serial.print (printCount); Serial.print (F("  Number of button changes = ")); Serial.println(changeCount);
       beginTime   = 0;
       changeCount = 0;
     }
@@ -118,11 +118,11 @@ void setup() {
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   Serial.println (); Serial.println (F("MTD2A library: Measure push button down time."));
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
-  buttonTimer.initialize (pushButton);  // default: NORMALL & INPUT_PULLUP
+  buttonTimer.initialize (pushButton);  // default: NORMAL & INPUT_PULLUP
 }
 
 void loop() {
-  if (buttonTimer) { // Equvivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
+  if (buttonTimer) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
     printCount++; 
     Serial.print (printCount); Serial.print (F("  Button down milliseconds: ")); Serial.println (buttonTimer.get_activeTimeMS ());
   }
@@ -137,12 +137,12 @@ void loop() {
 
 #if section == 4
 
-// Count number of button presses within LONG_PRESS_MS milliseconds
+// A: Count number of button presses within LONG_PRESS_MS milliseconds
 MTD2A_binary_input buttonCounter ("Button first press counter", LONG_PRESS_MS, FIRST_TRIGGER, TIME_DELAY);
-// Count number of button presses within LONG_PRESS_MS milliseconds, resstarting timer after each button press. 
+// B: Count number of button presses within LONG_PRESS_MS milliseconds, resstarting timer after each button press. 
 // MTD2A_binary_input buttonCounter ("Button last press counter", LONG_PRESS_MS, LAST_TRIGGER, TIME_DELAY);
-// Immediately detects one button press.
-// MTD2A_binary_input buttonCounter ("One fast Button press", 0, LAST_TRIGGER, TIME_DELAY);
+// C: Immediately detects exactly one button press
+// MTD2A_binary_input buttonCounter ("One fast Button press", 0);
 
 void setup() {
   Serial.begin(9600); 
@@ -152,11 +152,11 @@ void setup() {
   Serial.print (F("The Debounce time: "));  Serial.print (DEBOUNCE_MS); 
   Serial.println (F(" milliseconds is skipped, and is not counted.")); 
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
-  buttonCounter.initialize (pushButton);  // default: NORMALL & INPUT_PULLUP
+  buttonCounter.initialize (pushButton);  // default: NORMAL & INPUT_PULLUP
 }
 
 void loop() {
-  if (buttonCounter) { // Equvivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
+  if (buttonCounter) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
     printCount++; 
     Serial.print (printCount); Serial.print (F("  Number of button presses: ")); Serial.println (buttonCounter.get_inputCount ());
   }
