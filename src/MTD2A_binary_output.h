@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
- * @version 1.3.1
- * @date    15. july 2026
+ * @version 1.3.2
+ * @date    12. september 2026
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -117,9 +117,10 @@ class MTD2A_binary_output: public MTD2A
     bool     outputState      {false};          // Data ready. Indicates when to call get_outputValue (); { true | false }
     bool     outputProcess    {COMPLETE};       // Output process state period get_outputProcess { ACTIVE | COMPLETE }
     // Timers
-    uint32_t setOutputUS      {0UL};            // Microseconds (output start time)
-    uint32_t setBeginUS       {0UL};            // Microseconds (begin start time)
-    uint32_t setEndUS         {0UL};            // Microseconds (end start time)
+    uint32_t setOutputUS      {0UL};            // Output start time (Microseconds)
+    uint32_t setBeginUS       {0UL};            // Begin  start time (Microseconds)
+    uint32_t setEndUS         {0UL};            // End    start time (Microseconds)
+    uint32_t setCompleteUS    {0UL};            // Process complete time (Microseconds)
     // Stop timer
     bool     stopOutputTimer  {DISABLE};        // stop output timer process when executing MTD2A_loop_execute ();
     bool     stopBeginTimer   {DISABLE};        // stop begin delay timer process when executing MTD2A_loop_execute ();
@@ -551,12 +552,21 @@ class MTD2A_binary_output: public MTD2A
 
 
     /**
-     * @brief  Get end start time 
+     * @brief Get end start time 
      * @name object_name.get_setEndMS ();
      * @param none
      * @return uint32_t Milliseconds
      */
     uint32_t get_setEndMS () const;
+
+
+    /**
+     * @brief Get active time (the ACTIVE process time)
+     * @name object_name.get_activeTimeMS ();
+     * @param none
+     * @return uint32_t Milliseconds
+     */
+    uint32_t get_activeTimeMS () const;
 
 
     /**
@@ -582,6 +592,7 @@ class MTD2A_binary_output: public MTD2A
     void     activate_check        ();
     void     activate_process      (bool userActivate = true);
     bool     check_PWM_pin_mode    ();
+    uint32_t calc_active_time_MS   () const;
     uint8_t  check_pin_value       (uint8_t  checkPinValue);
     void     write_pin_value       (uint8_t  writePinValue);
     uint8_t  check_PWM_curve       (uint8_t  checkPWMcurveType);

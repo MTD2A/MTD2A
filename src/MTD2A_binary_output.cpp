@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.cpp
  * @author  Joergen Bo Madsen
- * @version 1.3.1
- * @date    15. july 2026
+ * @version 1.3.2
+ * @date    12. september 2026
  * @brief   Functions for MTD2A_binary_output.h (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -424,8 +424,8 @@ void MTD2A_binary_output::set_outputTimer (uint8_t setStopOrReset) {
   if (processState == ACTIVE) {
     if (outputTimeUS > 0) {
       switch (setStopOrReset) {
-        case STOP_TIMER : stopOutputTimer  = ENABLE;       break;
-        case RESET_TIMER: resetOutputTimer = ENABLE;       break;
+        case STOP_TIMER : stopOutputTimer  = ENABLE;    break;
+        case RESET_TIMER: resetOutputTimer = ENABLE;    break;
         default: print_error_text (ERR_STOP_OR_RESET);  break; 
       }
     }
@@ -443,8 +443,8 @@ void MTD2A_binary_output::set_beginTimer (uint8_t setStopOrReset) {
   if (processState == ACTIVE) {
     if (beginDelayUS > 0) {
       switch (setStopOrReset) {
-        case STOP_TIMER : stopBeginTimer  = ENABLE;        break;
-        case RESET_TIMER: resetBeginTimer = ENABLE;        break;
+        case STOP_TIMER : stopBeginTimer  = ENABLE;     break;
+        case RESET_TIMER: resetBeginTimer = ENABLE;     break;
         default: print_error_text (ERR_STOP_OR_RESET);  break; 
       }
     }
@@ -462,8 +462,8 @@ void MTD2A_binary_output::set_endTimer (uint8_t setStopOrReset) {
   if (processState == ACTIVE) {
     if (endDelayUS > 0) {
       switch (setStopOrReset) {
-        case STOP_TIMER : stopEndTimer  = ENABLE;          break;
-        case RESET_TIMER: resetEndTimer = ENABLE;          break;
+        case STOP_TIMER : stopEndTimer  = ENABLE;       break;
+        case RESET_TIMER: resetEndTimer = ENABLE;       break;
         default: print_error_text (ERR_STOP_OR_RESET);  break; 
       }
     }
@@ -572,6 +572,11 @@ uint32_t MTD2A_binary_output::get_setOutputMS () const {
 uint32_t MTD2A_binary_output::get_setEndMS () const {
   return MTD2A_round_US_to_MS (setEndUS);
 }
+
+
+uint32_t MTD2A_binary_output::get_activeTimeMS () const {
+  return calc_active_time_MS ();
+} // get_activeTimMS
 
 
 uint8_t MTD2A_binary_output::get_reset_error () {
@@ -972,21 +977,21 @@ void MTD2A_binary_output::loop_fast_end_timer () {
 
 
 void MTD2A_binary_output::loop_fast_complete () {
-  processState = COMPLETE;
+  processState  = COMPLETE;
+  phaseNumber   = COMPLETE_PHASE;
+  setCompleteUS = globalSyncTimeUS;
   bool restartLoop = (loopActivate == ENABLE  &&  startPhase == true);
   if (restartLoop == true  &&  outputTimeUS == 0  &&  beginDelayUS == 0  &&  endDelayUS == 0) {
     restartLoop = false;  // No timing configured: go idle instead of spinning every loop
     print_error_text (WARN_ALL_TIMERS_ZERO);
   }
   if (restartLoop == true) {
-    phaseNumber = COMPLETE_PHASE; // One-loop [4] Complete strobe: operator bool ()
     phaseChange = true;     // fires once per completed loop cycle
     print_phase_line ();    // To many repeating phase lines?
     activate_check ();
     activate_process (false);
   }
   else {
-    phaseNumber = COMPLETE_PHASE;
     if (startPhase == true) {
       startPhase  = false;
       phaseChange = true;
@@ -1008,11 +1013,11 @@ void MTD2A_binary_output::reset () {
   phaseChange      = true;
   phaseNumber      = RESET_PHASE;
   setPhaseNumber   = RESET_PHASE;
-  //
+  // reset timer
   resetOutputTimer = DISABLE;
   resetBeginTimer  = DISABLE;
   resetEndTimer    = DISABLE;
-  //
+  // stop timer
   stopOutputTimer  = DISABLE;
   stopBeginTimer   = DISABLE;
   stopEndTimer     = DISABLE;
@@ -1030,6 +1035,27 @@ void MTD2A_binary_output::reset () {
   write_pin_value  (pinStartValue); // if pinNumber != NO_PIN  &&  pinWriteToggl == ENABLE
   print_phase_line ();
 }  // reset
+
+
+uint32_t MTD2A_binary_output::calc_active_time_MS () const {
+  uint32_t startTime = 0;
+  if (beginDelayUS > 0) {
+    startTime = setBeginUS;
+  }
+  else if (outputTimeUS > 0) {
+    startTime = setOutputUS;
+  }
+  else if (endDelayUS > 0) {
+    startTime = setEndUS;
+  }
+  //
+  if (processState == ACTIVE) {
+    return MTD2A_round_US_to_MS (globalSyncTimeUS - startTime);
+  }
+  else {
+    return MTD2A_round_US_to_MS (setCompleteUS - startTime);
+  }
+} // calc_active_time_MS
 
 
 uint32_t MTD2A_binary_output::check_set_MS_to_US (uint32_t setCheckTimeMS) {
@@ -1110,6 +1136,7 @@ void MTD2A_binary_output::print_conf () {
   PortPrint  (F("  pinStartValue: ")); MTD2A_print_value_binary (outputMode, pinStartValue);
   PortPrint  (F("  pinWriteValue: ")); MTD2A_print_value_binary (outputMode, pinWriteValue);
   // timers
+  PortPrint  (F("  ActiveTimeMS : ")); PortPrintln (calc_active_time_MS ());
   PortPrint  (F("  setOutputMS  : ")); PortPrintln (MTD2A_round_US_to_MS (setOutputUS));
   PortPrint  (F("  setBeginMS   : ")); PortPrintln (MTD2A_round_US_to_MS (setBeginUS));
   PortPrint  (F("  setEndMS     : ")); PortPrintln (MTD2A_round_US_to_MS (setEndUS));
