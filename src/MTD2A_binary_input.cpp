@@ -3,7 +3,7 @@
  * @file    MTD2A_binary_input.cpp
  * @author  Joergen Bo Madsen
  * @version 1.3.5
- * @date    11. september 2026
+ * @date    12. september 2026
  * @brief   Functions for MTD2A_binary_input.h (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -88,7 +88,6 @@ void MTD2A_binary_input::initialize (uint8_t setPinNumber, bool setPinNormalOrIn
 } // initialize
 
 
-// original function
 void MTD2A_binary_input::check_pin_init (uint8_t checkPinNumber, uint8_t checkPinPullupOrInput) {
   if (checkPinNumber != NO_PIN) {
     pinNumber = checkPinNumber; 
@@ -184,7 +183,7 @@ void MTD2A_binary_input::set_pinBlockMS (uint32_t setPinBlockMS) {
 
 void MTD2A_binary_input::set_stopDelayTimer () {
   if (processState == ACTIVE  &&  delayTimeUS > 0) {
-    stopDelayTM = ENABLE;
+    stopDelayTimer = ENABLE;
   } 
   else {
     print_error_text (ERR_TIMER_NOT_IN_USE);
@@ -194,7 +193,7 @@ void MTD2A_binary_input::set_stopDelayTimer () {
 
 void MTD2A_binary_input::set_stopBlockTimer () {
   if (processState == ACTIVE  &&  pinBlockUS > 0) {
-    stopBlockTM = ENABLE;
+    stopBlockTimer = ENABLE;
   }
   else {
     print_error_text (ERR_TIMER_NOT_IN_USE);
@@ -331,7 +330,6 @@ void MTD2A_binary_input::loop_fast_input () {
 } // loop_fast_input
 
 
-// AAAAAAAAAAAAAA
 void MTD2A_binary_input::loop_fast_binary () {
   if (inputGoLow) {
     if (processState == COMPLETE) {  // no retrigger while ACTIVE (same guard as first/last)
@@ -358,12 +356,12 @@ void MTD2A_binary_input::loop_fast_first () {
   timer_input_count ();
   //
   if (processState == ACTIVE) {
-    if ((globalSyncTimeUS - firstTimeUS) >= (delayTimeUS - MARGIN_TIME_US)  ||  stopDelayTM == ENABLE) {
-      stopDelayTM = DISABLE;
-      if (timerMode == MONO_STABLE) 
+    if ((globalSyncTimeUS - firstTimeUS) >= (delayTimeUS - MARGIN_TIME_US)  ||  stopDelayTimer == ENABLE) {
+      stopDelayTimer = DISABLE;
+      if (timerMode == MONO_STABLE) {
         end_state ();
-      else {
-        if (currentState == HIGH)
+      }
+      else if (currentState == HIGH) {
           end_state ();
       }
     } 
@@ -389,12 +387,12 @@ void MTD2A_binary_input::loop_fast_last () {
     //
     timer_input_count ();
     //
-    if ((globalSyncTimeUS - lastTimeUS) >= (delayTimeUS - MARGIN_TIME_US)  ||  stopDelayTM == ENABLE) {
-      stopDelayTM = DISABLE;
-      if (timerMode == MONO_STABLE) 
+    if ((globalSyncTimeUS - lastTimeUS) >= (delayTimeUS - MARGIN_TIME_US)  ||  stopDelayTimer == ENABLE) {
+      stopDelayTimer = DISABLE;
+      if (timerMode == MONO_STABLE) {
         end_state ();
-      else {
-        if (currentState == HIGH)
+      }
+      else if (currentState == HIGH) {
           end_state ();
       }
     } 
@@ -415,7 +413,7 @@ void MTD2A_binary_input::begin_input_count () {
 
 void MTD2A_binary_input::timer_input_count () {
   if (countState) {
-    if ((globalSyncTimeUS - countTimeUS) >= DEBOUNCE_MS) {
+    if ((globalSyncTimeUS - countTimeUS) >= DEBOUNCE_MS * MS_to_US) {
       if (currentState == LOW) {
         inputCount++;
       }
@@ -430,6 +428,7 @@ void MTD2A_binary_input::begin_state () {
   firstTimeUS  = globalSyncTimeUS;
   lastTimeUS   = firstTimeUS;
   inputCount   = 0;
+  countState   = false;
   phaseChange  = true;
   phaseNumber  = FIRST_TIME_PHASE;
   print_phase_line ();
@@ -447,53 +446,55 @@ void MTD2A_binary_input::end_state () {
       phaseNumber   = BLOCKING_PHASE;
       print_phase_line (); 
     }
-    if ((globalSyncTimeUS - blockTimeUS) >= (pinBlockUS - MARGIN_TIME_US)  ||  stopBlockTM == ENABLE) {
-      stopBlockTM   = DISABLE;
-      pinBlockState = DISABLE;
-      pinReadToggl  = pinReadSaved;   // restore
+    if ((globalSyncTimeUS - blockTimeUS) >= (pinBlockUS - MARGIN_TIME_US)  ||  stopBlockTimer == ENABLE) {
+      stopBlockTimer = DISABLE;
+      pinBlockState  = DISABLE;
+      pinReadToggl   = pinReadSaved;   // restore
       complete_state ();
     }
   }
-  else
+  else {
     complete_state ();    
+  }
 } // end_state
 
 
 void MTD2A_binary_input::complete_state () {
-  stopDelayTM  = DISABLE;   // discard unconsumed stop requests -
-  stopBlockTM  = DISABLE;   // they must not leak into the next cycle
-  endTimeUS    = globalSyncTimeUS;
-  phaseChange  = true;
-  processState = COMPLETE;
-  phaseNumber  = COMPLETE_PHASE;
+  stopDelayTimer = DISABLE;   // discard unconsumed stop requests -
+  stopBlockTimer = DISABLE;   // they must not leak into the next cycle
+  endTimeUS      = globalSyncTimeUS;
+  countState     = false;
+  phaseChange    = true;
+  processState   = COMPLETE;
+  phaseNumber    = COMPLETE_PHASE;
   print_phase_line();
 } // complete_state
 
 
 void MTD2A_binary_input::reset () {
-  firstTimeUS   = 0;
-  lastTimeUS    = 0;
-  endTimeUS     = 0;
-  inputCount    = 0;
-  countState    = 0;
-  countTimeUS   = 0;
-  blockTimeUS   = 0;
-  errorNumber   = 0;
-  stopDelayTM   = DISABLE;
-  stopBlockTM   = DISABLE;
-  pinState      = HIGH;
+  firstTimeUS    = 0;
+  lastTimeUS     = 0;
+  endTimeUS      = 0;
+  inputCount     = 0;
+  countState     = false;
+  countTimeUS    = 0;
+  blockTimeUS    = 0;
+  errorNumber    = 0;
+  stopDelayTimer = DISABLE;
+  stopBlockTimer = DISABLE;
+  pinState       = HIGH;
   if (pinBlockState == ENABLE) {      // reset issued during BLOCKING_PHASE
     pinReadToggl = pinReadSaved;      // restore pin reading
   }
-  pinBlockState = DISABLE;
-  processState  = COMPLETE;
-  inputState    = HIGH;
-  currentState  = HIGH;
-  lastState     = HIGH;
-  phaseChange   = true;
-  phaseNumber   = RESET_PHASE; 
-  inputGoLow    = false;
-  inputGoHigh   = false;
+  pinBlockState  = DISABLE;
+  processState   = COMPLETE;
+  inputState     = HIGH;
+  currentState   = HIGH;
+  lastState      = HIGH;
+  phaseChange    = true;
+  phaseNumber    = RESET_PHASE; 
+  inputGoLow     = false;
+  inputGoHigh    = false;
   print_phase_line ();
 }  // reset
 
