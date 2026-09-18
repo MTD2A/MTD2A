@@ -55,7 +55,7 @@ Automatic switch to the direction the train is coming from (to avoid derailment 
 
 ### railway_crossing.ino
 Danish railway crossing. Read left and right sensor, activate red blinking warning light, start pulsating bell, lower boom slowly. 
-<br/> Wait for the train to pass, raise boom slowly and stop red blink. 
+<br/> Wait for the train to pass, raise boom slowly and stop red blink. Support hard (binary) blink and soft (like an incandescent bulb) blink using PWM
 <br/> Short DEMO: https://youtu.be/VaXmki2oLrk
 <br/> Diagram drawing: [Railway crossing](/image/railway_crossing.png)
 
