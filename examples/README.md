@@ -16,11 +16,23 @@ Read sensor and write phase state information to Arduino IDE serial monitor.
 <br/> Diagram drawing: [Read sensor](/image/read_sensor.png)
 
 ### time_event_processes.ino
-7 time and event processes examples, to inspire how to code state machine process flows. 
+7 time and event processes examples, to inspire how to code state machine process flows.
+<br/> 1: Timed cascading (round robin) 4 LEDs. Loop time controlled.
+<br/> 2: Timed cascading (round robin) 4 LEDs. Precision time controlled.
+<br/> 3: millis(); Not recommende with MTD2A library functions. Use MTD2A_timer ()
+<br/> 4: Timed if-condition nested controlled. Not recommended. Can be used for simple solutions.
+<br/> 5: Timed step controlled. Recommended for complex solutions
+<br/> 6: Event if-condition controlled. Recommended for simple solutions
+<br/> 7: Event step controlled. Recommended for complex constructions
 <br/> Short DEMO: https://youtu.be/UU4k4_8GWfM
 
 ### push_button.ino
 Push button detection and debounce handling. Demonstration of debounce counting, measuring button down time and button down counter within time period.
+<br/> 1: Count number of push button debounce.
+<br/> 2: Arduino standard: Measure push button down time.
+<br/> 3: MTD2A library:    Measure push button down time.
+<br/> 4: Short, long and extra long button presses.
+<br/> 5: Count number of button presses within 2 seconds and variations thereof.
 <br/> Short DEMO: PREPARING
 <br/> Diagram drawing: [PREPARING](/image/Concept-Diagram.png)
 
