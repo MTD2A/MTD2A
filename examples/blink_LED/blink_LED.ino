@@ -1,6 +1,7 @@
 // Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
+// Examples are written for the Arduino Nano pinout (Nano family, Uno, Mega)
 // Short DEMO: https://youtu.be/eyGRazX9Bko
-// Jørgen Bo Madsen / update april 2026 / https://github.com/jebmdk
+// Jørgen Bo Madsen / updated september 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 using namespace MTD2A_const;
@@ -8,8 +9,12 @@ using namespace MTD2A_const;
 MTD2A_binary_output red_LED   ("Red LED",   400, 400);  // 0.4 sec light, 0.4 sec no light
 MTD2A_binary_output green_LED ("Green LED", 300, 700, 0, P_W_M, 96);  // 0.3 sec light, 0.7 sec no light, PWM dimmed
 
-#define section 1 // section 1: Re-activated blink / section 2: Automated continuously blink
-
+#define section 1
+// 1: Re-activated blink 
+// 2: Automated continuously blink
+// 3: switch-example: Soft blink (like an incandescent bulb) blink using PWM curves
+// 4: if-example:     Soft blink (like an incandescent bulb) blink using PWM curves
+// 5: Switching red and green Soft blink (like an incandescent bulb) blink using PWM curves
 
 void setup() {
   Serial.begin(9600);
@@ -40,7 +45,9 @@ void loop() {
   MTD2A_loop_execute ();
 } // Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
 
+
 // ----------------------------------------------------------------------------------------
+
 
 #elif section == 2
 
@@ -50,15 +57,15 @@ void loop() {
   switch (loopCount) {
     case  300: // 3 seconds
       Serial.println("START Red and Green blink");
-      red_LED.set_repeatActivate   (ENABLE);
-      green_LED.set_repeatActivate (ENABLE);
+      red_LED.set_loopActivate   (ENABLE);
+      green_LED.set_loopActivate (ENABLE);
       red_LED.activate   ();
       green_LED.activate ();
     break;
     case 1000: // 10 seconds (7 seconds blink)
       Serial.println("STOP blink");
-      red_LED.set_repeatActivate   (DISABLE);
-      green_LED.set_repeatActivate (DISABLE);
+      red_LED.set_loopActivate   (DISABLE);
+      green_LED.set_loopActivate (DISABLE);
       loopCount = 0;
     break;
   } // switch
@@ -66,5 +73,110 @@ void loop() {
   loopCount++;
   MTD2A_loop_execute();
 } // Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
+
+
+// ----------------------------------------------------------------------------------------
+
+
+#elif section == 3
+
+int softStep = 0;
+
+void loop() {
+  switch (softStep) {
+    case 0:
+      Serial.println (F("switch-example: Soft blink (like an incandescent bulb) blink using PWM curves"));
+      softStep = 1;
+      break;
+    case 1:
+      if (red_LED.get_processState () == COMPLETE) {  // waith for case 2 process to end
+        // Light up during 200 miliseconds and keep full lightning for 300 millisesonds
+        red_LED.set_timers (200, 0, 300); 
+        red_LED.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
+        softStep = 2;
+      }
+      break;
+    case 2:
+      if (red_LED.get_processState () == COMPLETE) {  // waith for case 1 process to end
+        // Light down during 200 miliseconds and keep zero lightning for 300 millisesonds
+        red_LED.set_timers (200, 0, 300); 
+        red_LED.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
+        softStep = 1;
+      }
+      break;      
+  } // switch 
+  MTD2A_loop_execute();
+} // loop
+
+
+// ----------------------------------------------------------------------------------------
+
+
+#elif section == 4
+
+bool switchUpDown = true, printFlag = true;
+
+void loop() {
+  if (printFlag) {
+    Serial.println (F("if-example: Soft blink (like an incandescent bulb) blink using PWM curves"));
+    printFlag = false;
+  }
+  //
+  if (switchUpDown) {
+    if (red_LED.get_processState () == COMPLETE) {
+      // Light up during 200 miliseconds and keep full lightning for 300 millisesonds
+      red_LED.set_timers (200, 0, 300);
+      red_LED.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
+      switchUpDown = false;
+    }
+  }
+  else {
+    if (red_LED.get_processState () == COMPLETE) {
+      // Light down during 200 miliseconds and keep zero lightning for 300 millisesonds      
+      red_LED.set_timers (200, 0, 300);
+      red_LED.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
+      switchUpDown = true;
+    }
+  } // switchUpDown
+  MTD2A_loop_execute();
+} // loop
+
+
+// ----------------------------------------------------------------------------------------
+
+
+#elif section == 5
+
+bool switchUpDown = true, printFlag = true;
+
+void loop() {
+  if (printFlag) {
+    Serial.println (F("Switching red and green Soft blink (like an incandescent bulb) blink using PWM curves"));
+    printFlag = false;
+  }
+  //
+  if (switchUpDown) {
+    if (red_LED.get_processState () == COMPLETE) {
+      // Light up during 200 miliseconds and keep full lightning for 300 millisesonds
+      red_LED.set_timers (200, 0, 300);
+      red_LED.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
+      green_LED.set_timers (200, 0, 300);
+      green_LED.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
+      switchUpDown = false;
+    }
+  }
+  else {
+    if (red_LED.get_processState () == COMPLETE) {
+      // Light down during 200 miliseconds and keep zero lightning for 300 millisesonds      
+      red_LED.set_timers (200, 0, 300);
+      red_LED.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
+      green_LED.set_timers (200, 0, 300);
+      green_LED.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
+      switchUpDown = true;
+    }
+  } // switchUpDown
+  MTD2A_loop_execute();
+} // loop
+
 
 #endif
