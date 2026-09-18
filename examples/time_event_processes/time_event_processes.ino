@@ -2,13 +2,19 @@
 // Examples are written for the Arduino Nano pinout (Nano family, Uno, Mega)
 // https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_english.pdf
 // Short DEMO: https://youtu.be/UU4k4_8GWfM
-// Joergen Bo Madsen / Updatede August 2026 / https://github.com/jebmdk
+// Joergen Bo Madsen / Updatede September 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 using namespace MTD2A_const;
 
 #define section 1
-// 1, 2, 3, 4, 5, 6, 7
+// 1: Timed cascading (round robin) 4 LEDs. Loop time controlled.
+// 2: Timed cascading (round robin) 4 LEDs. Precision time controlled.
+// 3: millis(); Not recommende with MTD2A library functions. Use MTD2A_timer ()
+// 4: Timed if-condition nested controlled. Not recommended. Can be used for simple solutions.
+// 5: Timed step controlled. Recommended for complex solutions
+// 6: Event if-condition controlled. Recommended for simple solutions
+// 7: Event step controlled. Recommended for complex constructions
 
 // 0,5 sec light, 0,5 sec delay
 MTD2A_binary_output green_LED_1 ("Green LED 1", 500); // LED on 0,5 second
@@ -56,8 +62,6 @@ void loop() {
   // Timed cascading (round robin) 4 LEDs. Loop time controlled.
   // Simpel and easy to use. Suitable for predictable processes following a non critical time line
   // however, if the throughput time exceeds 10 milliseconds, unexpected actions may occur
-  // timing is a bit faster than loopCcount and and differences grow over time.
-  // ATmega328: 1% - 5% and ESP32 below 1%. Use MTD2A_timer () for precision timing.
 
   switch (loopCount) {
     case   0: green_LED_1.activate();   Serial.println (F("Green LED 1"));   break;  // Start at once
