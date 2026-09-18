@@ -91,6 +91,8 @@ to power train engine and direction. A simple H-bridge is used to control track 
 One IR sensor is used to calibrate time and distance offset. Finally red and green train station signal.
 The train route is controlled by advanced mathematical PWM curves that compensate for inertia and 
 friction, and thus ensure smooth acceleration and deceleration.
+<br/> 1: case step process 
+<br/> 2: for loop process
 <br/> Short DEMO: https://youtu.be/1i-cGc6Dk4E
 <br/> Diagram drawing: [Pendulum H-bridge](/image/advanced_pendulum_H_bridge.png)
 <br/> Overview of [PWM curves](/doc/PWM_curves.pdf)
