@@ -21,6 +21,7 @@ using namespace MTD2A_const;
 // 3: PWM Sinus curve - max speed at 0 and 180 degrees
 // 4: PWM Sinus curve - max speed at 90 degrees
 // 5: PWM Sinus amplitude decreasing curve - max speed at 90 degrees
+// 6: PC9685 PWM 256 max step resolution - setPWM() - 50 Hz
 
 // SG92R micro analog servo. Nylon gear. Range: 0 - 180 degrees. 50 Hz. Deadband ~10 us
 // 9IMOD 7kg 2065 Digital Servo. Stainless steel gear. Water resistant IP66. Range: 0 - 180 & 50 - 330 Hz. Deadband ~2 us
@@ -151,7 +152,7 @@ void loop() {
 
 void loop() {
   if (loopCount == 1) {
-    Serial.println(F("(4) PWM Sinus curve - max speed at 0 and 180 degrees"));
+    Serial.println(F("(3) PWM Sinus curve - max speed at 0 and 180 degrees"));
     boom_angel.set_timers (1000, 0, 0);  // Output, begin, end
     loopCount = 0;
   }
@@ -200,7 +201,7 @@ void loop() {
 
 void loop() {
   if (loopCount == 1) {
-    Serial.println(F("(5) PWM Sinus curve - max speed at 90 degrees"));
+    Serial.println(F("(4) PWM Sinus curve - max speed at 90 degrees"));
     boom_angel.set_timers (1000, 0, 0);  // Output, begin, end
     loopCount = 0;
   }
@@ -254,7 +255,7 @@ int  offsetStep  = 0;
 void loop() {
   if (loopStart) {
     boom_angel.set_timers (500, 0, 0);  // Output, begin, end
-    Serial.println(F("(6) PWM Sinus amplitude decreasing curve (pendulum) - max speed at 90 degrees"));
+    Serial.println(F("(5) PWM Sinus amplitude decreasing curve (pendulum) - max speed at 90 degrees"));
     loopStart  = false;
     offsetStep = 0;
   }
@@ -325,7 +326,7 @@ int   pulseLen = 0;
 // 512 max step resolution
 void loop() {
   if (loopStart) {
-    Serial.println(F("(7) PC9685 PWM 256 max step resolution - setPWM() - 50 Hz"));
+    Serial.println(F("(6) PC9685 PWM 256 max step resolution - setPWM() - 50 Hz"));
     boom_angel.set_timers (3000, 100, 0);  // Output, begin, end
     loopStart = false;
   }
