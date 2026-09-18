@@ -90,7 +90,7 @@ void loop() {
       break;
     case 1:
       if (red_LED.get_processState () == COMPLETE) {  // waith for case 2 process to end
-        // Light up during 200 miliseconds and keep full lightning for 300 millisesonds
+        // Light up during 200 milliseconds and keep full lightning for 300 milliseconds
         red_LED.set_timers (200, 0, 300); 
         red_LED.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
         softStep = 2;
@@ -98,7 +98,7 @@ void loop() {
       break;
     case 2:
       if (red_LED.get_processState () == COMPLETE) {  // waith for case 1 process to end
-        // Light down during 200 miliseconds and keep zero lightning for 300 millisesonds
+        // Light down during 200 milliseconds and keep zero lightning for 300 milliseconds
         red_LED.set_timers (200, 0, 300); 
         red_LED.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
         softStep = 1;
@@ -124,7 +124,7 @@ void loop() {
   //
   if (switchUpDown) {
     if (red_LED.get_processState () == COMPLETE) {
-      // Light up during 200 miliseconds and keep full lightning for 300 millisesonds
+      // Light up during 200 milliseconds and keep full lightning for 300 milliseconds
       red_LED.set_timers (200, 0, 300);
       red_LED.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
       switchUpDown = false;
@@ -132,7 +132,7 @@ void loop() {
   }
   else {
     if (red_LED.get_processState () == COMPLETE) {
-      // Light down during 200 miliseconds and keep zero lightning for 300 millisesonds      
+      // Light down during 200 milliseconds and keep zero lightning for 300 milliseconds      
       red_LED.set_timers (200, 0, 300);
       red_LED.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
       switchUpDown = true;
@@ -157,7 +157,7 @@ void loop() {
   //
   if (switchUpDown) {
     if (red_LED.get_processState () == COMPLETE) {
-      // Light up during 200 miliseconds and keep full lightning for 300 millisesonds
+      // Light up during 200 milliseconds and keep full lightning for 300 milliseconds
       red_LED.set_timers (200, 0, 300);
       red_LED.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
       green_LED.set_timers (200, 0, 300);
@@ -167,7 +167,7 @@ void loop() {
   }
   else {
     if (red_LED.get_processState () == COMPLETE) {
-      // Light down during 200 miliseconds and keep zero lightning for 300 millisesonds      
+      // Light down during 200 milliseconds and keep zero lightning for 300 milliseconds      
       red_LED.set_timers (200, 0, 300);
       red_LED.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
       green_LED.set_timers (200, 0, 300);

@@ -222,7 +222,7 @@ void soft_blink () {
   case 0:  break;
   case 1:
     if (red_LED_1.get_processState () == COMPLETE) {  // waith for case 2 process to end
-      // Light up during 200 miliseconds and keep full lightning for 300 millisesonds
+      // Light up during 200 milliseconds and keep full lightning for 300 millisesonds
       red_LED_1.set_timers (200, 0, 300); 
       red_LED_1.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
       softStep = 2;
@@ -230,7 +230,7 @@ void soft_blink () {
     break;
   case 2:
     if (red_LED_1.get_processState () == COMPLETE) {  // waith for case 1 process to end
-      // Light down during 200 miliseconds and keep zero lightning for 300 millisesonds
+      // Light down during 200 milliseconds and keep zero lightning for 300 millisesonds
       red_LED_1.set_timers (200, 0, 300); 
       red_LED_1.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
       softStep = (softStop) ? 0 : 1;
