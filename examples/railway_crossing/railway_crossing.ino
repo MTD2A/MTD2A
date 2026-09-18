@@ -4,7 +4,7 @@
 // https://docs.arduino.cc/libraries/servo/
 // https://github.com/MTD2A/MTD2A/blob/main/sounds/Bells/railroad-crossing-bell-denmark-1-sec.mp3
 // Short DEMO: https://youtu.be/VaXmki2oLrk
-// Jørgen Bo Madsen / Updated august 2026 / https://github.com/jebmdk
+// Jørgen Bo Madsen / Updated September 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 #if defined(ESP32)
@@ -49,7 +49,6 @@ bool beginFlag   = false;
 bool endFlag     = false;
 bool softStop    = false;
 int  softStep    = 0;
-int  waitStep    = 0;
 
 // Time counters
 long beginCount  = 0; // Default MTD2A loop time step is 10 milliseconds
@@ -218,30 +217,25 @@ void soft_or_hard_blink (bool enableOrDisable) {
 
 
 void soft_blink () {
+ // https://github.com/MTD2A/MTD2A/tree/main/examples/blink_LED
  switch (softStep) {
-    case 0:  break;
-    case 1:
-        red_LED_2.set_timers (200, 0, 0); // Output, begin, end
-        red_LED_2.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
-        softStep = 2; 
-        waitStep = 0;
-    case 2:
-      if (waitStep == 45) { // wait 450 milliseconds starting from activation (globalDelayTimeMS = DELAY_10MS * 45)
-        softStep = 3;
-      }
-      waitStep++;
-      break;
-    case 3:
-      red_LED_2.set_timers (200, 0, 0); // Output, begin, end
-      red_LED_2.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
-      softStep = 4;
-      waitStep = 0;
-      break;
-    case 4:
-      if (waitStep == 55) { // wait 550 milliseconds starting from activation (globalDelayTimeMS = DELAY_10MS * 55)
-        softStep = (softStop) ? 0 : 1;
-      }
-      waitStep++;
-      break;
-  }
+  case 0:  break;
+  case 1:
+    if (red_LED_1.get_processState () == COMPLETE) {  // waith for case 2 process to end
+      // Light up during 200 miliseconds and keep full lightning for 300 millisesonds
+      red_LED_1.set_timers (200, 0, 300); 
+      red_LED_1.activate(MIN_PWM_VALUE, MAX_PWM_VALUE, RISING_LED);
+      softStep = 2;
+    }
+    break;
+  case 2:
+    if (red_LED_1.get_processState () == COMPLETE) {  // waith for case 1 process to end
+      // Light down during 200 miliseconds and keep zero lightning for 300 millisesonds
+      red_LED_1.set_timers (200, 0, 300); 
+      red_LED_1.activate(MAX_PWM_VALUE, MIN_PWM_VALUE, FALLING_LED);
+      softStep = (softStop) ? 0 : 1;
+    }
+    break;
+  } // switch 
+  if (!softStop) red_LED_2.set_pinWriteValue (red_LED_1.get_outputValue (), P_W_M);
 } // Soft blink
