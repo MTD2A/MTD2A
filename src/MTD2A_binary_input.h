@@ -3,7 +3,7 @@
  * @file    MTD2A_binary_input.h
  * @author  Joergen Bo Madsen
  * @version 1.3.5
- * @date    12. september 2026
+ * @date    20. september 2026
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 

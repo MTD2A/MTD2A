@@ -3,7 +3,7 @@
  * @file    MTD2A_binary_input.cpp
  * @author  Joergen Bo Madsen
  * @version 1.3.5
- * @date    12. september 2026
+ * @date    20. september 2026
  * @brief   Functions for MTD2A_binary_input.h (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -395,7 +395,7 @@ void MTD2A_binary_input::loop_fast_last () {
 
 
 void MTD2A_binary_input::begin_input_count () {
-  // Counting after DEBOUNCE_MS milliseconds ensures stability and noice canselation and unrealistic fast human switching.
+  // Counting after DEBOUNCE_MS milliseconds ensures stability, noise cancellation and rejection of unrealistically fast switching.
   // If it is necessary to detect rapid switching, optical buttons and switches can be used.
   if (delayTimeUS >= DEBOUNCE_US) {
     if (!countState) {  // edge during debounce window: ignore
