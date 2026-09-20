@@ -10,12 +10,17 @@ get_activeTimeMS (); {Milliseconds)  // Get active time (the ACTIVE process time
 get_inputCount   (); {number);       // Get number of button presses within "delayTimeMS" milliseconds
 
 New MTD2A_binary_output functionality:
--------------------------------------
+--------------------------------------
 get_activeTimeMS   (); {Milliseconds)  // Get active time (the ACTIVE process time)
 
 
+Name changes:
+-------------
+set_repeatActivate () changed to set_loopActivate
 
 
-
-
+New warning messages
+--------------------
+If timer or delay value modulus globalDelayTimeMS is not zero
+In practice, the value will be truncated to nearest multipla of globalDelayTimeMS
 

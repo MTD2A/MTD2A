@@ -52,6 +52,8 @@ get_reset_error	KEYWORD2
 set_pinReadToggl	KEYWORD2
 set_pinReadMode	KEYWORD2
 set_inputState	KEYWORD2
+get_inputCount	KEYWORD2
+get_activeTimeMS	KEYWORD2
 set_delayTimeMS	KEYWORD2
 set_pinBlockMS	KEYWORD2
 set_stopDelayTimer	KEYWORD2
@@ -79,6 +81,7 @@ set_PWM_curve_type	KEYWORD2
 set_pinWriteValue	KEYWORD2
 set_pinWriteToggl	KEYWORD2
 set_pinWriteMode	KEYWORD2
+get_activeTimeMS	KEYWORD2
 set_outputTimeMS	KEYWORD2
 set_beginDelayMS	KEYWORD2
 set_endDelayMS	KEYWORD2
