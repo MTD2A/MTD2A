@@ -8,13 +8,13 @@
 using namespace MTD2A_const;
 
 #define section 5
-// 1: Count number of push button debounces.
+// 1: Count number of push button debounce.
 // 2: Arduino standard: Measure push button down time.
-// 3: MTD2A library: Measure push button down time.
+// 3: MTD2A library:    Measure push button down time.
 // 4: Short, long and extra long button presses.
-// 5: Count number of button presses within LONG_PRESS_MS milliseconds and variations thereof.
+// 5: Count number of button presses within 2 seconds and variations thereof.
 
-int pushButton = 2; // Digital PIN 2
+int BUTTON_PIN = 2; // Digital PIN 2
 
 
 bool buttonDown = false;
@@ -34,16 +34,16 @@ unsigned long beginTime   = 0;
 void setup() {
   Serial.begin(9600);
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
-  Serial.println (F("Count number of push button debounces."));
-  pinMode(pushButton, INPUT_PULLUP);
+  Serial.println (F("Count number of push button debounce."));
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 } // setup
 
 
 void loop() {
   // read the input pin:
   lastButtonState = currButtonState;
-  currButtonState = digitalRead(pushButton);
-  // Detect push down button
+  currButtonState = digitalRead(BUTTON_PIN);
+  // Check whether the button has been pressed.
   if (currButtonState == LOW) {
     if (buttonDown == false) {
        buttonDown = true;
@@ -53,7 +53,9 @@ void loop() {
   }
 
   if (timerState == true) {
-    if (currButtonState != lastButtonState) changeCount++;
+    if (currButtonState != lastButtonState) {
+      changeCount++;
+    }
     if (millis() - beginTime > 500) {
       timerState = false;
       buttonDown = false;
@@ -77,22 +79,21 @@ void setup() {
   Serial.begin(9600);
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   Serial.println (); Serial.println (F("Arduino standard: Measure push button down time."));
-  pinMode(pushButton, INPUT_PULLUP);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 } // setup
 
 
 void loop() {
   // read the input pin:
   lastButtonState = currButtonState;
-  currButtonState = digitalRead(pushButton);
-  // Detect push down button
+  currButtonState = digitalRead(BUTTON_PIN);
+  // Check whether the button has been pressed.
   if (currButtonState == LOW) {
     if (buttonDown == false) {
        buttonDown = true;
        timerState = true;
        beginTime  = millis();
-       // delay (20); // Debounce time
-       delay (50); // DEBOUNCE_MS
+       delay (DEBOUNCE_MS); // DEBOUNCE_MS = 50 milliseconds
     }
   }
   // print out push button downn time (LOW)
@@ -119,7 +120,7 @@ void setup() {
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   Serial.println (); Serial.println (F("MTD2A library: Measure push button down time."));
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
-  buttonTimer.initialize (pushButton);  // default: NORMAL & INPUT_PULLUP
+  buttonTimer.initialize (BUTTON_PIN);  // default: NORMAL & INPUT_PULLUP
 }
 
 void loop() {
@@ -138,20 +139,20 @@ void loop() {
 
 #if section == 4
 
-MTD2A_binary_input buttonTimer ("Short / long button press", DEBOUNCE_MS, FIRST_TRIGGER, TIME_DELAY);
+MTD2A_binary_input buttonTimer ("Button timer", DEBOUNCE_MS, FIRST_TRIGGER, TIME_DELAY);
 
 void setup() {
   Serial.begin(9600); 
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   Serial.println (); Serial.println (F("MTD2A library: Short, long and extra long button presses."));
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
-  buttonTimer.initialize (pushButton);  // default: NORMAL & INPUT_PULLUP
+  buttonTimer.initialize (BUTTON_PIN);  // default: NORMAL & INPUT_PULLUP
 }
 
 void loop() {
   if (buttonTimer) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
     unsigned long activeTimeMS = buttonTimer.get_activeTimeMS ();
-    if (activeTimeMS > 100  && activeTimeMS <= 500) {
+    if (activeTimeMS > 50  && activeTimeMS <= 500) {  // DEBOUNCE_MS = 50
       Serial.print (F("SHORT button press: ")); Serial.println (activeTimeMS);
     }
     else if (activeTimeMS > 500  && activeTimeMS <= 1500) {
@@ -172,9 +173,9 @@ void loop() {
 
 #if section == 5
 
-// A: Count number of button presses within 2000 milliseconds
+// A: Count number of button presses within 2 seconds
 MTD2A_binary_input buttonCounter ("Button first press counter", 2000, FIRST_TRIGGER, TIME_DELAY);
-// B: Count number of button presses within 2000 milliseconds, resstarting timer after each button press. 
+// B: Count number of button presses within 2 seconds, resstarting timer after each button press. 
 // MTD2A_binary_input buttonCounter ("Button last press counter", 2000, LAST_TRIGGER, TIME_DELAY);
 // C: Immediately detects exactly one button press
 // MTD2A_binary_input buttonCounter ("One fast Button press", 0);
@@ -182,11 +183,9 @@ MTD2A_binary_input buttonCounter ("Button first press counter", 2000, FIRST_TRIG
 void setup() {
   Serial.begin(9600); 
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
-  Serial.println (); Serial.println (F("MTD2A library: Count number of button presses.")); 
-  Serial.print (F("The Debounce time: "));  Serial.print (DEBOUNCE_MS); 
-  Serial.println (F(" milliseconds is skipped, and is not counted.")); 
+  Serial.println (); Serial.println (F("MTD2A library: Count number of button presses within 2 seconds and variations thereof.")); 
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
-  buttonCounter.initialize (pushButton);  // default: NORMAL & INPUT_PULLUP
+  buttonCounter.initialize (BUTTON_PIN);  // default: NORMAL & INPUT_PULLUP
 }
 
 void loop() {
