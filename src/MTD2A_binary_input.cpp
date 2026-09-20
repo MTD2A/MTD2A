@@ -255,7 +255,7 @@ uint32_t MTD2A_binary_input::get_activeTimeMS () const {
 }
 
 
-uint32_t MTD2A_binary_input::get_inputCount () const {
+uint8_t MTD2A_binary_input::get_inputCount () const {
   return inputCount;
 }
 
@@ -357,12 +357,9 @@ void MTD2A_binary_input::loop_fast_first () {
   //
   if (processState == ACTIVE) {
     if ((globalSyncTimeUS - firstTimeUS) >= (delayTimeUS - MARGIN_TIME_US)  ||  stopDelayTimer == ENABLE) {
-      stopDelayTimer = DISABLE;
-      if (timerMode == MONO_STABLE) {
+      if (timerMode == MONO_STABLE  ||  currentState == HIGH) {
+        stopDelayTimer = DISABLE;
         end_state ();
-      }
-      else if (currentState == HIGH) {
-          end_state ();
       }
     } 
   }
@@ -388,12 +385,9 @@ void MTD2A_binary_input::loop_fast_last () {
     timer_input_count ();
     //
     if ((globalSyncTimeUS - lastTimeUS) >= (delayTimeUS - MARGIN_TIME_US)  ||  stopDelayTimer == ENABLE) {
-      stopDelayTimer = DISABLE;
-      if (timerMode == MONO_STABLE) {
+      if (timerMode == MONO_STABLE  ||  currentState == HIGH) {
+        stopDelayTimer = DISABLE;
         end_state ();
-      }
-      else if (currentState == HIGH) {
-          end_state ();
       }
     } 
   } // ACTIVE
@@ -401,21 +395,27 @@ void MTD2A_binary_input::loop_fast_last () {
 
 
 void MTD2A_binary_input::begin_input_count () {
-  if (delayTimeUS > (DEBOUNCE_MS * MS_to_US)) {
-    countState  = true;
-    countTimeUS = globalSyncTimeUS;
+  // Counting after DEBOUNCE_MS milliseconds ensures stability and noice canselation and unrealistic fast human switching.
+  // If it is necessary to detect rapid switching, optical buttons and switches can be used.
+  if (delayTimeUS >= DEBOUNCE_US) {
+    if (!countState) {  // edge during debounce window: ignore
+      countState  = true;
+      countTimeUS = globalSyncTimeUS;
+    }
   }
   else {
+    countState = false;
     inputCount = 1;
   }
-} // button_count_begin
+}  // button_count_begin
 
 
 void MTD2A_binary_input::timer_input_count () {
+  // In MONO_STABLE a press within the last DEBOUNCE_MS of the delay is not counted."
   if (countState) {
-    if ((globalSyncTimeUS - countTimeUS) >= DEBOUNCE_MS * MS_to_US) {
+    if ((globalSyncTimeUS - countTimeUS) >= DEBOUNCE_US) {
       if (currentState == LOW) {
-        inputCount++;
+        if (inputCount < UINT8_MAX) inputCount++;
       }
       countState = false;
     }
@@ -518,6 +518,9 @@ uint32_t MTD2A_binary_input::check_set_MS_to_US (uint32_t setCheckTimeMS) {
     print_error_text (ERR_TIME_ABOVE_MAX);
     return MAX_TIME_MS * MS_to_US;
   }
+  if (setCheckTimeMS % globalDelayTimeMS != 0) {
+    print_error_text (WARN_NOT_MODULU_ZERO);    
+  }
   return setCheckTimeMS * MS_to_US;
 } // check_set_MS_to_US
 
@@ -566,7 +569,7 @@ void MTD2A_binary_input::print_conf () {
   PortPrint  (F("  inputMode    : ")); MTD2A_print_pulse_fixed     (inputMode);
   // Button press
   PortPrint  (F("  inputCount   : ")); PortPrintln (inputCount);
-  PortPrint  (F("  ActiveTimeMS : ")); PortPrintln (calc_active_time_MS ());
+  PortPrint  (F("  activeTimeMS : ")); PortPrintln (calc_active_time_MS ());
   // timers
   PortPrint  (F("  delayTimeMS  : ")); PortPrintln (MTD2A_round_US_to_MS (delayTimeUS));
   PortPrint  (F("  firstTimeMS  : ")); PortPrintln (MTD2A_round_US_to_MS (firstTimeUS));

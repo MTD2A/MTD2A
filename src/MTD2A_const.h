@@ -128,6 +128,7 @@ namespace MTD2A_const {
   constexpr uint8_t  WARN_NO_CURVE_VALUE   = 156;  // beginValue = endValue => NO_CURVE
   constexpr uint8_t  WARN_NO_CURVE_TIME    = 157;  // Time = globalDelayTime => NO_CURVE
   constexpr uint8_t  WARN_PAUSE_ACTIVE     = 158;  // PAUSE already active
+  constexpr uint8_t  WARN_NOT_MODULU_ZERO  = 160;  // Value not stepping by globalDelayTimeMS
 
 } // namespace MTD2A_const
 

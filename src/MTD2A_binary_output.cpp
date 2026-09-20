@@ -1067,6 +1067,9 @@ uint32_t MTD2A_binary_output::check_set_MS_to_US (uint32_t setCheckTimeMS) {
     print_error_text (ERR_TIME_ABOVE_MAX);
     return MAX_TIME_MS * MS_to_US;
   }
+  if (setCheckTimeMS % globalDelayTimeMS != 0) {
+    print_error_text (WARN_NOT_MODULU_ZERO);    
+  }
   return setCheckTimeMS * MS_to_US;
 } // check_set_MS_to_US
 

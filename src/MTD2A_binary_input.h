@@ -66,7 +66,7 @@ class MTD2A_binary_input: public MTD2A
     static constexpr uint8_t  BLOCKING_PHASE   {MTD2A_const::BLOCKING_PHASE};
     static constexpr uint8_t  COMPLETE_PHASE   {MTD2A_const::COMPLETE_PHASE};
     // Button control
-    static constexpr uint8_t  DEBOUNCE_MS      {MTD2A_const::DEBOUNCE_MS};
+    static constexpr uint32_t DEBOUNCE_US      {static_cast<uint32_t>(MTD2A_const::DEBOUNCE_MS) * MS_to_US};
     
     // Arguments
     char    *objectName      {nullptr};        // Constructor initialized (User defined name to display identification)
@@ -348,12 +348,15 @@ class MTD2A_binary_input: public MTD2A
 
 
     /**
-     * @brief Get number of button presses within "delayTimeMS" milliseconds
+     * @brief Get number of valid button presses during the ACTIVE period.
+     *        A press is valid if the input is still activated DEBOUNCE_MS after the falling edge.
+     *        0 = cycle triggered, but no valid press (noise or too short press). Max 255.
+     *        delayTimeMS < DEBOUNCE_MS: always 1 (no debouncing).
      * @name object_name.get_inputCount ();
      * @param none
-     * @return uint8_t Count
+     * @return uint8_t Count {0 - 255}
      */
-    uint32_t get_inputCount () const;
+    uint8_t get_inputCount () const;
 
     
     /**
