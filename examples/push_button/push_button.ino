@@ -7,12 +7,13 @@
 #include <MTD2A.h>
 using namespace MTD2A_const;
 
-#define section 5
+#define section 6
 // 1: Count number of push button debounce.
 // 2: Arduino standard: Measure push button down time.
 // 3: MTD2A library:    Measure push button down time.
 // 4: Short, long and extra long button presses.
 // 5: Count number of button presses within 2 seconds and variations thereof.
+// 6: Count number of two button presses in parallel within 4 seconds.
 
 int BUTTON_PIN = 2; // Digital PIN 2
 
@@ -120,7 +121,7 @@ void setup() {
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   Serial.println (); Serial.println (F("MTD2A library: Measure push button down time."));
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
-  buttonTimer.initialize (BUTTON_PIN);  // default: NORMAL & INPUT_PULLUP
+  buttonTimer.initialize (BUTTON_PIN);  // Default: NORMAL & INPUT_PULLUP
 }
 
 void loop() {
@@ -146,7 +147,7 @@ void setup() {
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   Serial.println (); Serial.println (F("MTD2A library: Short, long and extra long button presses."));
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
-  buttonTimer.initialize (BUTTON_PIN);  // default: NORMAL & INPUT_PULLUP
+  buttonTimer.initialize (BUTTON_PIN);  // Default: NORMAL & INPUT_PULLUP
 }
 
 void loop() {
@@ -185,7 +186,7 @@ void setup() {
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   Serial.println (); Serial.println (F("MTD2A library: Count number of button presses within 2 seconds and variations thereof.")); 
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
-  buttonCounter.initialize (BUTTON_PIN);  // default: NORMAL & INPUT_PULLUP
+  buttonCounter.initialize (BUTTON_PIN);  // Default: NORMAL & INPUT_PULLUP
 }
 
 void loop() {
@@ -199,4 +200,41 @@ void loop() {
 
 #endif
 
+
+// ------------------------------------------------------------------------------------------------
+
+
+#if section == 6
+
+int BUTTON_PIN_2 = 3; // Digital PIN 3
+
+// Count number of button presses within 4 seconds
+MTD2A_binary_input buttonCounter  ("Button first press counter",   4000, FIRST_TRIGGER, TIME_DELAY);
+MTD2A_binary_input buttonCounter2 ("Button first press counter 2", 4000, FIRST_TRIGGER, TIME_DELAY);
+
+void setup() {
+  Serial.begin(9600); 
+  while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
+  Serial.println (); Serial.println (F("MTD2A library: Count number of two button presses in parallel within 4 seconds.")); 
+  MTD2A::set_globalDelayTimeMS (DELAY_10MS); // Default: DELAY_10MS { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
+  buttonCounter.initialize  (BUTTON_PIN);     // Default: NORMAL & INPUT_PULLUP
+  buttonCounter2.initialize (BUTTON_PIN_2);   // Default: NORMAL & INPUT_PULLUP
+}
+
+void loop() {
+  // Button 1
+  if (buttonCounter) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
+    printCount++; 
+    Serial.print (printCount); Serial.print (F("  Number of button pressed: ")); Serial.println (buttonCounter.get_inputCount ());
+  }
+  // Button 2
+  if (buttonCounter2) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
+    printCount++; 
+    Serial.print (printCount); Serial.print (F("  Number of button 2 pressed: ")); Serial.println (buttonCounter2.get_inputCount ());
+  }
+  MTD2A_loop_execute ();
+} // loop
+
+
+#endif
 
