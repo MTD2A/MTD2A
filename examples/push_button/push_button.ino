@@ -7,7 +7,7 @@
 #include <MTD2A.h>
 using namespace MTD2A_const;
 
-#define section 6
+#define section 4
 // 1: Count number of push button debounce.
 // 2: Arduino standard: Measure push button down time.
 // 3: MTD2A library:    Measure push button down time.
