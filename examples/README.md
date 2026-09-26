@@ -35,7 +35,7 @@ Push button detection and debounce handling. Demonstration of debounce counting,
 <br/> 5: Count number of button presses within 2 seconds and variations thereof.
 <br/> 6: Count number of two button presses in parallel within 4 seconds.
 <br/> Short DEMO: PREPARING
-<br/> Diagram drawing: [PREPARING](/image/Concept-Diagram.png)
+<br/> Diagram drawing: [Push button](/image/push_button.png)
 
 ### train_direction.ino
 Determining the direction of travel of the train (left / right). 
