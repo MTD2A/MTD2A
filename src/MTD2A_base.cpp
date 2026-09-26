@@ -58,6 +58,7 @@ bool     MTD2A::globalErrorPrint  {ENABLE};
 uint8_t  MTD2A::globalObjectCount {0};
 //
 uint32_t MTD2A::globalSyncTimeUS  {0UL};
+uint32_t MTD2A::globalSyncTimeMS  {0UL};
 uint8_t  MTD2A::globalDelayTimeMS {DELAY_10MS};
 
 // statistics
@@ -188,8 +189,25 @@ MTD2A::~MTD2A () {
 
 void MTD2A::loop_execute () {
   currentTimeUS = micros();
+
+  /* To do - next major version
+
+  // MTD2A_base.h
+    static uint32_t lastTimeUS;        // Previous raw micros() reading (wrap detect)
+    static uint64_t syncRolloverUS;    // Accumulated 2^32 wraps
+    static uint64_t globalSyncTimeUS;  // Extended monotonic reference (microseconds)
+
+  if (currentTimeUS < lastTimeUS) {  // micros() wrapped
+    syncRolloverUS += 0x100000000ULL;
+  }
+  lastTimeUS       = currentTimeUS;
+  globalSyncTimeUS = syncRolloverUS + currentTimeUS;
+
+  */
+
   // Synchronized reference time for all child objects
   globalSyncTimeUS = currentTimeUS;
+  globalSyncTimeMS = millis();  // Wraps at 49.7 days - long-span measurements
 
   loop_init_epoch_once         ();
   loop_execute_MTD2A_objects   ();

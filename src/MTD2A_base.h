@@ -92,7 +92,8 @@ class MTD2A  // base class
     // Globals - all MTD2A instantiations
     static bool     globalDebugPrint;   // User friendly status information
     static bool     globalErrorPrint;   // Error messaging
-    static uint32_t globalSyncTimeUS;   // Synchronized reference time for all child objects 
+    static uint32_t globalSyncTimeUS;   // Synchronized reference time for all child objects
+    static uint32_t globalSyncTimeMS;   // Synchronized reference time Milliseconds
     static uint8_t  globalDelayTimeMS;  // Current loop delay time (DELAY_10MS, DELAY_5MS & DELAY_1MS)
     static uint8_t  globalObjectCount;  // Number or instantiated objects (classes)
     // statistics

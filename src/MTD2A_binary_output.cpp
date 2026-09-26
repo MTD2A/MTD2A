@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.cpp
  * @author  Joergen Bo Madsen
- * @version 1.3.2
- * @date    12. september 2026
+ * @version 1.3.3
+ * @date    26. september 2026
  * @brief   Functions for MTD2A_binary_output.h (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -832,6 +832,7 @@ void MTD2A_binary_output::loop_fast () {
   if (setStartPhase == true) {
     setStartPhase = false;
     phaseNumber   = setPhaseNumber;
+    setActiveMS   = globalSyncTimeMS;
   }
   //
   outputState   = false;
@@ -977,26 +978,24 @@ void MTD2A_binary_output::loop_fast_end_timer () {
 
 
 void MTD2A_binary_output::loop_fast_complete () {
-  processState  = COMPLETE;
-  phaseNumber   = COMPLETE_PHASE;
-  setCompleteUS = globalSyncTimeUS;
+  processState = COMPLETE;
+  phaseNumber  = COMPLETE_PHASE;
   bool restartLoop = (loopActivate == ENABLE  &&  startPhase == true);
   if (restartLoop == true  &&  outputTimeUS == 0  &&  beginDelayUS == 0  &&  endDelayUS == 0) {
-    restartLoop = false;  // No timing configured: go idle instead of spinning every loop
+    restartLoop = false;    // No timing configured: go idle instead of spinning every loop
     print_error_text (WARN_ALL_TIMERS_ZERO);
   }
-  if (restartLoop == true) {
-    phaseChange = true;     // fires once per completed loop cycle
+  if (startPhase == true) {  // Genuine transition - latch once, not every idle loop
+    setCompleteMS = globalSyncTimeMS;
+    phaseChange   = true;     // fires once per completed loop cycle
     print_phase_line ();    // To many repeating phase lines?
+  }
+  if (restartLoop == true) {
     activate_check ();
     activate_process (false);
   }
   else {
-    if (startPhase == true) {
-      startPhase  = false;
-      phaseChange = true;
-      print_phase_line ();
-    }
+    startPhase  = false;
   }
 } // loop_fast_complete
 
@@ -1006,6 +1005,9 @@ void MTD2A_binary_output::reset () {
   setBeginUS       = 0;
   setOutputUS      = 0;
   setEndUS         = 0;
+  //
+  setActiveMS      = 0;
+  setCompleteMS    = 0;
   //
   errorNumber      = 0;
   startPhase       = false; 
@@ -1038,23 +1040,10 @@ void MTD2A_binary_output::reset () {
 
 
 uint32_t MTD2A_binary_output::calc_active_time_MS () const {
-  uint32_t startTime = 0;
-  if (beginDelayUS > 0) {
-    startTime = setBeginUS;
-  }
-  else if (outputTimeUS > 0) {
-    startTime = setOutputUS;
-  }
-  else if (endDelayUS > 0) {
-    startTime = setEndUS;
-  }
-  //
   if (processState == ACTIVE) {
-    return MTD2A_round_US_to_MS (globalSyncTimeUS - startTime);
+    return globalSyncTimeMS - setActiveMS;
   }
-  else {
-    return MTD2A_round_US_to_MS (setCompleteUS - startTime);
-  }
+  return setCompleteMS - setActiveMS;
 } // calc_active_time_MS
 
 

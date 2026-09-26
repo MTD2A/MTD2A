@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_timer.cpp
  * @author  Joergen Bo Madsen
- * @version 1.3.1
- * @date    15. july 2026
+ * @version 1.3.2
+ * @date    21. september 2026
  * @brief   functions for MTD2A_timer.h base class (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -402,6 +402,9 @@ uint32_t MTD2A_timer::check_set_MS_to_US (uint32_t setCheckTimeMS) {
   }
   if (setCheckTimeMS == 0) {
     print_error_text (WARN_TIMER_ZERO);
+  }
+  if (setCheckTimeMS % globalDelayTimeMS != 0) {
+    print_error_text (WARN_NOT_MODULU_ZERO);    
   }
   return setCheckTimeMS * MS_to_US;
 } // check_set_MS_to_US

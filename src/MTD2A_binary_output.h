@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
- * @version 1.3.2
- * @date    12. september 2026
+ * @version 1.3.3
+ * @date    26. september 2026
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -120,7 +120,8 @@ class MTD2A_binary_output: public MTD2A
     uint32_t setOutputUS      {0UL};            // Output start time (Microseconds)
     uint32_t setBeginUS       {0UL};            // Begin  start time (Microseconds)
     uint32_t setEndUS         {0UL};            // End    start time (Microseconds)
-    uint32_t setCompleteUS    {0UL};            // Process complete time (Microseconds)
+    uint32_t setActiveMS      {0UL};            // Process active start time (Milliseconds)
+    uint32_t setCompleteMS    {0UL};            // Process complete time (Milliseconds)
     // Stop timer
     bool     stopOutputTimer  {DISABLE};        // stop output timer process when executing MTD2A_loop_execute ();
     bool     stopBeginTimer   {DISABLE};        // stop begin delay timer process when executing MTD2A_loop_execute ();
