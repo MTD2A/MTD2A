@@ -33,6 +33,7 @@ Push button detection and debounce handling. Demonstration of debounce counting,
 <br/> 3: MTD2A library:    Measure push button down time.
 <br/> 4: Short, long and extra long button presses.
 <br/> 5: Count number of button presses within 2 seconds and variations thereof.
+<br/> 6: Count number of two button presses in parallel within 4 seconds.
 <br/> Short DEMO: PREPARING
 <br/> Diagram drawing: [PREPARING](/image/Concept-Diagram.png)
 
