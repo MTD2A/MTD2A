@@ -3,7 +3,7 @@
 // Examples are written for the Arduino Nano pinout (Nano family, Uno, Mega)
 // https://docs.arduino.cc/libraries/servo/ 
 // Short DEMO: https://youtu.be/parVpl98mDk
-// Jørgen Bo Madsen / July 2026 / https://github.com/jebmdk
+// Jørgen Bo Madsen / September 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 #if defined(ESP32)
@@ -36,6 +36,9 @@ const unsigned int PCA9685_MAX  =  590; // This is the 'maximum' pulse length co
 const byte NANO_PIN_1  = 5;  // Nano Servo output PIN
 const byte NANO_PIN_2  = 6;  // Nano Servo output PIN
 const byte PCA9685_PIN = 0;  // Adadfruit I2C PCA9685 board servo PIN no
+
+// NOTE! On Arduino Uno / Nano / Pro Mini (ATmega328P): The servo library claims Timer 1. 
+// This completely disables PWM on Digital Pins 9 and 10, even if you only attach a single servo to a completely different pin.
 
 MTD2A_binary_output boom_angel ("Boom angel");
 Servo Nano_servo_1;
