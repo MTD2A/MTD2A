@@ -1128,7 +1128,7 @@ void MTD2A_binary_output::print_conf () {
   PortPrint  (F("  pinStartValue: ")); MTD2A_print_value_binary (outputMode, pinStartValue);
   PortPrint  (F("  pinWriteValue: ")); MTD2A_print_value_binary (outputMode, pinWriteValue);
   // timers
-  PortPrint  (F("  ActiveTimeMS : ")); PortPrintln (calc_active_time_MS ());
+  PortPrint  (F("  activeTimeMS : ")); PortPrintln (calc_active_time_MS ());
   PortPrint  (F("  setOutputMS  : ")); PortPrintln (MTD2A_round_US_to_MS (setOutputUS));
   PortPrint  (F("  setBeginMS   : ")); PortPrintln (MTD2A_round_US_to_MS (setBeginUS));
   PortPrint  (F("  setEndMS     : ")); PortPrintln (MTD2A_round_US_to_MS (setEndUS));

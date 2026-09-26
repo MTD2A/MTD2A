@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.h
  * @author  Joergen Bo Madsen
- * @version 1.3.1
- * @date    15. july 2026
+ * @version 1.3.3
+ * @date    26. september 2026
  * @brief   Base class for common functions (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -229,6 +229,15 @@ class MTD2A  // base class
      */
     static void reset_stats ();
 
+    
+    /**
+     * @brief Check all reserved PWM pins for timer conflicts (Servo, tone, etc.)
+     * @name MTD2A_check_pwm_timers ();
+     * @param none
+     * @return Set error number and print error text if error settings is enabled
+     */
+    static void check_pwm_timers ();
+
 
   private:
     // Function pointer linked list -----------------------------------------------------------------------------------
@@ -261,6 +270,10 @@ class MTD2A  // base class
     static char    *MTD2A_set_object_name        (const char *setObjectName);
     static void     MTD2A_print_object_name      (const char *printObjectName);
     static uint8_t  MTD2A_reserve_and_check_pin  (uint8_t     checkPinNumber,    uint8_t checkPinFlags);
+    static bool     MTD2A_pin_timer_claimed      (uint8_t     checkPinNumber);
+    static uint8_t *MTD2A_pin_flags_table        ();
+
+
     // Error and debug print
     static void     MTD2A_print_US_to_MS         (uint32_t    microSeconds);
     static void     MTD2A_print_error_text       (const char *printObjectName,   bool    debugOrErrorPrint, uint8_t printErrorNumber, uint8_t printPinNumber);
@@ -324,6 +337,15 @@ inline void MTD2A_print_conf () {  MTD2A::print_conf ();  }
  * @return none
  */
 inline void MTD2A_reset_stats () {  MTD2A::reset_stats ();  }
+
+
+/**
+ * @brief Check all reserved PWM pins for timer conflicts (Servo, tone, etc.)
+ * @name MTD2A_check_pwm_timers ();
+ * @param none
+ * @return Set error number and print error text if error settings is enabled
+ */
+inline void MTD2A_check_pwm_timers () { MTD2A::check_pwm_timers (); }
 
 
 #endif

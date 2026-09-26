@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.cpp
  * @author  Joergen Bo Madsen
- * @version 1.3.1
- * @date    15. july 2026
+ * @version 1.3.3
+ * @date    26. september 2026
  * @brief   Base class for common functions (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -43,6 +43,15 @@
 
 // Global constants from MTD2A_base.h (MTD2A_const.h) 
 using namespace MTD2A_const;
+
+
+// Pin count fallback. A few cores do not define NUM_DIGITAL_PINS. Defined once
+// here - before every function that uses it - so file order does not matter.
+#ifndef NUM_DIGITAL_PINS
+  #define NUM_DIGITAL_PINS   32   // Safe default for most Arduino boards
+  #define MTD2A_NO_PIN_COUNT      // Pin number range check not possible
+#endif
+
 
 constexpr uint32_t MTD2A::MAX_TIME_MS;    // definition, no initializer here
 constexpr uint8_t  MTD2A::MAX_PWM_CURVES; // definition, no initializer here
@@ -229,6 +238,11 @@ void MTD2A::loop_init_epoch_once () {
     epochTimeUS      = currentTimeUS;
     beginLoopTimeUS  = currentTimeUS;
     totalLoopCount   = 1;
+    static bool pwmCheckedOnce {false};      // once per program, not per call
+    if (pwmCheckedOnce == false) {
+      pwmCheckedOnce = true;
+      check_pwm_timers ();
+    }
   }
 } // loop_init_epoch_once
 
@@ -358,11 +372,10 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (uint8_t checkPinNumber, uint8_t chec
   // https://github.com/espressif/arduino-esp32/blob/master/variants/nano32/pins_arduino.h
   uint8_t checkErrorNumber = 0;
   // errorNumber {1-127} Error {128-255} Warning
-  #ifndef NUM_DIGITAL_PINS
-    #define NUM_DIGITAL_PINS 100  // Safe default for most Arduino boards
-    checkErrorNumber = 128;  // Warning, but continue processing
+  #ifdef MTD2A_NO_PIN_COUNT
+    checkErrorNumber = WARN_DIGITAL_NO_CHECK;  // Warning, but continue processing
   #endif
-  static uint8_t pinFlags[NUM_DIGITAL_PINS] = {0};
+  uint8_t *pinFlags = MTD2A_pin_flags_table ();
 
   // bit 0 [1]  : digital
   // bit 1 [2]  : analog
@@ -375,7 +388,7 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (uint8_t checkPinNumber, uint8_t chec
 
   // Digital 
   if ((checkPinFlags & DIGITAL_FLAG_0)  &&  (checkPinNumber >= NUM_DIGITAL_PINS)) {
-    checkErrorNumber = 2;
+    checkErrorNumber = ERR_DIGITAL_PIN_RANGE;
     return checkErrorNumber;
   }
 
@@ -386,33 +399,33 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (uint8_t checkPinNumber, uint8_t chec
       // digitalPinToAnalogChannel() (esp32-hal-gpio.h) returns -1 for non-ADC pins.
       // NOTE: ADC2 channels are unavailable while WiFi is active (hardware limitation).
       if (digitalPinToAnalogChannel(checkPinNumber) < 0) {
-        checkErrorNumber = 3;
+        checkErrorNumber = ERR_ANALOG_PIN_RANGE;
         return checkErrorNumber;
       }
     #elif defined(NUM_ANALOG_INPUTS) && defined(analogInputToDigitalPin)
       // Classic AVR: analog pins map to a contiguous block of digital pin numbers.
       if (checkPinNumber <  analogInputToDigitalPin(0)  ||
           checkPinNumber >  analogInputToDigitalPin(NUM_ANALOG_INPUTS - 1)) {
-        checkErrorNumber = 3;
+        checkErrorNumber = ERR_ANALOG_PIN_RANGE;
         return checkErrorNumber;
       }
     #elif defined(NUM_ANALOG_INPUTS)
       // Fallback: original block-at-the-end assumption.
       if (checkPinNumber < (NUM_DIGITAL_PINS - NUM_ANALOG_INPUTS)) {
-        checkErrorNumber = 3;
+        checkErrorNumber = ERR_ANALOG_PIN_RANGE;
         return checkErrorNumber;
       }
     #else
-      checkErrorNumber = 129;  // Warning, but continue processing
+      checkErrorNumber = WARN_ANALOG_NO_CHECK;  // Warning, but continue processing
     #endif
   }
 
   // Double pin binding
   if ((pinFlags[checkPinNumber] & INPUT_FLAG_2)  &&  (checkPinFlags & INPUT_FLAG_2)) {
-    checkErrorNumber = 130;  // Warning, but continue processing
+    checkErrorNumber = WARN_PIN_REUSED;  // Warning, but continue processing
   }
   if ((pinFlags[checkPinNumber] & OUTPUT_FLAG_4)  &&  (checkPinFlags & OUTPUT_FLAG_4)) {
-    checkErrorNumber = 4;
+    checkErrorNumber = ERR_OUTPUT_PIN_IN_USE;
     return checkErrorNumber;
   }
 
@@ -420,24 +433,24 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (uint8_t checkPinNumber, uint8_t chec
   # if defined(digitalPinHasPWM)
     if (checkPinFlags & PWM_FLAG_5) {
       if (!digitalPinHasPWM(checkPinNumber)) {
-        checkErrorNumber = 5;
+        checkErrorNumber = ERR_NO_PWM_SUPPORT;
         return checkErrorNumber;
       }
       #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__) // Arduino Uno/Nano    
         if ((checkPinFlags & TONE_FLAG_6) && (checkPinNumber == 3  ||  checkPinNumber == 11)) {  // tone()
-         checkErrorNumber = 6;
+         checkErrorNumber = ERR_TONE_PWM_CONFLICT;
           return checkErrorNumber;
         }
       #elif defined(__AVR_ATmega2560__) // Arduino Mega
         if ((checkPinFlags & TONE_FLAG_6) && (checkPinNumber == 9  ||  checkPinNumber == 10)) {  // tone()
-          checkErrorNumber = 6;
+          checkErrorNumber = ERR_TONE_PWM_CONFLICT;
           return checkErrorNumber;
         }
       #endif
     } // checkPinFlags & PWM_FLAG_5
   #else
     if (checkPinFlags & PWM_FLAG_5) {
-      checkErrorNumber = 131;  // WARN_PWM_NO_CHECK - only if PWM was requested
+      checkErrorNumber = WARN_PWM_NO_CHECK;  // only if PWM was requested
     }
   #endif
 
@@ -445,16 +458,16 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (uint8_t checkPinNumber, uint8_t chec
     #ifndef NOT_AN_INTERRUPT // Interrupt capability check
       #define NOT_AN_INTERRUPT 255 // Fallback for older Arduino versions
       if (checkPinFlags & INTERRUPT_FLAG_7) {
-        checkErrorNumber = 132;  // WARN_INT_NO_CHECK
+        checkErrorNumber = WARN_INT_NO_CHECK; 
       }
     #endif
     if ((checkPinFlags & INTERRUPT_FLAG_7)  &&  (digitalPinToInterrupt(checkPinNumber) == NOT_AN_INTERRUPT)) {
-      checkErrorNumber = 7;
+      checkErrorNumber = ERR_NO_INT_SUPPORT;
       return checkErrorNumber;
     }
   #else
     if (checkPinFlags & INTERRUPT_FLAG_7) {
-      checkErrorNumber = 132;  // WARN_INT_NO_CHECK
+      checkErrorNumber = WARN_INT_NO_CHECK; 
     }
   #endif
 
@@ -462,6 +475,113 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (uint8_t checkPinNumber, uint8_t chec
     pinFlags[checkPinNumber] |= checkPinFlags;
   return checkErrorNumber;
 } // MTD2A_reserve_and_check_pin
+
+
+// Some AVR cores (ATTinyCore, MicroCore, ...) define only the timer names the
+// chip actually has. Give the missing names unique dummy values that
+// digitalPinToTimer () can never return (the core uses 0 - 17), so that every
+// case label below compiles on every AVR variant.
+#if defined(__AVR__)
+  #ifndef TIMER1A
+    #define TIMER1A 201
+  #endif
+  #ifndef TIMER1B
+    #define TIMER1B 202
+  #endif
+  #ifndef TIMER1C
+    #define TIMER1C 203
+  #endif
+  #ifndef TIMER2
+    #define TIMER2  204
+  #endif
+  #ifndef TIMER2A
+    #define TIMER2A 205
+  #endif
+  #ifndef TIMER2B
+    #define TIMER2B 206
+  #endif
+  #ifndef TIMER3A
+    #define TIMER3A 207
+  #endif
+  #ifndef TIMER3B
+    #define TIMER3B 208
+  #endif
+  #ifndef TIMER3C
+    #define TIMER3C 209
+  #endif
+  #ifndef TIMER4A
+    #define TIMER4A 210
+  #endif
+  #ifndef TIMER4B
+    #define TIMER4B 211
+  #endif
+  #ifndef TIMER4C
+    #define TIMER4C 212
+  #endif
+  #ifndef TIMER5A
+    #define TIMER5A 213
+  #endif
+  #ifndef TIMER5B
+    #define TIMER5B 214
+  #endif
+  #ifndef TIMER5C
+    #define TIMER5C 215
+  #endif
+#endif
+
+
+// Returns true if the timer behind this pin is claimed by another library
+// (Servo, tone, etc.), which disables PWM output on the pin.
+bool MTD2A::MTD2A_pin_timer_claimed (uint8_t checkPinNumber) {
+#if defined(__AVR__)
+  if (checkPinNumber >= NUM_DIGITAL_PINS) {   // digitalPinToTimer () has no range check
+    return false;
+  }
+  switch (digitalPinToTimer (checkPinNumber)) {
+  #if defined(TIMSK1) && defined(OCIE1A)
+    case TIMER1A: case TIMER1B: case TIMER1C:
+      return (TIMSK1 & _BV(OCIE1A)) != 0;
+  #endif
+  #if defined(TIMSK2) && defined(OCIE2A)
+    case TIMER2:  case TIMER2A: case TIMER2B:
+      return (TIMSK2 & _BV(OCIE2A)) != 0;   // tone()
+  #endif
+  #if defined(TIMSK3) && defined(OCIE3A)
+    case TIMER3A: case TIMER3B: case TIMER3C:
+      return (TIMSK3 & _BV(OCIE3A)) != 0;
+  #endif
+  #if defined(TIMSK4) && defined(OCIE4A)
+    case TIMER4A: case TIMER4B: case TIMER4C:
+      return (TIMSK4 & _BV(OCIE4A)) != 0;
+  #endif
+  #if defined(TIMSK5) && defined(OCIE5A)
+    case TIMER5A: case TIMER5B: case TIMER5C:
+      return (TIMSK5 & _BV(OCIE5A)) != 0;
+  #endif
+    default: break;
+  }
+#else
+  (void)checkPinNumber;   // ESP32 and others use LEDC, not AVR timers
+#endif
+  return false;
+} // MTD2A_pin_timer_claimed
+
+
+uint8_t *MTD2A::MTD2A_pin_flags_table () {
+  static uint8_t pinFlags[NUM_DIGITAL_PINS] = {0};
+  return pinFlags;
+} // MTD2A_pin_flags_table
+
+
+void MTD2A::check_pwm_timers () {
+  uint8_t *pinFlags = MTD2A_pin_flags_table ();
+  for (uint8_t pinNumber = 0; pinNumber < NUM_DIGITAL_PINS; pinNumber++) {
+    if ((pinFlags[pinNumber] & PWM_FLAG_5)  &&  MTD2A_pin_timer_claimed (pinNumber)) {
+      MTD2A_print_error_text (baseName, (globalDebugPrint == ENABLE || globalErrorPrint == ENABLE),
+                              WARN_TIMER_CLAIMED, pinNumber);
+    }
+  }
+} // check_pwm_timers
 
 
 void MTD2A::MTD2A_print_error_text 
@@ -484,7 +604,6 @@ void MTD2A::MTD2A_print_error_text
     // Named constants: central registry in MTD2A_const.h ties number, name and text together
     switch (printErrorNumber) {
       // Errors {1-127}
-      case ERR_OBJECT_INSTANT:     PortPrintln (F("Object instantiation error / warning"));  break;
       case ERR_PIN_NOT_DEFINED:    PortPrintln (F("Pin number not defined (255)"));          break;
       case ERR_DIGITAL_PIN_RANGE:  PortPrintln (F("Digital pin number out of range"));       break;
       case ERR_ANALOG_PIN_RANGE:   PortPrintln (F("Analog pin number out of range"));        break;
@@ -504,6 +623,7 @@ void MTD2A::MTD2A_print_error_text
       case ERR_UNFORESEEN_ERROR:   PortPrintln (F("Unforeseen system error"));               break;
       case ERR_TIMER_NOT_IN_USE:   PortPrintln (F("Must be ACTIVE and timer configured"));   break;
       case ERR_ALREADY_INIT:       PortPrintln (F("Already initialized"));                   break;
+      case ERR_OBJECT_INSTANT:     PortPrintln (F("Object instantiation error / warning"));  break;
 
       // Warnings {128-255}
       case WARN_DIGITAL_NO_CHECK:  PortPrintln (F("Digital Pin check not possible"));        break;
@@ -511,19 +631,21 @@ void MTD2A::MTD2A_print_error_text
       case WARN_PIN_REUSED:        PortPrintln (F("Pin used more than once"));               break;
       case WARN_PWM_NO_CHECK:      PortPrintln (F("PWM Pin check not possible"));            break;
       case WARN_INT_NO_CHECK:      PortPrintln (F("Interrupt Pin check not possible"));      break;
+      case WARN_TIMER_CLAIMED:     PortPrintln (F("PWM disabled: Timer claimed by another library")); break;
       case WARN_TIMER_ZERO:        PortPrintln (F("Timer value is zero"));                   break;
       case WARN_TIME_PAUSE_MAX:    PortPrintln (F("Time + pause exceeds MAX_TIME_MS"));      break;
       case WARN_COUNTDOWN_IGNORED: PortPrintln (F("setCountDownMS argument is ignored"));    break;
       case WARN_OUT_TIMER_ZERO:    PortPrintln (F("Output timer value is zero"));            break;
       case WARN_ALL_TIMERS_ZERO:   PortPrintln (F("All three timers are zero"));             break;
       case WARN_BINARY_VALUE:      PortPrintln (F("Binary pin value > 1. Set to HIGH"));     break;
-      case WARN_UNDEF_PWM_CURVE:   PortPrint   (F("Undefined PWM curve. Must be <= "));  PortPrintln (MAX_PWM_CURVES); break;
+      case WARN_UNDEF_PWM_CURVE:   PortPrint   (F("Undefined PWM curve. Must be <= "));      PortPrintln (MAX_PWM_CURVES); break;
       case WARN_USE_RISING:        PortPrintln (F("Use RISING curve instead of FALLING"));   break;
       case WARN_USE_FALLING:       PortPrintln (F("Use FALLING curve instead of RISING"));   break;
       case WARN_NO_CURVE_VALUE:    PortPrintln (F("BeginValue = endValue => NO_CURVE"));     break;
       case WARN_NO_CURVE_TIME:     PortPrintln (F("Time = globalDelayTime => NO_CURVE"));    break;
       case WARN_PAUSE_ACTIVE:      PortPrintln (F("PAUSE already active"));                  break;
-      case WARN_NOT_MODULU_ZERO:   PortPrint   (F("Value not stepping by globalDelayTimeMS: "));  PortPrintln (globalDelayTimeMS); break;;
+      case WARN_NOT_MODULU_ZERO:   PortPrint   (F("Value not stepping by globalDelayTimeMS: "));  PortPrintln (globalDelayTimeMS); break;
+
       default:
         PortPrint(F("Unknown error: ")); PortPrint(printErrorNumber); PortPrintln(F(" Please report"));
     }

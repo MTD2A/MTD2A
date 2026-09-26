@@ -3,7 +3,7 @@
  * @file    MTD2A_timer.cpp
  * @author  Joergen Bo Madsen
  * @version 1.3.2
- * @date    21. september 2026
+ * @date    26. september 2026
  * @brief   functions for MTD2A_timer.h base class (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -267,7 +267,7 @@ uint8_t MTD2A_timer::get_phaseNumber () const {
 uint8_t MTD2A_timer::get_reset_error () {
   uint8_t tempErrorNumber = errorNumber;
   if (objectError > 0) {
-    print_error_text (0);
+    print_error_text (ERR_OBJECT_INSTANT);
     print_error_text (objectError);
     objectError = 0;
   }

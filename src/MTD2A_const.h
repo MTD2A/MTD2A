@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_const.h
  * @author  Joergen Bo Madsen
- * @version 1.3.2
- * @date    10. september 2026
+ * @version 1.3.3
+ * @date    26. september 2026
  * @brief   Global constants for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -89,7 +89,6 @@ namespace MTD2A_const {
   constexpr uint8_t  FALLING_LED   = 24;
 
   // Error numbers {1-127} --------------------------------------------
-  constexpr uint8_t  ERR_OBJECT_INSTANT    =   0;  // Header line: object instantiation error/warning
   constexpr uint8_t  ERR_PIN_NOT_DEFINED   =   1;  // Pin number not defined (255)
   constexpr uint8_t  ERR_DIGITAL_PIN_RANGE =   2;  // Digital pin number out of range
   constexpr uint8_t  ERR_ANALOG_PIN_RANGE  =   3;  // Analog pin number out of range
@@ -109,6 +108,7 @@ namespace MTD2A_const {
   constexpr uint8_t  ERR_UNFORESEEN_ERROR  =  17;  // Unforeseen system error
   constexpr uint8_t  ERR_TIMER_NOT_IN_USE  =  18;  // Must be ACTIVE and timer configured (> 0)
   constexpr uint8_t  ERR_ALREADY_INIT      =  19;  // Already initialized
+  constexpr uint8_t  ERR_OBJECT_INSTANT    =  20;  // Header line: object instantiation error/warning
 
   // Warning numbers {128-255} ----------------------------------------
   constexpr uint8_t  WARN_DIGITAL_NO_CHECK = 128;  // Digital pin check not possible
@@ -116,6 +116,7 @@ namespace MTD2A_const {
   constexpr uint8_t  WARN_PIN_REUSED       = 130;  // Pin used more than once
   constexpr uint8_t  WARN_PWM_NO_CHECK     = 131;  // PWM pin check not possible
   constexpr uint8_t  WARN_INT_NO_CHECK     = 132;  // Interrupt pin check not possible
+  constexpr uint8_t  WARN_TIMER_CLAIMED    = 133;  // PWM disabled: Timer claimed by another library
   constexpr uint8_t  WARN_TIMER_ZERO       = 140;  // Timer value is zero
   constexpr uint8_t  WARN_TIME_PAUSE_MAX   = 141;  // Time + pause exceeds MAX_TIME_MS
   constexpr uint8_t  WARN_COUNTDOWN_IGNORED= 142;  // setCountDownMS argument is ignored
