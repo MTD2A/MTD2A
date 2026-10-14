@@ -114,7 +114,8 @@ void MTD2A::set_globalDelayTimeMS (uint8_t setGlobalDelayTimeMS) {
     reset_stats ();
   }
   else {
-      MTD2A_print_error_text (baseName, (globalDebugPrint == ENABLE ||  globalErrorPrint == ENABLE), 15, NO_PIN);
+      MTD2A_print_error_text (baseName, (globalDebugPrint == ENABLE ||  globalErrorPrint == ENABLE), 
+      ERR_DELAY_RANGE, NO_PIN);
   }
 } // set_globalDelayTimeMS
 
@@ -128,7 +129,7 @@ uint8_t MTD2A::get_globalDelayTimeMS () {
 
 
 uint32_t MTD2A::get_globalSyncTimeMS () {
-  return MTD2A_round_US_to_MS (globalSyncTimeUS);
+  return globalSyncTimeMS;
 }
 
 
@@ -386,8 +387,8 @@ uint8_t MTD2A::MTD2A_reserve_and_check_pin (uint8_t checkPinNumber, uint8_t chec
   // bit 6 [64] : tone()
   // bit 7 [128]: Interrupt
 
-  // Digital 
-  if ((checkPinFlags & DIGITAL_FLAG_0)  &&  (checkPinNumber >= NUM_DIGITAL_PINS)) {
+  // Pin number range. Unconditional: also guards pinFlags [] indexing below
+  if (checkPinNumber >= NUM_DIGITAL_PINS) {
     checkErrorNumber = ERR_DIGITAL_PIN_RANGE;
     return checkErrorNumber;
   }
@@ -644,6 +645,7 @@ void MTD2A::MTD2A_print_error_text
       case WARN_NO_CURVE_VALUE:    PortPrintln (F("BeginValue = endValue => NO_CURVE"));     break;
       case WARN_NO_CURVE_TIME:     PortPrintln (F("Time = globalDelayTime => NO_CURVE"));    break;
       case WARN_PAUSE_ACTIVE:      PortPrintln (F("PAUSE already active"));                  break;
+      case WARN_LOOP_ACT_DISAB:    PortPrintln (F("loopActivate set to DISABLE"));          break;
       case WARN_NOT_MODULU_ZERO:   PortPrint   (F("Value not stepping by globalDelayTimeMS: "));  PortPrintln (globalDelayTimeMS); break;
 
       default:
@@ -746,7 +748,7 @@ void MTD2A::print_conf () {
   PortPrint  (F("  globalErrorPrint : ")); MTD2A_print_enable_disable (globalErrorPrint);
   PortPrint  (F("  globalObjectCount: ")); PortPrintln (globalObjectCount);
   PortPrint  (F("  globalDelayTimeMS: ")); PortPrintln (globalDelayTimeMS);
-  PortPrint  (F("  globalSyncTimeMS : ")); PortPrintln (MTD2A_round_US_to_MS (globalSyncTimeUS));
+  PortPrint  (F("  globalSyncTimeMS : ")); PortPrintln (globalSyncTimeMS);
   PortPrint  (F("  lastElapsedTimeMS: ")); MTD2A_print_US_to_MS (elapsedLoopTimeUS);
   PortPrint  (F("  maxElapsedTimeMS : ")); MTD2A_print_US_to_MS (maxElapsedTimeUS);
   PortPrint  (F("  timeOverrunCount : ")); PortPrintln (timeOverrunCount);

@@ -94,6 +94,8 @@ class MTD2A_binary_output: public MTD2A
     static constexpr uint8_t  FALLING_LED     {MTD2A_const::FALLING_LED};
     // Base
     static constexpr uint8_t  MAX_PWM_CURVES  {MTD2A::MAX_PWM_CURVES};
+    // Local
+    static constexpr uint16_t MAX_UINT16_VALUE {65535};
 
     // Arguments
     char    *objectName       {nullptr};        // Constructor default argument (User defined name to display identification)
@@ -104,13 +106,15 @@ class MTD2A_binary_output: public MTD2A
     uint8_t  beginValue       {HIGH};           // Constructor default argument BINARY {HIGH | LOW} / P_W_M {0-255} 
     uint8_t  endValue         {LOW};            // Constructor default argument BINARY {HIGH | LOW} / P_W_M {0-255}
     bool     loopActivate     {DISABLE};        // Constructor default argument {ENABLE | DISABLE}
-        // pin and input setup
+    uint16_t activateNumber   {0};              // Number of looping activations. 0 = infinite
+    // pin and input setup
     uint8_t  pinNumber        {NO_PIN};         // initialize () default argument
     bool     pinWriteToggl    {DISABLE};        // set_pinWriteToggl ()
     bool     pinWriteMode     {NORMAL};         // initialize () and set_pinWriteMode () default argument / INVERTED
     uint8_t  pinStartValue    {LOW};            // initialize () default argument BINARY {HIGH | LOW} / P_W_M {0-255}
     uint8_t  pinWriteValue    {LOW};            // set_pinWriteValue () default argument BINARY {HIGH | LOW} / P_W_M {0-255}
     bool     processState     {COMPLETE};       // Total process state period get_processState (); { ACTIVE | COMPLETE }
+    uint16_t activateCounter  {0};              // Loop activation counter. if set_loopActivate (ENABLE);
     // Output value
     uint8_t  outputValue      {LOW};            // Current value to write to output. get_outputValue (); {HIGH | LOW} / P_W_M {0-255}
     bool     outputOptimize   {ENABLE};         // If the same value occurs several times in a row, only output the first time
@@ -178,19 +182,20 @@ class MTD2A_binary_output: public MTD2A
      * @class MTD2A_binary_output
      * @brief Create object and set configuration parameters or use defaults
      * @param ( "Object Name", setOutputTimeMS, setBeginDelayMS, setEndDelayMS,
-     * @param setOutputMode {BINARY | P_W_M}, setBeginValue, setEndValue, setLoopActivate {ENABLE | DISABLE});
+     * @param setOutputMode {BINARY | P_W_M}, setBeginValue, setEndValue, setLoopActivate {ENABLE | DISABLE}, setActivateNumber);
      * @param Timers {0 - MAX_TIME_MS} and Values {0 - 255}
      * @return none
      */
     MTD2A_binary_output (
-      const char *setObjectName   = "Object name",
-      uint32_t    setOutputTimeMS = 0,
-      uint32_t    setBeginDelayMS = 0,
-      uint32_t    setEndDelayMS   = 0,
-      bool        setOutputMode   = BINARY,
-      uint8_t     setBeginValue   = HIGH, 
-      uint8_t     setEndValue     = LOW,
-      bool        setLoopActivate = DISABLE
+      const char *setObjectName     = "Object name",
+      uint32_t    setOutputTimeMS   = 0,
+      uint32_t    setBeginDelayMS   = 0,
+      uint32_t    setEndDelayMS     = 0,
+      bool        setOutputMode     = BINARY,
+      uint8_t     setBeginValue     = HIGH, 
+      uint8_t     setEndValue       = LOW,
+      bool        setLoopActivate   = DISABLE,
+      uint16_t    setActivateNumber = 0
     );
 
 
@@ -388,14 +393,16 @@ class MTD2A_binary_output: public MTD2A
   
 
     /**
-     * @brief Repeats a process started with activate(); enabling it does not start the process.
+     * @brief Repeats a process started with activate(); Enabling it does not start the process.
+     * @brief 
      * @name object_name.set_loopActivate
-     * @param ( ENABLE | DISABLE );
+     * @param ( ENABLE | DISABLE); Set activateNumber = 0;
+     * @param ( ENABLE | DISABLE, {Number of repeated activations});
      * @return none
      */    
-    void set_loopActivate (bool setEnableOrDisable = ENABLE); 
+    void set_loopActivate (bool setEnableOrDisable = ENABLE, uint16_t setActivateNumber = 0); 
 
-
+    
     /**
      * @brief If the same value occurs several times in a row, only output the first time
      * @name object_name.set_outputOptimize
@@ -499,12 +506,30 @@ class MTD2A_binary_output: public MTD2A
 
 
     /**
-     * @brief get repeating activation setting 
+     * @brief get loop activation setting 
      * @name object_name.get_loopActivate
      * @param none
      * @return bool {ENABLE | DISABLE} );
      */    
     bool get_loopActivate () const;
+
+
+    /**
+     * @brief get number of activation loops.
+     * @name object_name.get_activateNumber
+     * @param none
+     * @return uint16_t Number
+     */ 
+    uint16_t get_activateNumber () const;
+
+
+    /**
+     * @brief get actual counts of activation loops. Inreasing by one on every activation loop
+     * @name object_name.get_activateCounter
+     * @param none
+     * @return uint16_t Number
+     */ 
+    uint16_t get_activateCounter () const;
 
 
     /**
@@ -598,14 +623,14 @@ class MTD2A_binary_output: public MTD2A
     void     write_pin_value       (uint8_t  writePinValue);
     uint8_t  check_PWM_curve       (uint8_t  checkPWMcurveType);
     void     PWM_curve_begin_end   ();
-    uint8_t  PWM_scale_point       (const float    &curvePointY);
-    float    PWM_sigmoid_5         (const float    &curvePointX5_F);
-    float    PWM_sigmoid_8         (const float    &curvePointX8_F);
-    float    PWM_rising_BZ1        (const float    &curvePointX1_F);
-    float    PWM_rising_BZ2        (const float    &curvePointX1_F);
-    float    PWM_falling_BZ1       (const float    &curvePointX2_F);
-    float    PWM_falling_BZ2       (const float    &curvePointX2_F);
-    uint8_t  PWM_curve_point       (const float    &curvePointX_F, uint8_t curveType);
+    uint8_t  PWM_scale_point       (const float  &curvePointY);
+    float    PWM_sigmoid_5         (const float  &curvePointX5_F);
+    float    PWM_sigmoid_8         (const float  &curvePointX8_F);
+    float    PWM_rising_BZ1        (const float  &curvePointX1_F);
+    float    PWM_rising_BZ2        (const float  &curvePointX1_F);
+    float    PWM_falling_BZ1       (const float  &curvePointX2_F);
+    float    PWM_falling_BZ2       (const float  &curvePointX2_F);
+    uint8_t  PWM_curve_point       (const float  &curvePointX_F, uint8_t curveType);
     void     PWM_curve_step        ();
     void     loop_fast_begin_start ();
     void     loop_fast_begin_timer ();

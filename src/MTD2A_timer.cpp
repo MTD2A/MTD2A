@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_timer.cpp
  * @author  Joergen Bo Madsen
- * @version 1.3.2
- * @date    26. september 2026
+ * @version 1.3.3
+ * @date    14. october 2026
  * @brief   functions for MTD2A_timer.h base class (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -158,7 +158,11 @@ void MTD2A_timer::reset_timer () {
 
 void MTD2A_timer::pause_timer () {
   if (pending_state () == ACTIVE) {
-    if (setPhaseNumber == START_TIMER  ||  setPhaseNumber == RESET_TIMER) {  
+    if (setPhaseNumber == START_TIMER  ||  setPhaseNumber == RESET_TIMER) {
+      if (pauseTimeUS >= (MAX_TIME_US - countDownUS)) {  // No pause budget left
+        print_error_text (WARN_TIME_PAUSE_MAX);
+        return;                                          // Keep running, refuse the pause
+      }
       beginPause     = true;
       calcProcess    = false;
       setPhaseNumber = PAUSE_TIMER; 
@@ -239,8 +243,8 @@ uint32_t MTD2A_timer::get_pauseTimeMS () const {
 }
 
 
-uint32_t MTD2A_timer::get_remaingTimeMS () const {
-  return MTD2A_round_US_to_MS (remaingTimeUS);
+uint32_t MTD2A_timer::get_remainingTimeMS () const {
+  return MTD2A_round_US_to_MS (remainingTimeUS);
 }
 
 
@@ -295,6 +299,9 @@ void MTD2A_timer::loop_fast () {
 void MTD2A_timer::loop_fast_start_reset () {
   if (startProcess == true) {
     startProcess  = false;
+    if (setPhaseNumber == RESET_TIMER) {   // Reset is a one-loop event: the run continues as Start
+      setPhaseNumber = START_TIMER;        // phaseNumber already holds RESET_TIMER for this pass
+    }
     if (countDownUS > 0) {
       calcProcess = (beginPause == false);
     }
@@ -302,15 +309,15 @@ void MTD2A_timer::loop_fast_start_reset () {
       calcProcess = false;
       stopProcess = true;
     }
-    phaseChange   = true;
-    processState  = ACTIVE;
-    startTimeUS   = globalSyncTimeUS;
-    remaingTimeUS = countDownUS;
-    elapsedTimeUS = 0;
-    pauseTimeUS   = 0;
-    pauseBeginUS  = 0;
-    pauseEndUS    = 0;
-    stopTimeUS    = 0;
+    phaseChange     = true;
+    processState    = ACTIVE;
+    startTimeUS     = globalSyncTimeUS;
+    remainingTimeUS = countDownUS;
+    elapsedTimeUS   = 0;
+    pauseTimeUS     = 0;
+    pauseBeginUS    = 0;
+    pauseEndUS      = 0;
+    stopTimeUS      = 0;
     print_phase_line ();
   }
 } // loop_fast_start_reset
@@ -362,13 +369,13 @@ void MTD2A_timer::loop_fast_calc_time () {
   if (calcProcess == true) {
     elapsedTimeUS = (globalSyncTimeUS - pauseTimeUS) - startTimeUS;
     if (elapsedTimeUS + MARGIN_TIME_US >= countDownUS) {
-      remaingTimeUS = 0;
-      elapsedTimeUS = countDownUS;
-      calcProcess   = false;
-      stopProcess   = true;
+      remainingTimeUS = 0;
+      elapsedTimeUS   = countDownUS;
+      calcProcess     = false;
+      stopProcess     = true;
     } 
     else {
-      remaingTimeUS = countDownUS - elapsedTimeUS;
+      remainingTimeUS = countDownUS - elapsedTimeUS;
     }
   }
 } // loop_fast_calc_time
@@ -425,7 +432,7 @@ void MTD2A_timer::print_phase_text () {
     case  1: PortPrint(F("[1] Start"));  break;
     case  2: PortPrint(F("[2] Pause"));  break;
     case  3: PortPrint(F("[3] Stop"));   break;
-    default: print_error_text (ERR_UNFORESEEN_ERROR);
+    default: print_error_text (ERR_UNFORESEEN_ERROR); return;  // Error text is already newline terminated
   }
   PortPrintln(F(" timer"));    
 } // print_phase_text
@@ -447,7 +454,7 @@ void MTD2A_timer::print_conf () {
   // timers
   PortPrint  (F("  countDownMS  : ")); PortPrintln(MTD2A_round_US_to_MS (countDownUS));
   PortPrint  (F("  elapsedTimeMS: ")); PortPrintln(MTD2A_round_US_to_MS (elapsedTimeUS));
-  PortPrint  (F("  remaingTimeMS: ")); PortPrintln(MTD2A_round_US_to_MS (remaingTimeUS));
+  PortPrint  (F("  remainTimeMS : ")); PortPrintln(MTD2A_round_US_to_MS (remainingTimeUS));
   PortPrint  (F("  startTimeMS  : ")); PortPrintln(MTD2A_round_US_to_MS (startTimeUS));
   PortPrint  (F("  stopTimeMS   : ")); PortPrintln(MTD2A_round_US_to_MS (stopTimeUS));
   PortPrint  (F("  pauseTimeMS  : ")); PortPrintln(MTD2A_round_US_to_MS (pauseTimeUS));

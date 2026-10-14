@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_timer.h
  * @author  Joergen Bo Madsen
- * @version 1.3.1
- * @date    15. july 2026
+ * @version 1.3.3
+ * @date    14. october 2026
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -73,11 +73,11 @@ class MTD2A_timer: public MTD2A
     char    *objectName      {nullptr};     // Constructor initialized (User defined name to display identification)
     uint32_t countDownUS     {0UL};         // Constructor default argument. setCountDownMS [Milliseconds] * MS_to_US
       // Timers
-    uint32_t startTimeUS     {0UL};         // get_startTimeUS   () Microseconds
-    uint32_t stopTimeUS      {0UL};         // get_stopTimeUS    () Microseconds
-    uint32_t remaingTimeUS   {0UL};         // get_remaingTimeUS () Microseconds
-    uint32_t elapsedTimeUS   {0UL};         // get_elapsedTimeUS () Microseconds
-    uint32_t pauseTimeUS     {0UL};         // get_pauseTimeUS   () Microseconds
+    uint32_t startTimeUS     {0UL};         // get_startTimeUS     () Microseconds
+    uint32_t stopTimeUS      {0UL};         // get_stopTimeUS      () Microseconds
+    uint32_t remainingTimeUS {0UL};         // get_remainingTimeUS () Microseconds
+    uint32_t elapsedTimeUS   {0UL};         // get_elapsedTimeUS   () Microseconds
+    uint32_t pauseTimeUS     {0UL};         // get_pauseTimeUS     () Microseconds
     // Debug and error
     bool     debugPrint      {DISABLE};     // set_debugPrint  () default argument / ENABLE
     bool     errorPrint      {DISABLE};     // set_errorPrint  () default argument / ENABLE
@@ -227,12 +227,12 @@ class MTD2A_timer: public MTD2A
 
     /**
      * @brief get remaining time in milliseconds
-     * @name object_name.get_remaingTimeMS ();
+     * @name object_name.get_remainingTimeMS ();
      * @param none
      * @return uint32_t milliseconds
      */
-    uint32_t get_remaingTimeMS () const;
-
+    uint32_t get_remainingTimeMS () const;
+    uint32_t get_remaingTimeMS   () const { return get_remainingTimeMS (); }
 
     /**
      * @brief get elapsed time in milliseconds
@@ -302,6 +302,8 @@ class MTD2A_timer: public MTD2A
     void     print_error_text (uint8_t setErrorNumber);
 
 };  // MTD2A_timer
+
+// function renaming
 
 
 #endif

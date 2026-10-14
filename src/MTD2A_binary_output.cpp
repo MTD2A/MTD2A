@@ -56,16 +56,17 @@ MTD2A_binary_output::MTD2A_binary_output
     bool        setOutputMode,
     uint8_t     setBeginValue, 
     uint8_t     setEndValue,
-    bool        setLoopActivate
+    bool        setLoopActivate,
+    uint16_t    setActivateNumber
   )
   :
     // Instantiated function pointer
     MTD2A{[](MTD2A* funcPtr) { static_cast<MTD2A_binary_output*>(funcPtr)->loop_fast(); }},
-    outputMode    {setOutputMode}, 
-    beginValue    {setBeginValue}, 
-    endValue      {setEndValue},
-    loopActivate  {setLoopActivate}
-    // loopAutoStart {setLoopActivate}  // Starts immediately
+    outputMode     {setOutputMode}, 
+    beginValue     {setBeginValue}, 
+    endValue       {setEndValue},
+    loopActivate   {setLoopActivate},
+    activateNumber {setActivateNumber}
   {
     MTD2A_add_function_pointer_loop_fast(this);
     objInstantiated = false;
@@ -228,8 +229,13 @@ void MTD2A_binary_output::activate_process (bool userActivate) {
   // Warn on user activation only - stay silent on automatic loop restarts,
   // otherwise the same configuration warning repeats once per loop cycle.
   if (userActivate == true) {
+    activateCounter = 0;
     if (outputTimeUS == 0  &&  beginDelayUS == 0  &&  endDelayUS == 0) {
       print_error_text (WARN_ALL_TIMERS_ZERO); // No timing configured
+      if (loopActivate == ENABLE) {
+        loopActivate = DISABLE;
+        print_error_text (WARN_LOOP_ACT_DISAB); // loopActivate set to DISABLE
+      }
     }
     else if (outputTimeUS == 0) {
       print_error_text (WARN_OUT_TIMER_ZERO);
@@ -477,9 +483,15 @@ void MTD2A_binary_output::set_endTimer (uint8_t setStopOrReset) {
 } // set_endTimer
 
 
-void MTD2A_binary_output::set_loopActivate (bool setEnableOrDisable) {
-  loopActivate = setEnableOrDisable;
-}
+void MTD2A_binary_output::set_loopActivate (bool setEnableOrDisable, uint16_t setActivateNumber) {
+  if (processState == COMPLETE) {
+    loopActivate   = setEnableOrDisable;
+    activateNumber = setActivateNumber;
+  }
+  else {
+    print_error_text (ERR_NOT_COMPLETE);
+  }
+} // set_loopActivate
 
 
 void MTD2A_binary_output::set_outputOptimize (bool setEnableOrDisable) {
@@ -556,6 +568,16 @@ uint8_t MTD2A_binary_output::get_phaseNumber () const {
 
 bool MTD2A_binary_output::get_loopActivate () const{
   return loopActivate;
+}
+
+
+uint16_t MTD2A_binary_output::get_activateNumber () const{
+  return activateNumber;
+}
+
+
+uint16_t MTD2A_binary_output::get_activateCounter () const{
+  return activateCounter;
 }
 
 
@@ -833,6 +855,11 @@ void MTD2A_binary_output::loop_fast () {
     setStartPhase = false;
     phaseNumber   = setPhaseNumber;
     setActiveMS   = globalSyncTimeMS;
+    // By default activateCounter is zero when loopActivate is disabled
+    // activateCounter is bound to loopActivate and may only count up when loopActivate == ENABLE
+    if (loopActivate == ENABLE  &&  activateCounter < MAX_UINT16_VALUE) {
+      activateCounter++;
+    }
   }
   //
   outputState   = false;
@@ -980,23 +1007,24 @@ void MTD2A_binary_output::loop_fast_end_timer () {
 void MTD2A_binary_output::loop_fast_complete () {
   processState = COMPLETE;
   phaseNumber  = COMPLETE_PHASE;
-  bool restartLoop = (loopActivate == ENABLE  &&  startPhase == true);
-  if (restartLoop == true  &&  outputTimeUS == 0  &&  beginDelayUS == 0  &&  endDelayUS == 0) {
-    restartLoop = false;    // No timing configured: go idle instead of spinning every loop
-    print_error_text (WARN_ALL_TIMERS_ZERO);
-  }
   if (startPhase == true) {  // Genuine transition - latch once, not every idle loop
     setCompleteMS = globalSyncTimeMS;
-    phaseChange   = true;     // fires once per completed loop cycle
-    print_phase_line ();    // To many repeating phase lines?
-  }
-  if (restartLoop == true) {
-    activate_check ();
-    activate_process (false);
-  }
-  else {
-    startPhase  = false;
-  }
+    phaseChange   = true;   // fires once per completed loop cycle
+    print_phase_line ();
+    // Repeat only while enabled and the configured count allows it.
+    // activateNumber 0 = infinite. loopActivate stays as the user configured it.
+    bool repeatActivate = (loopActivate == ENABLE);
+    if (repeatActivate == true  &&  activateNumber > 0  &&  activateCounter >= activateNumber) {
+      repeatActivate = false;   // Count reached: stop looping, keep the configuration
+    }
+    if (repeatActivate == true) {
+      activate_check ();
+      activate_process (false);
+    }
+    else {
+      startPhase = false;
+    }
+  } // startPhase == true
 } // loop_fast_complete
 
 
@@ -1028,6 +1056,7 @@ void MTD2A_binary_output::reset () {
   outputState      = false;
   outputProcess    = COMPLETE;
   pinWriteValue    = LOW;
+  activateCounter  = 0;
   // PWM curves
   PWMoffsetPoint   = 0;
   PWMCurrPinValue  = 0;
@@ -1121,6 +1150,10 @@ void MTD2A_binary_output::print_conf () {
   PortPrint  (F("  beginValue   : ")); MTD2A_print_value_binary (outputMode, beginValue);
   PortPrint  (F("  endValue     : ")); MTD2A_print_value_binary (outputMode, endValue);
   PortPrint  (F("  outputValue  : ")); MTD2A_print_value_binary (outputMode, outputValue);
+  // Looping activate process
+  PortPrint  (F("  loopActivate : ")); MTD2A_print_enable_disable (loopActivate);
+  PortPrint  (F("  activateNumbr: ")); if (activateNumber == 0) PortPrintln (F("0 (infinite)")); else PortPrintln (activateNumber);
+  PortPrint  (F("  activateCount: ")); PortPrintln (activateCounter);
   // pin and input setup
   MTD2A_print_pin_number (pinNumber);
   PortPrint  (F("  pinWriteToggl: ")); MTD2A_print_enable_disable  (pinWriteToggl);
