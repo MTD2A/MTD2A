@@ -1,7 +1,7 @@
 // Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
 // Examples are written for the Arduino Nano pinout (Nano family, Uno, Mega)
 // Short DEMO: https://youtu.be/eyGRazX9Bko
-// Jørgen Bo Madsen / updated september 2026 / https://github.com/jebmdk
+// Jørgen Bo Madsen / updated october 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 using namespace MTD2A_const;
@@ -10,11 +10,13 @@ MTD2A_binary_output red_LED   ("Red LED",   400, 400);  // 0.4 sec light, 0.4 se
 MTD2A_binary_output green_LED ("Green LED", 300, 700, 0, P_W_M, 96);  // 0.3 sec light, 0.7 sec no light, PWM dimmed
 
 #define section 1
+
 // 1: Re-activated blink 
-// 2: Automated continuously blink
-// 3: switch-example: Soft blink (like an incandescent bulb) blink using PWM curves
-// 4: if-example:     Soft blink (like an incandescent bulb) blink using PWM curves
-// 5: Switching red and green Soft blink (like an incandescent bulb) blink using PWM curves
+// 2: Automated timed continuously blink
+// 3: Automated counted blink
+// 4: switch-example: Red LED soft blink (like an incandescent bulb) using PWM curves
+// 5: if-example:     Red LED soft blink (like an incandescent bulb) blink using PWM curves
+// 6: Switching red and green Soft blink (like an incandescent bulb) blink using PWM curves
 
 void setup() {
   Serial.begin(9600);
@@ -32,6 +34,7 @@ void setup() {
 
 // ----------------------------------------------------------------------------------------
 
+
 #if section == 1
 
 void loop() {
@@ -47,7 +50,6 @@ void loop() {
 
 
 // ----------------------------------------------------------------------------------------
-
 
 #elif section == 2
 
@@ -69,7 +71,6 @@ void loop() {
       loopCount = 0;
     break;
   } // switch
-
   loopCount++;
   MTD2A_loop_execute();
 } // Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
@@ -80,12 +81,32 @@ void loop() {
 
 #elif section == 3
 
+bool startFlag = false;
+
+void loop() {
+  if (startFlag == false) {
+    startFlag = true;
+    Serial.println("Red blink 5 times and and Green blink 10 times");
+    red_LED.set_loopActivate   (ENABLE, 5);
+    green_LED.set_loopActivate (ENABLE, 10);
+    red_LED.activate   ();
+    green_LED.activate ();
+  }
+  MTD2A_loop_execute();
+} // Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
+
+
+// ----------------------------------------------------------------------------------------
+
+
+#elif section == 4
+
 int softStep = 0;
 
 void loop() {
   switch (softStep) {
     case 0:
-      Serial.println (F("switch-example: Soft blink (like an incandescent bulb) blink using PWM curves"));
+      Serial.println (F("switch-example: Red LED SOFT blink (like an incandescent bulb) using PWM curves"));
       softStep = 1;
       break;
     case 1:
@@ -112,13 +133,13 @@ void loop() {
 // ----------------------------------------------------------------------------------------
 
 
-#elif section == 4
+#elif section == 5
 
 bool switchUpDown = true, printFlag = true;
 
 void loop() {
   if (printFlag) {
-    Serial.println (F("if-example: Soft blink (like an incandescent bulb) blink using PWM curves"));
+    Serial.println (F("if-example: Red LED SOFT blink (like an incandescent bulb) using PWM curves"));
     printFlag = false;
   }
   //
@@ -145,7 +166,7 @@ void loop() {
 // ----------------------------------------------------------------------------------------
 
 
-#elif section == 5
+#elif section == 6
 
 bool switchUpDown = true, printFlag = true;
 
