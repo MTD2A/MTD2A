@@ -3,10 +3,11 @@
 ### blink_LED.ino
 Two blinking LEDs. One with symmetric interval and another with asymmetric interval.
 <br/> 1: Re-activated blink 
-<br/> 2: Automated continuously blink
-<br/> 3: switch-example: Soft blink (like an incandescent bulb) blink using PWM curves
-<br/> 4: if-example:     Soft blink (like an incandescent bulb) blink using PWM curves
-<br/> 5: Switching red and green soft blink (like an incandescent bulb) blink using PWM curves
+<br/> 2: Automated timed continuously blink
+<br/> 3: Automated counted blink
+<br/> 4: switch-example: Red LED soft blink (like an incandescent bulb) using PWM curves
+<br/> 5: if-example:     Red LED soft blink (like an incandescent bulb) blink using PWM curves
+<br/> 6: Switching red and green Soft blink (like an incandescent bulb) blink using PWM curves
 <br/> Short DEMO: https://youtu.be/eyGRazX9Bko
 <br/> Diagram drawing: [Blink LED](/image/blink_LED.png)
 
