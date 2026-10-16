@@ -645,7 +645,7 @@ void MTD2A::MTD2A_print_error_text
       case WARN_NO_CURVE_VALUE:    PortPrintln (F("BeginValue = endValue => NO_CURVE"));     break;
       case WARN_NO_CURVE_TIME:     PortPrintln (F("Time = globalDelayTime => NO_CURVE"));    break;
       case WARN_PAUSE_ACTIVE:      PortPrintln (F("PAUSE already active"));                  break;
-      case WARN_LOOP_ACT_DISAB:    PortPrintln (F("loopActivate set to DISABLE"));          break;
+      case WARN_LOOP_ACT_IGNOR:    PortPrintln (F("loopActivate ENABLE is ignored"));        break;
       case WARN_NOT_MODULU_ZERO:   PortPrint   (F("Value not stepping by globalDelayTimeMS: "));  PortPrintln (globalDelayTimeMS); break;
 
       default:

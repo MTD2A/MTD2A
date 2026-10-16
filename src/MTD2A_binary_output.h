@@ -3,7 +3,7 @@
  * @file    MTD2A_binary_output.h
  * @author  Joergen Bo Madsen
  * @version 1.3.3
- * @date    26. september 2026
+ * @date    16. oktober 2026
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -393,12 +393,14 @@ class MTD2A_binary_output: public MTD2A
   
 
     /**
-     * @brief Repeats a process started with activate(); Enabling it does not start the process.
-     * @brief 
-     * @name object_name.set_loopActivate
-     * @param ( ENABLE | DISABLE); Set activateNumber = 0;
-     * @param ( ENABLE | DISABLE, {Number of repeated activations});
-     * @return none
+     * @brief   Repeats a process started with activate(); Enabling it does not start the process.
+     * @details ProcessState stays ACTIVE during the whole run until loopActivate is set to
+     *          DISABLE or activateCount has reached setActivateNumber. DISABLE is accepted at any time.
+     * @name    object_name.set_loopActivate
+     *          Disabling during a cycle lets the current cycle finish.
+     * @param   setEnableOrDisable ENABLE | DISABLE (Default ENABLE)
+     * @param   setActivateNumber  Total Number of repeated activations; 0 = repeat forever (default 0)
+     * @return  none
      */    
     void set_loopActivate (bool setEnableOrDisable = ENABLE, uint16_t setActivateNumber = 0); 
 
@@ -437,7 +439,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Get pinWriteToggl status
      * @name object_name.get_pinWriteToggl (); 
      * @param none
-     * @return bool {ENABLE | DISABLE} );
+     * @return bool { ENABLE | DISABLE }
      */  
     bool get_pinWriteToggl () const;
 
@@ -446,7 +448,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Get pinWriteMode
      * @name object_name.get_pinWriteMode (); 
      * @param none
-     * @return ( {NORMAL | INVERTED} );
+     * @return bool { NORMAL | INVERTED }
      */
     bool get_pinWriteMode () const;
 
@@ -455,7 +457,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Get outputMode
      * @name object_name.get_outputMode
      * @param none
-     * @return ( {BINARY | P_W_M} );
+     * @return bool { BINARY | P_W_M }
      */  
     bool get_outputMode () const;
 
@@ -463,8 +465,8 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief Get PMW curve type number
      * @name object_name.get_PWMcurveType
-     * @param ( {CURVE NO | NO_CURVE} );
-     * @return none
+     * @param none
+     * @return bool { CURVE NO | NO_CURVE }
      */
     uint8_t get_PWMcurveType () const;
 
@@ -473,7 +475,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Get outputValue value
      * @name object_name.get_outputValue (); 
      * @param none
-     * @return uint8_t {0 - 255);
+     * @return uint8_t {0 - 255}
      */      
     uint8_t get_outputValue () const;
 
@@ -482,7 +484,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Get outputState indicates when to call get_outputValue ()
      * @name object_name.get_outputState (); 
      * @param none
-     * @return bool {true | false}
+     * @return bool { true | false }
      */      
     bool get_outputState () const;
 
@@ -491,7 +493,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Get outputProcess
      * @name object_name.get_outputProcess ();
      * @param none
-     * @return bool {ACTIVE | COMPLETE}
+     * @return bool { ACTIVE | COMPLETE }
      */  
     bool get_outputProcess () const;
 
@@ -500,7 +502,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief get output value optimize setting (all values or only changed values) 
      * @name object_name.get_outputOptimize
      * @param none
-     * @return bool {ENABLE | DISABLE} );
+     * @return bool { ENABLE | DISABLE }
      */    
     bool get_outputOptimize () const;
 
@@ -509,43 +511,43 @@ class MTD2A_binary_output: public MTD2A
      * @brief get loop activation setting 
      * @name object_name.get_loopActivate
      * @param none
-     * @return bool {ENABLE | DISABLE} );
+     * @return bool { ENABLE | DISABLE }
      */    
     bool get_loopActivate () const;
 
 
     /**
-     * @brief get number of activation loops.
+     * @brief get number of activation activations to perform 
      * @name object_name.get_activateNumber
      * @param none
-     * @return uint16_t Number
+     * @return uint16_t { Number }
      */ 
     uint16_t get_activateNumber () const;
 
 
     /**
-     * @brief get actual counts of activation loops. Inreasing by one on every activation loop
+     * @brief get current number of activations. Increasing by one on every process activation loop.
      * @name object_name.get_activateCounter
      * @param none
-     * @return uint16_t Number
+     * @return uint16_t { Number }
      */ 
     uint16_t get_activateCounter () const;
 
 
     /**
-     * @brief Get processState  
+     * @brief Get processState. Level: ACTIVE for the whole process, not an edge.
      * @name object_name.get_processState ();
      * @param none
-     * @return bool {ACTIVE | COMPLETE}
+     * @return bool { ACTIVE | COMPLETE }
      */  
     bool get_processState () const;
   
 
     /**
-     * @brief get phaseChange 
+     * @brief get phaseChange. Edge: true for one loop at each phase boundary.
      * @name object_name.get_phaseChange ();
      * @param none
-     * @return bool {true | false}
+     * @return bool { true | false }
      */  
     bool get_phaseChange () const;
   
@@ -615,14 +617,14 @@ class MTD2A_binary_output: public MTD2A
     void     loop_fast             ();
     uint32_t check_set_MS_to_US    (uint32_t setCheckTimeMS);
     void     check_pin_init        (uint8_t  checkPinNumber, uint8_t checkpinStartValue);
-    void     activate_check        ();
+    void     activate_check        (bool userActivate = true);
     void     activate_process      (bool userActivate = true);
     bool     check_PWM_pin_mode    ();
     uint32_t calc_active_time_MS   () const;
     uint8_t  check_pin_value       (uint8_t  checkPinValue);
     void     write_pin_value       (uint8_t  writePinValue);
     uint8_t  check_PWM_curve       (uint8_t  checkPWMcurveType);
-    void     PWM_curve_begin_end   ();
+    void     PWM_curve_begin_end   (bool userActivate = true);
     uint8_t  PWM_scale_point       (const float  &curvePointY);
     float    PWM_sigmoid_5         (const float  &curvePointX5_F);
     float    PWM_sigmoid_8         (const float  &curvePointX8_F);

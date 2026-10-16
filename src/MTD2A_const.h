@@ -3,7 +3,7 @@
  * @file    MTD2A_const.h
  * @author  Joergen Bo Madsen
  * @version 1.3.3
- * @date    26. september 2026
+ * @date    16. october 2026
  * @brief   Global constants for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -129,7 +129,7 @@ namespace MTD2A_const {
   constexpr uint8_t  WARN_NO_CURVE_VALUE   = 156;  // beginValue = endValue => NO_CURVE
   constexpr uint8_t  WARN_NO_CURVE_TIME    = 157;  // Time = globalDelayTime => NO_CURVE
   constexpr uint8_t  WARN_PAUSE_ACTIVE     = 158;  // PAUSE already active
-  constexpr uint8_t  WARN_LOOP_ACT_DISAB   = 159;  // loopActivate set to DISABLE
+  constexpr uint8_t  WARN_LOOP_ACT_IGNOR   = 159;  // loopActivate ENABLE is ignored
   constexpr uint8_t  WARN_NOT_MODULU_ZERO  = 160;  // Value not stepping by globalDelayTimeMS
 
 } // namespace MTD2A_const

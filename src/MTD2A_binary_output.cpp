@@ -199,7 +199,7 @@ void MTD2A_binary_output::activate (uint8_t setBeginValue, uint8_t setEndValue,
 // End -----------------------------------------------------------------------------
 
 
-void MTD2A_binary_output::activate_check () {
+void MTD2A_binary_output::activate_check (bool userActivate) {
   if (outputMode == P_W_M  && PWMcurveType != NO_CURVE) {
     PWMcurveType = check_PWM_curve (PWMcurveType);
     if (beginValue == endValue) {
@@ -218,7 +218,7 @@ void MTD2A_binary_output::activate_check () {
       return;
     }
     PWMloopCount = 0;
-    PWM_curve_begin_end ();
+    PWM_curve_begin_end (userActivate);
   }
 } // activate_check
 
@@ -233,8 +233,7 @@ void MTD2A_binary_output::activate_process (bool userActivate) {
     if (outputTimeUS == 0  &&  beginDelayUS == 0  &&  endDelayUS == 0) {
       print_error_text (WARN_ALL_TIMERS_ZERO); // No timing configured
       if (loopActivate == ENABLE) {
-        loopActivate = DISABLE;
-        print_error_text (WARN_LOOP_ACT_DISAB); // loopActivate set to DISABLE
+        print_error_text (WARN_LOOP_ACT_IGNOR); // Looping ignored for this run, configuration kept
       }
     }
     else if (outputTimeUS == 0) {
@@ -484,8 +483,11 @@ void MTD2A_binary_output::set_endTimer (uint8_t setStopOrReset) {
 
 
 void MTD2A_binary_output::set_loopActivate (bool setEnableOrDisable, uint16_t setActivateNumber) {
-  if (processState == COMPLETE) {
-    loopActivate   = setEnableOrDisable;
+  if (setEnableOrDisable == DISABLE) {
+    loopActivate = DISABLE;           // Allowed anytime: current cycle finishes, then COMPLETE
+  }
+  else if (processState == COMPLETE) {
+    loopActivate   = ENABLE;
     activateNumber = setActivateNumber;
   }
   else {
@@ -652,18 +654,20 @@ uint8_t MTD2A_binary_output::check_PWM_curve (uint8_t checkPWMcurveType) {
 } // check_PWM_curve
 
 
-void MTD2A_binary_output::PWM_curve_begin_end () {
+void MTD2A_binary_output::PWM_curve_begin_end (bool userActivate) {
   if (endValue > beginValue) {
     PWMoffsetPoint = beginValue;
     PWMscaleFactor_F = static_cast<float>(endValue - beginValue) / MAX_BYTE_VALUE_F;
-    if (PWMcurveType >= FALLING_XY && PWMcurveType <= FALLING_LED) {
+    // Warn on user activation only - stay silent on automatic loop restarts
+    if (userActivate == true  &&  PWMcurveType >= FALLING_XY  &&  PWMcurveType <= FALLING_LED) {
       print_error_text (WARN_USE_RISING);
     }
   }
   else {
     PWMoffsetPoint = endValue;
     PWMscaleFactor_F = static_cast<float>(beginValue - endValue) / MAX_BYTE_VALUE_F;
-    if (PWMcurveType >= RISING_XY && PWMcurveType <= RISING_LED) {
+    // Warn on user activation only - stay silent on automatic loop restarts
+    if (userActivate == true  &&  PWMcurveType >= RISING_XY  &&  PWMcurveType <= RISING_LED) {
       print_error_text (WARN_USE_FALLING);
     }
   }
@@ -854,11 +858,15 @@ void MTD2A_binary_output::loop_fast () {
   if (setStartPhase == true) {
     setStartPhase = false;
     phaseNumber   = setPhaseNumber;
-    setActiveMS   = globalSyncTimeMS;
     // By default activateCounter is zero when loopActivate is disabled
     // activateCounter is bound to loopActivate and may only count up when loopActivate == ENABLE
     if (loopActivate == ENABLE  &&  activateCounter < MAX_UINT16_VALUE) {
       activateCounter++;
+    }
+    // Start of a new run: user activate() (counter 0 or 1). Repeats (counter > 1) keep the start time,
+    // so get_activeTimeMS () covers the whole loop run.
+    if (activateCounter <= 1) {
+      setActiveMS = globalSyncTimeMS;
     }
   }
   //
@@ -1005,24 +1013,23 @@ void MTD2A_binary_output::loop_fast_end_timer () {
 
 
 void MTD2A_binary_output::loop_fast_complete () {
-  processState = COMPLETE;
-  phaseNumber  = COMPLETE_PHASE;
   if (startPhase == true) {  // Genuine transition - latch once, not every idle loop
+    phaseNumber   = COMPLETE_PHASE;
     setCompleteMS = globalSyncTimeMS;
     phaseChange   = true;   // fires once per completed loop cycle
     print_phase_line ();
-    // Repeat only while enabled and the configured count allows it.
-    // activateNumber 0 = infinite. loopActivate stays as the user configured it.
-    bool repeatActivate = (loopActivate == ENABLE);
-    if (repeatActivate == true  &&  activateNumber > 0  &&  activateCounter >= activateNumber) {
-      repeatActivate = false;   // Count reached: stop looping, keep the configuration
-    }
+    // Repeat while enabled, timers are configured, and the count is not reached.
+    // activateNumber 0 = infinite. loopActivate is always kept as configured.
+    bool timersZero     = (outputTimeUS == 0  &&  beginDelayUS == 0  &&  endDelayUS == 0);
+    bool countReached   = (activateNumber > 0  &&  activateCounter >= activateNumber);
+    bool repeatActivate = (loopActivate == ENABLE)  &&  !timersZero  &&  !countReached;
     if (repeatActivate == true) {
-      activate_check ();
+      activate_check (false);
       activate_process (false);
     }
     else {
       startPhase = false;
+      processState = COMPLETE;
     }
   } // startPhase == true
 } // loop_fast_complete
