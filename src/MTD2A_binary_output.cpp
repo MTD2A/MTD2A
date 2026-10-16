@@ -3,7 +3,7 @@
  * @file    MTD2A_binary_output.cpp
  * @author  Joergen Bo Madsen
  * @version 1.3.3
- * @date    26. september 2026
+ * @date    16. october 2026
  * @brief   Functions for MTD2A_binary_output.h (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
