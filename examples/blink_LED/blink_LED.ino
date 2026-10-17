@@ -92,6 +92,13 @@ void loop() {
     red_LED.activate   ();
     green_LED.activate ();
   }
+  //
+  if (red_LED.get_processState () == COMPLETE &&  red_LED.get_phaseChange () == true) {
+    Serial.println (F("Red LED process complete"));
+  }
+  if (green_LED.get_processState () == COMPLETE &&  green_LED.get_phaseChange () == true) {
+    Serial.println (F("Green LED process complete"));
+  }
   MTD2A_loop_execute();
 } // Two flashing LEDs. One with symmetric interval and another with asymmetric interval.
 
