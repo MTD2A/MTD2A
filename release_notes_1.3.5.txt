@@ -1,17 +1,24 @@
 Release 1.3.5
 
-New button press functionality which takes into account debouncing.
-Sort press, long press and extra long press.
-Number of button presses - skipping debounces.
+
+New: Button press functionality which takes into account debouncing.
+Short press, long press and extra long press. Pressed for duration. 
+Number of button presses within defined time.
 
 New MTD2A_binary_input functionality:
 -------------------------------------
 get_activeTimeMS (); {Milliseconds)  // Get active time (the ACTIVE process time)
 get_inputCount   (); {number);       // Get number of button presses within "delayTimeMS" milliseconds
 
+
+
 New MTD2A_binary_output functionality:
 --------------------------------------
-get_activeTimeMS   (); {Milliseconds)  // Get active time (the ACTIVE process time)
+set_loopActivate    ( ENABLE | DISABLE, {Number of repeated activations} ); 0 = infinite.
+                      Repeats a process started with activate(); Enabling it does not start the process.
+get_activateNumber  (); get number of activation loops - set_activaetNumber ()
+get_activateCounter (); get actual counts of activation loops. Increasing by one on every activation loop
+get_activeTimeMS    (); {Milliseconds)  // Get active time (the ACTIVE process time)
 
 
 Name changes:
@@ -19,8 +26,18 @@ Name changes:
 set_repeatActivate () changed to set_loopActivate
 
 
+New MTD2A_base functionality:
+-----------------------------
+Check is done one the first loop. No need to call the functions unde ordinary use
+MTD2A::check_pwm_timers (); // Set error number and print error text if error settings is enabled
+MTD2A_check_pwm_timers ();  // Alias
+
+
 New warning messages
 --------------------
-If timer or delay value modulus globalDelayTimeMS is not zero
+WARN_NOT_MODULU_ZERO: "Value not stepping by globalDelayTimeMS". 
 In practice, the value will be truncated to nearest multipla of globalDelayTimeMS
-
+WARN_TIMER_CLAIMED:   "PWM disabled: Timer claimed by another library".
+Check of missing PIN PWM functionality due to system timers claimed by other libraries (Servo, tone, etc).
+WARN_LOOP_ACT_IGNOR:  "loopActivate ENABLE is ignored"
+If all three  timers (begin, output & end) are ZERO

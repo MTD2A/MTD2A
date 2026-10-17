@@ -15,7 +15,7 @@ get_pinOutputMode  changed to get_outputMode
 get_pinOutputValue changed to get_outputValue
 
 New MTD2A_binary_output functionality:
--------------------------------------
+--------------------------------------
 set_PWMcurveType (NO_CURVE / Curve number);
 set_timers (outputTimeMS); // {0 - MAX_TIME_MS}
 set_timers (outputTimeMS, beginDelayMS);
@@ -31,7 +31,7 @@ get_repeatActivate (); {ENABLE | DISABLE}
 get_outputOptimize (); {ENABLE | DISABLE}
 
 New MTD2A_base functionality:
-----------------------------
+-----------------------------
 reset_stats ();
 
 
