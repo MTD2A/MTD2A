@@ -5,7 +5,7 @@
 * Detailed **Danish** documentation: [MTD2A_base.pdf](/doc/MTD2A.pdf)
 * Detailed **English** documentation: [MTD2A_base_english.pdf](/doc/MTD2A_english.pdf)
 * DEMO: 7 time and event processes flow examples, to inspire how to code. https://youtu.be/eyGRazX9Bko
-* 
+
 ### MTD2A_binary_input 
 * Source files contain doxygen documentation.
 * Detailed **Danish** documentation: [MTD2A_binary_input.pdf](/doc/MTD2A_binary_input.pdf)
