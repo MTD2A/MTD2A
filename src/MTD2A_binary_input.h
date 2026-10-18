@@ -180,7 +180,7 @@ class MTD2A_binary_input: public MTD2A
     void reset ();
 
 
-    /*
+    /**
      * @brief print configuration parameters, timers and state logic.
      * @name object_name.print_conf ();
      * @param none
@@ -195,7 +195,7 @@ class MTD2A_binary_input: public MTD2A
     /**
      * @brief Enable or disable pin reading.
      * @name object_name.set_pinReadToggl
-     * @param ( {ENABLE | DISABLE} );
+     * @param ( ENABLE | DISABLE );
      * @return none
      */
     void set_pinReadToggl (bool setPinEnableOrDisable = ENABLE);
@@ -204,7 +204,7 @@ class MTD2A_binary_input: public MTD2A
     /**
      * @brief Configure pin input trigger mode = NORMAL or INVERTED.
      * @name object_name.set_pinReadMode
-     * @param ( {NORMAL | INVERTED} );
+     * @param ( NORMAL | INVERTED );
      * @return none
      */
     void set_pinReadMode (bool setPinNormalOrInverted = NORMAL);
@@ -213,7 +213,7 @@ class MTD2A_binary_input: public MTD2A
     /**
      * @brief Set input state and set input mode.
      * @name object_name.set_inputState
-     * @param ( {HIGH | LOW}, {PULSE | FIXED} );
+     * @param ( HIGH | LOW, PULSE | FIXED );
      * @return none
      */
     void set_inputState (bool setInputLowOrHigh = LOW, bool setPulseOrFixed = PULSE);
@@ -222,7 +222,7 @@ class MTD2A_binary_input: public MTD2A
     /**
      * @brief Set new delay time in milliseconds.
      * @name object_name.set_delayTimeMS
-     * @param ( {0 - MAX_TIME_MS} );
+     * @param ( 0 - MAX_TIME_MS );
      * @return none
      */  
     void set_delayTimeMS (uint32_t setDelayTimeMS);
@@ -231,7 +231,7 @@ class MTD2A_binary_input: public MTD2A
     /**
      * @brief Set new pin block time in milliseconds.
      * @name object_name.set_pinBlockMS
-     * @param ( {0 - MAX_TIME_MS} );
+     * @param ( 0 - MAX_TIME_MS );
      * @return none
      */  
     void set_pinBlockMS (uint32_t setPinBlockMS);
@@ -257,7 +257,7 @@ class MTD2A_binary_input: public MTD2A
     /**
      * @brief Enable print phase state number, phase state text and error text.
      * @name object_name.set_debugPrint
-     * @param ( {ENABLE | DISABLE} );
+     * @param ( ENABLE | DISABLE );
      * @return none
      */    
     void set_debugPrint (bool setEnableOrDisable = ENABLE);
@@ -266,7 +266,7 @@ class MTD2A_binary_input: public MTD2A
     /**
      * @brief Enable error print text.
      * @name object_name.set_errorPrint
-     * @param ( {ENABLE | DISABLE} );
+     * @param ( ENABLE | DISABLE );
      * @return none
      */    
     void set_errorPrint (bool setEnableOrDisable = ENABLE);
@@ -349,9 +349,9 @@ class MTD2A_binary_input: public MTD2A
 
     /**
      * @brief Get number of valid button presses during the ACTIVE period.
-     *        A press is valid if the input is still activated DEBOUNCE_MS after the falling edge.
-     *        0 = cycle triggered, but no valid press (noise or too short press). Max 255.
-     *        delayTimeMS < DEBOUNCE_MS: always 1 (no debouncing).
+     * @details A press is valid if the input is still activated DEBOUNCE_MS after the falling edge.
+     *          0 = cycle triggered, but no valid press (noise or too short press). Max 255.
+     *          delayTimeMS < DEBOUNCE_MS: always 1 (no debouncing check).
      * @name object_name.get_inputCount ();
      * @param none
      * @return uint8_t Count {0 - 255}

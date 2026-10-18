@@ -108,7 +108,7 @@ class MTD2A_timer: public MTD2A
      * @class MTD2A_timer
      * @brief Create object and set configuration parameter or use defaults
      * @param ( "Object Name", delayTimeMS {0 - MAX_TIME_MS} ); // approx 72 minutes
-     * NOTE: countdown time + accumulated pause time must not exceed MAX_TIME_MS
+     * @details Countdown time + accumulated pause time must not exceed MAX_TIME_MS
      * @return none
      */
     MTD2A_timer (
@@ -172,7 +172,7 @@ class MTD2A_timer: public MTD2A
      * @brief set countdown time in milliseconds
      * @name set_countDownMS
      * @param ( {0 - MAX_TIME_MS } ); // 72 minutes
-     * NOTE: countdown time + accumulated pause time must not exceed MAX_TIME_MS 
+     * @details Countdown time + accumulated pause time must not exceed MAX_TIME_MS 
      * @return none
      */    
     void set_countDownMS (uint32_t setCountDownMS);
@@ -232,7 +232,7 @@ class MTD2A_timer: public MTD2A
      * @return uint32_t milliseconds
      */
     uint32_t get_remainingTimeMS () const;
-    uint32_t get_remaingTimeMS   () const { return get_remainingTimeMS (); }
+
 
     /**
      * @brief get elapsed time in milliseconds

@@ -231,8 +231,8 @@ class MTD2A_binary_output: public MTD2A
   
     /**
      * @brief Initialize and configure output pin.
-     * @brief If setPinNumber is invalid, pin writing is disabled! (pinWriteToggl = DISABLE)
-     * @brief If P_W_M is selected and pin does not support PWM, pin writing is disabled! (pinWriteToggl = DISABLE)
+     * @details If setPinNumber is invalid, pin writing is disabled! (pinWriteToggl = DISABLE)
+     *          If P_W_M is selected and pin does not support PWM, pin writing is disabled! (pinWriteToggl = DISABLE)
      * @name object_name.initialize 
      * @param ( {0 - NUM_DIGITAL_PINS | NO_PIN}, {NORMAL| INVERTED}, setPinStartValue );
      * @return none
@@ -282,7 +282,7 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief Select to write binary or PWM value to pin.
      * @name object_name.set_outputMode
-     * @param ( {BINARY | P_W_M} );
+     * @param ( BINARY | P_W_M );
      * @return none
      */  
     void set_outputMode (bool setBinaryOrPWM = BINARY);
@@ -290,7 +290,7 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief Select PMW curve type to write binary or PWM value to pin.
      * @name object_name.set_PWMcurveType
-     * @param ( {CURVE NO | NO_CURVE} );
+     * @param ( CURVE NO | NO_CURVE );
      * @return none
      */
     void set_PWMcurveType (uint8_t setPWMcurveType = NO_CURVE);
@@ -299,8 +299,8 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief write binary or PWM value directly to pin.
      * @name object_name.set_pinWriteValue
-     * @param (BINARY {HIGH | LOW} / P_W_M {0-255} );
-     * @param (BINARY {HIGH | LOW} / P_W_M {0-255}, {BINARY | P_W_M} );
+     * @param ( BINARY {HIGH | LOW} / P_W_M {0-255} );
+     * @param ( BINARY {HIGH | LOW} / P_W_M {0-255}, {BINARY | P_W_M} );
      * @return none
      */  
     void set_pinWriteValue (uint8_t setPinWriteValue = LOW);
@@ -310,7 +310,7 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief Enable or disable write to pin (BINARY and analog P_W_M).
      * @name object_name.set_pinWriteToggl
-     * @param ( {ENABLE | DISABLE} );
+     * @param ( ENABLE | DISABLE );
      * @return none
      */ 
     void set_pinWriteToggl (bool setPinEnableOrDisable = ENABLE);
@@ -319,7 +319,7 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief Configure pin write mode = NORMAL or INVERTED
      * @name object_name.set_pinWriteMode
-     * @param ( {NORMAL | INVERTED} );
+     * @param ( NORMAL | INVERTED );
      * @return none
      */
     void set_pinWriteMode (bool setPinNormalOrInverted = NORMAL);
@@ -328,7 +328,7 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief Set new output delay time in milliseconds.
      * @name object_name.set_outputTimeMS
-     * @param ( {0 - MAX_TIME_MS} );
+     * @param ( 0 - MAX_TIME_MS );
      * @return none
      */  
     void set_outputTimeMS (uint32_t setOutputTimeMS);
@@ -337,7 +337,7 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief Set new begin delay time in milliseconds.
      * @name object_name.set_beginDelayMS
-     * @param ( {0 - MAX_TIME_MS} );
+     * @param ( 0 - MAX_TIME_MS );
      * @return none
      */  
     void set_beginDelayMS (uint32_t setBeginDelayMS);
@@ -346,14 +346,14 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief Set new end delay time in milliseconds.
      * @name object_name.set_endDelayMS
-     * @param ( {0 - MAX_TIME_MS} );
+     * @param ( 0 - MAX_TIME_MS );
      * @return none
      */  
     void set_endDelayMS (uint32_t setEndDelayMS);
 
     
     /**
-     * @brief set one, two or three timers in milliseconds {0 - MAX_TIME_MS}
+     * @brief set one, two or three timers in milliseconds { 0 - MAX_TIME_MS }
      * @name object_name.set_timers - overloaded
      * @param ( setOutputTimeMS );
      * @param ( setOutputTimeMS, setBeginDelayMS );
@@ -394,9 +394,9 @@ class MTD2A_binary_output: public MTD2A
 
     /**
      * @brief   Repeats a process started with activate(); Enabling it does not start the process.
-     * @details ProcessState stays ACTIVE during the whole run until loopActivate is set to
-     *          DISABLE or activateCount has reached setActivateNumber. DISABLE is accepted at any time.
-     * @name    object_name.set_loopActivate
+     * @details ProcessState stays ACTIVE during the whole run until loopActivate () is set to
+     *          DISABLE or activateCounter has reached setActivateNumber. DISABLE is accepted at any time.
+     * @name    object_name.set_loopActivate ()
      *          Disabling during a cycle lets the current cycle finish.
      * @param   setEnableOrDisable ENABLE | DISABLE (Default ENABLE)
      * @param   setActivateNumber  Total Number of repeated activations; 0 = repeat forever (default 0)
@@ -417,7 +417,7 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief Enable print phase state number, phase state text and error text.
      * @name object_name.set_debugPrint
-     * @param ( {ENABLE | DISABLE} );
+     * @param ( ENABLE | DISABLE );
      * @return none
      */  
     void set_debugPrint (bool setEnableOrDisable = ENABLE);
@@ -426,7 +426,7 @@ class MTD2A_binary_output: public MTD2A
     /**
      * @brief Enable error print text.
      * @name object_name.set_errorPrint
-     * @param ( {ENABLE | DISABLE} );
+     * @param ( ENABLE | DISABLE );
      * @return none
      */  
     void set_errorPrint (bool setEnableOrDisable = ENABLE);
@@ -475,7 +475,7 @@ class MTD2A_binary_output: public MTD2A
      * @brief Get outputValue value
      * @name object_name.get_outputValue (); 
      * @param none
-     * @return uint8_t {0 - 255}
+     * @return uint8_t { 0 - 255 }
      */      
     uint8_t get_outputValue () const;
 
@@ -517,7 +517,7 @@ class MTD2A_binary_output: public MTD2A
 
 
     /**
-     * @brief get number of activation activations to perform 
+     * @brief get number of activations to perform 
      * @name object_name.get_activateNumber
      * @param none
      * @return uint16_t { Number }
@@ -526,7 +526,7 @@ class MTD2A_binary_output: public MTD2A
 
 
     /**
-     * @brief get current number of activations. Increasing by one on every process activation loop.
+     * @brief get current number of activations. Increasing by one on every process activation loop (cycle).
      * @name object_name.get_activateCounter
      * @param none
      * @return uint16_t { Number }
