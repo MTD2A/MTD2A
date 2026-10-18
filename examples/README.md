@@ -27,8 +27,8 @@ Read sensor and write phase state information to Arduino IDE serial monitor.
 <br/> 7: Event step controlled. Recommended for complex constructions
 <br/> Short DEMO: https://youtu.be/UU4k4_8GWfM
 
-### push_button.ino
-Push button detection and debounce handling. Demonstration of debounce counting, measuring button down time and button down counter within time period.
+### contact_bouncing.ino
+Correct push button detection and debounce handling. Demonstration of debounce handling, measuring button push holding down time and push button down counter within time period.
 <br/> 1: Count number of push button debounce.
 <br/> 2: Arduino standard: Measure push button down time.
 <br/> 3: MTD2A library:    Measure push button down time.
@@ -36,7 +36,7 @@ Push button detection and debounce handling. Demonstration of debounce counting,
 <br/> 5: Count number of button presses within 2 seconds and variations thereof.
 <br/> 6: Count number of two button presses in parallel within 4 seconds.
 <br/> Short DEMO: PREPARING
-<br/> Diagram drawing: [Push button](/image/push_button.png)
+<br/> Diagram drawing: [Contact debouncing](/image/contact_debouncing.png)
 
 ### train_direction.ino
 Determining the direction of travel of the train (left / right). 
