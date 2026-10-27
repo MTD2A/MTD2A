@@ -1,9 +1,10 @@
 // contact_bouncing - correct push button detection and debounce handling.
-// Demonstration of debounce handling, measuring button push down time and button push down counter within time period.
+// Demonstration of debounce handling, measuring button push holding down time and push button down counter within time period.
 // Examples are written for the Arduino Nano pinout (Nano family, Uno, Mega)
 // https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_input_english.pdf
-// Short DEMO: 
+// Short DEMO: https://youtu.be/LPrWA3gDReY
 // Joergen Bo Madsen / September 2026 / https://github.com/jebmdk
+
 #include <MTD2A.h>
 using namespace MTD2A_const;
 
@@ -37,7 +38,7 @@ unsigned long beginTime   = 0;
 void setup() {
   Serial.begin(9600);
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
-  // pinMode(GREEN_BUTTON_PIN, INPUT_PULLUP);
+  pinMode(GREEN_BUTTON_PIN, INPUT_PULLUP);
   pinMode(RED_BUTTON_PIN, INPUT_PULLUP);
   Serial.println (F("Count number of push button debounce."));
 } // setup
@@ -275,9 +276,4 @@ void loop() {
 
 
 #endif
-
-
-
-
-
 
