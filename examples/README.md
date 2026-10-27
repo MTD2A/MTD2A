@@ -35,7 +35,7 @@ Correct push button detection and debounce handling. Demonstration of debounce h
 <br/> 4: Short, long and extra long button presses.
 <br/> 5: Count number of button presses within 2 seconds and variations thereof.
 <br/> 6: Count number of two button presses in parallel within 4 seconds.
-<br/> Short DEMO: PREPARING
+<br/> Short DEMO: https://youtu.be/LPrWA3gDReY
 <br/> Diagram drawing: [Contact bouncing](/image/contact_bouncing.png)
 
 ### train_direction.ino
