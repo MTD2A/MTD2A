@@ -303,7 +303,5 @@ class MTD2A_timer: public MTD2A
 
 };  // MTD2A_timer
 
-// function renaming
-
 
 #endif
