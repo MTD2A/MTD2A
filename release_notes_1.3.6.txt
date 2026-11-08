@@ -1,0 +1,24 @@
+Release 1.3.6
+
+
+New MTD2A_binary_input functionality:
+-------------------------------------
+get_countingState  (); {TRUE | FALSE } // Get button (input bounce managed change) counting activation state (one loop)
+get_debounceTimeMS (); {globalDelayTimeMS - MAX_DEBOUNCE_MS} // Get bounce threshold time milliseconds
+set_debounceTimeMS (); {globalDelayTimeMS - MAX_DEBOUNCE_MS} // Get bounce threshold time milliseconds
+
+
+
+New MTD2A_binary_output functionality:
+--------------------------------------
+
+
+Function change:
+-------------
+set_inputState (bool setInputLowOrHigh, bool setPulseOrFixed) split up:
+1) set_inputMode  (bool setPulseOrFixed);
+2) set_inputState (bool setInputLowOrHigh); 
+
+New warning messages
+--------------------
+ERR_MAX_DEBOUNCE: "Time set to MAX_DEBOUNCE_MS"
