@@ -3,13 +3,13 @@
 // Examples are written for the Arduino Nano pinout (Nano family, Uno, Mega)
 // https://github.com/MTD2A/MTD2A/blob/main/doc/MTD2A_binary_input_english.pdf
 // Short DEMO: https://youtu.be/LPrWA3gDReY
-// Joergen Bo Madsen / September 2026 / https://github.com/jebmdk
+// Joergen Bo Madsen / UPDATE october 2026 / https://github.com/jebmdk
 
 #include <MTD2A.h>
 using namespace MTD2A_const;
 
 #define section 1
-// 1: Count number of push button debounce.
+// 1: Count number of push button bouncse.
 // 2: Arduino standard: Measure push button down time.
 // 3: MTD2A library:    Measure push button down time.
 // 4: Short, long and extra long button presses.
@@ -40,7 +40,7 @@ void setup() {
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
   pinMode(GREEN_BUTTON_PIN, INPUT_PULLUP);
   pinMode(RED_BUTTON_PIN, INPUT_PULLUP);
-  Serial.println (F("Count number of push button debounce."));
+  Serial.println (F("(1) Count number of push button bounces."));
 } // setup
 
 
@@ -84,7 +84,7 @@ void loop() {
 void setup() {
   Serial.begin(9600);
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
-  Serial.println (); Serial.println (F("Arduino standard: Measure green push button down time (minimum DEBOUNCE_MS)."));
+  Serial.println (); Serial.println (F("(2) Arduino standard: Measure green push button down time (minimum DEBOUNCE_MS)."));
   pinMode(GREEN_BUTTON_PIN, INPUT_PULLUP);
   // pinMode(RED_BUTTON_PIN, INPUT_PULLUP);
 } // setup
@@ -128,7 +128,7 @@ MTD2A_binary_output greenLED    ("Green LED");
 void setup() {
   Serial.begin(9600); 
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
-  Serial.println (); Serial.println (F("MTD2A library: Measure green push holding button down time."));
+  Serial.println (); Serial.println (F("(3) MTD2A library: Measure green push holding button down time."));
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
   greenButton.initialize (GREEN_BUTTON_PIN);  // Default: NORMAL & INPUT_PULLUP
   greenLED.initialize    (GREEN_LED_PIN);
@@ -138,7 +138,7 @@ void loop() {
   if (greenButton) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
     printCount++; 
     Serial.print (printCount); Serial.print (F("  Green button holding down milliseconds: ")); Serial.println (greenButton.get_activeTimeMS ());
-    if (greenLED.get_processState() == COMPLETE) { // Check if button is pressed before LED flash time is up
+    if (greenLED.get_processState() == COMPLETE) { // Check if button is pressed before LED blink time is up
       greenLED.set_outputTimeMS(greenButton.get_activeTimeMS ());
       greenLED.activate ();
     }
@@ -156,18 +156,25 @@ void loop() {
 
 MTD2A_binary_input  greenButton ("Green button", DEBOUNCE_MS, FIRST_TRIGGER, TIME_DELAY);
 MTD2A_binary_output greenLED    ("Green LED");
+MTD2A_binary_output redLED      ("Red LED", DELAY_10MS); // Blink 10 milliseconds
 
 void setup() {
   Serial.begin(9600); 
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
-  Serial.println (); Serial.println (F("MTD2A library: Short, long and extra long button presses."));
+  Serial.println (); Serial.println (F("(4) MTD2A library: Short, long and extra long button presses."));
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
   greenButton.initialize (GREEN_BUTTON_PIN);  // Default: NORMAL & INPUT_PULLUP
-  greenLED.initialize    (GREEN_LED_PIN);
+  greenLED.initialize    (GREEN_LED_PIN);  // Shows how many times the button has been pressed
+  redLED.initialize      (RED_LED_PIN);    // Show immediately button activation
 }
 
 void loop() {
   unsigned long activeTimeMS = 0;
+  // Show when button count is activated
+  if (greenButton.get_countingState () == true) {
+    redLED.activate (); // one loop = 10 milliseconds (DELAY_10MS).
+  }  
+  // 
   if (greenButton) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
     activeTimeMS = greenButton.get_activeTimeMS ();
     if (activeTimeMS > 50  && activeTimeMS <= 500) {  // DEBOUNCE_MS = 50
@@ -204,21 +211,28 @@ void loop() {
 MTD2A_binary_input greenButton ("Green button last press counter", 2000, LAST_TRIGGER, TIME_DELAY);
 //
 MTD2A_binary_output greenLED ("Green LED", 200, 200); // Blink cycle is 400 milliseconds
+MTD2A_binary_output redLED   ("Red LED", DELAY_10MS); // Blink 10 milliseconds
 
 void setup() {
   Serial.begin(9600); 
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
-  Serial.println (); Serial.println (F("MTD2A library: Count number of green button presses within 2 seconds and variations thereof.")); 
-  MTD2A::set_globalDelayTimeMS (DELAY_10MS); // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
+  Serial.println (); Serial.println (F("(5) MTD2A library: Count number of green button presses within 2 seconds and variations thereof.")); 
+  MTD2A::set_globalDelayTimeMS (DELAY_10MS);  // { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
   greenButton.initialize (GREEN_BUTTON_PIN);  // Default: NORMAL & INPUT_PULLUP
-  greenLED.initialize    (GREEN_LED_PIN);
+  greenLED.initialize    (GREEN_LED_PIN);  // Shows how many times the button has been pressed
+  redLED.initialize      (RED_LED_PIN);    // Show immediately button activation
 }
 
 void loop() {
+  // Show when button count is activated
+  if (greenButton.get_countingState () == true) {
+    redLED.activate (); // one loop = 10 milliseconds (DELAY_10MS).
+  }  
+  // 
   if (greenButton) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
     printCount++; 
     Serial.print (printCount); Serial.print (F("  Number of green button pressed: ")); Serial.println (greenButton.get_inputCount ());
-    if (greenLED.get_processState() == COMPLETE) { // Check if button is pressed before LED flash time is up
+    if (greenLED.get_processState() == COMPLETE) { // Check if button is pressed before LED blink time is up
       greenLED.set_loopActivate(ENABLE, greenButton.get_inputCount ());
       greenLED.activate ();  
     }
@@ -244,7 +258,7 @@ MTD2A_binary_output redLED      ("Green LED", 200, 200);
 void setup() {
   Serial.begin(9600); 
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
-  Serial.println (); Serial.println (F("MTD2A library: Count number of two button presses in parallel within 4 seconds.")); 
+  Serial.println (); Serial.println (F("(6) MTD2A library: Count number of two button presses in parallel within 4 seconds.")); 
   MTD2A::set_globalDelayTimeMS (DELAY_10MS); // Default: DELAY_10MS { DELAY_10MS | DELAY_5MS | DELAY_2MS | DELAY_1MS }
   greenButton.initialize (GREEN_BUTTON_PIN); // Default: NORMAL & INPUT_PULLUP
   redButton.initialize   (RED_BUTTON_PIN);
@@ -257,7 +271,7 @@ void loop() {
   if (greenButton) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
     printCount++; 
     Serial.print (printCount); Serial.print (F("  Number of green button pressed: ")); Serial.println (greenButton.get_inputCount ());
-    if (greenLED.get_processState() == COMPLETE) { // Check if button is pressed before LED flash time is up
+    if (greenLED.get_processState() == COMPLETE) { // Check if button is pressed before LED blink time is up
       greenLED.set_loopActivate(ENABLE, greenButton.get_inputCount ());
       greenLED.activate ();  
     }
@@ -266,7 +280,7 @@ void loop() {
   if (redButton) { // Equivalent to (get_phaseChange() == true  &&  get_phaseNumber() == COMPLETE_PHASE)
     printCount++; 
     Serial.print (printCount); Serial.print (F("  Number of red button  pressed: ")); Serial.println (redButton.get_inputCount ());
-    if (redLED.get_processState() == COMPLETE) { // Check if button is pressed before LED flash time is up
+    if (redLED.get_processState() == COMPLETE) { // Check if button is pressed before LED blink time is up
       redLED.set_loopActivate(ENABLE, redButton.get_inputCount ());
       redLED.activate ();  
     }
