@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.h
  * @author  Joergen Bo Madsen
- * @version 1.3.3
- * @date    26. september 2026
+ * @version 1.3.4
+ * @date    8.october 2026
  * @brief   Base class for common functions (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -94,7 +94,7 @@ class MTD2A  // base class
     static bool     globalErrorPrint;   // Error messaging
     static uint32_t globalSyncTimeUS;   // Synchronized reference time for all child objects
     static uint32_t globalSyncTimeMS;   // Synchronized reference time Milliseconds
-    static uint8_t  globalDelayTimeMS;  // Current loop delay time (DELAY_10MS, DELAY_5MS & DELAY_1MS)
+    static uint8_t  globalDelayTimeMS;  // Current loop delay time (DELAY_10MS, DELAY_5MS, DELAY_2MS & DELAY_1MS)
     static uint8_t  globalObjectCount;  // Number or instantiated objects (classes)
     // statistics
     static uint32_t elapsedLoopTimeUS;  // Last measured elapsed time

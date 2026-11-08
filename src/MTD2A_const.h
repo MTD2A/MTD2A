@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_const.h
  * @author  Joergen Bo Madsen
- * @version 1.3.3
- * @date    16. october 2026
+ * @version 1.3.4
+ * @date    8. october 2026
  * @brief   Global constants for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -65,7 +65,7 @@ namespace MTD2A_const {
   constexpr uint8_t  BEGIN_PHASE      = 1,  OUTPUT_PHASE    = 2,  END_PHASE      = 3; // binary_output
   constexpr uint8_t  COMPLETE_PHASE   = 4;
   // Button default timing
-  constexpr uint8_t  DEBOUNCE_MS      = 50;
+  constexpr uint8_t  DEBOUNCE_MS      = 50, MAX_DEBOUNCE_MS = 65;
   constexpr uint16_t SHORT_PRESS_MS   = 200;
   constexpr uint16_t LONG_PRESS_MS    = 1000;
 
@@ -109,6 +109,7 @@ namespace MTD2A_const {
   constexpr uint8_t  ERR_TIMER_NOT_IN_USE  =  18;  // Must be ACTIVE and timer configured (> 0)
   constexpr uint8_t  ERR_ALREADY_INIT      =  19;  // Already initialized
   constexpr uint8_t  ERR_OBJECT_INSTANT    =  20;  // Header line: object instantiation error/warning
+  constexpr uint8_t  ERR_MAX_DEBOUNCE      =  21;  // Time set to MAX_DEBOUNCE_MS 
 
   // Warning numbers {128-255} ----------------------------------------
   constexpr uint8_t  WARN_DIGITAL_NO_CHECK = 128;  // Digital pin check not possible

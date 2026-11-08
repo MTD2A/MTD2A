@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_input.h
  * @author  Joergen Bo Madsen
- * @version 1.3.5
- * @date    20. september 2026
+ * @version 1.3.6
+ * @date    8. august 2026
  * @brief   Abstract Class for MTD2A (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -66,7 +66,8 @@ class MTD2A_binary_input: public MTD2A
     static constexpr uint8_t  BLOCKING_PHASE   {MTD2A_const::BLOCKING_PHASE};
     static constexpr uint8_t  COMPLETE_PHASE   {MTD2A_const::COMPLETE_PHASE};
     // Button control
-    static constexpr uint32_t DEBOUNCE_US      {static_cast<uint32_t>(MTD2A_const::DEBOUNCE_MS) * MS_to_US};
+    static constexpr uint32_t DEBOUNCE_MS      {MTD2A_const::DEBOUNCE_MS};
+    static constexpr uint32_t MAX_DEBOUNCE_MS  {MTD2A_const::MAX_DEBOUNCE_MS};  
     
     // Arguments
     char    *objectName      {nullptr};        // Constructor initialized (User defined name to display identification)
@@ -79,7 +80,7 @@ class MTD2A_binary_input: public MTD2A
     uint8_t  pinType         {INPUT_PULLUP};   // initialize () default argument. Open collector or switch to ground (LOW)
     bool     pinReadToggl    {DISABLE};        // initialize () default argument / ENABLE
     bool     pinReadMode     {NORMAL};         // initialize () and set_PinReadMode () default argument / INVERTED
-    bool     inputMode       {PULSE};          // set_InputState () default argument / FIXED
+    bool     inputMode       {PULSE};          // set_InputMode () default argument / FIXED
     // Debug and error
     bool     debugPrint      {DISABLE};        // set_debugPrint () default argument / ENABLE
     bool     errorPrint      {DISABLE};        // set_errorPrint () default argument / ENABLE
@@ -95,10 +96,12 @@ class MTD2A_binary_input: public MTD2A
     // Timer process stop
     bool     stopDelayTimer  {DISABLE};        // stop first or last timer process and go to next phase
     bool     stopBlockTimer  {DISABLE};        // stop blocking timer process and go to next phase
-    // Button control
-    bool     countState      {false};          // Start counting process and wait DEBOUNCE_MS milliseconds before counting.
+    // Button and input change control
+    uint16_t debounceTimeUS  {DEBOUNCE_MS * MS_to_US}; // {MIN_DEBOUNC_MS - MAX_DEBOUNCE_MS} milliseconds
+    bool     countingState   {false};          // Button (input change) counting activation state
+    bool     bounceCheck     {false};          // Start counting process and wait debouncTimeUS milliseconds before counting.
     uint8_t  inputCount      {0};              // Count the number of times a button is pressed (input is LOW (or INVERTED HIGH)
-    uint32_t countTimeUS     {0UL};            // Check if the DEBOUNCE_MS time has elapsed
+    uint32_t countTimeUS     {0UL};            // Check if the debouncTimeUS time has elapsed
     // State control
     bool     inputState      {HIGH};           // set_inputState () / LOW (manual program trigger)
     bool     pinState        {HIGH};           // get_pinState () / LOW (trigger)
@@ -211,12 +214,21 @@ class MTD2A_binary_input: public MTD2A
 
 
     /**
-     * @brief Set input state and set input mode.
+     * @brief Set input mode.
+     * @name object_name.set_inputMode
+     * @param ( PULSE | FIXED );
+     * @return none
+     */
+    void set_inputMode (bool setPulseOrFixed = PULSE);
+
+
+    /**
+     * @brief Set input state
      * @name object_name.set_inputState
      * @param ( HIGH | LOW, PULSE | FIXED );
      * @return none
      */
-    void set_inputState (bool setInputLowOrHigh = LOW, bool setPulseOrFixed = PULSE);
+    void set_inputState (bool setInputLowOrHigh = LOW);
 
     
     /**
@@ -245,6 +257,7 @@ class MTD2A_binary_input: public MTD2A
      */
     void set_stopDelayTimer ();
 
+    
     /**
      * @brief stop blocking timer process immediately and continue to next phase.
      * @name object_name.set_stopBlockTimer
@@ -252,6 +265,15 @@ class MTD2A_binary_input: public MTD2A
      * @return none
      */
     void set_stopBlockTimer ();
+
+
+    /**
+     * @brief Set bounce threshold time milliseconds
+     * @name object_name.set_debounceTimeMS ();
+     * @param  ( globalDelayTimeMS - MAX_DEBOUNCE_MS );
+     * @return none
+    */
+    void set_debounceTimeMS (uint8_t setDelayTimeMS = DEBOUNCE_MS);
 
 
     /**
@@ -348,15 +370,33 @@ class MTD2A_binary_input: public MTD2A
 
 
     /**
-     * @brief Get number of valid button presses during the ACTIVE period.
-     * @details A press is valid if the input is still activated DEBOUNCE_MS after the falling edge.
+     * @brief Get number of valid button presses (input changes) during the ACTIVE period.
+     * @details A press is valid if the input is still activated debouncTimeUS after the falling edge.
      *          0 = cycle triggered, but no valid press (noise or too short press). Max 255.
-     *          delayTimeMS < DEBOUNCE_MS: always 1 (no debouncing check).
+     *          delayTimeMS < debouncTimeUS: always 1 (no debouncing check).
      * @name object_name.get_inputCount ();
      * @param none
      * @return uint8_t Count {0 - 255}
      */
     uint8_t get_inputCount () const;
+
+
+    /**
+     * @brief Get button (input bounce change) counting activation state
+     * @name object_name.get_countingState ();
+     * @param none
+     * @return bool {HIGH | LOW}
+    */
+    bool get_countingState () const;
+
+
+    /**
+     * @brief Get bounce managed threshold time milliseconds
+     * @name object_name.get_debounceTimeMS ();
+     * @param none
+     * @return uint_8 {globalDelayTimeMS - MAX_DEBOUNCE_MS}
+    */
+    uint8_t get_debounceTimeMS () const;
 
     
     /**

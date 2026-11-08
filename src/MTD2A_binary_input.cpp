@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_binary_input.cpp
  * @author  Joergen Bo Madsen
- * @version 1.3.5
- * @date    20. september 2026
+ * @version 1.3.6
+ * @date    8. october 2026
  * @brief   Functions for MTD2A_binary_input.h (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -152,9 +152,13 @@ void MTD2A_binary_input::set_pinReadMode (bool setPinNormalOrInverted) {
 } // set_pinReadMode
 
 
-void MTD2A_binary_input::set_inputState (bool setInputLowOrHigh, bool setPulseOrFixed) {
-  inputState = setInputLowOrHigh;
+void MTD2A_binary_input::set_inputMode (bool setPulseOrFixed) {
   inputMode = setPulseOrFixed;
+} // set_inputMode
+
+
+void MTD2A_binary_input::set_inputState (bool setInputLowOrHigh) {
+  inputState = setInputLowOrHigh;
 } // set_inputState
 
 
@@ -199,6 +203,26 @@ void MTD2A_binary_input::set_stopBlockTimer () {
     print_error_text (ERR_TIMER_NOT_IN_USE);
   }
 } // set_stopBlockTimer
+
+
+void MTD2A_binary_input::set_debounceTimeMS (uint8_t setDebounceTimeMS) {
+  if (processState == COMPLETE) {
+    if (setDebounceTimeMS < globalDelayTimeMS) {
+      print_error_text (ERR_TIME_BELOW_DELAY);
+      debounceTimeUS = globalDelayTimeMS * MS_to_US;
+    }
+    else if (setDebounceTimeMS > MAX_DEBOUNCE_MS) {
+      print_error_text (ERR_MAX_DEBOUNCE);
+      debounceTimeUS = MAX_DEBOUNCE_MS * MS_to_US;
+    }
+    else {
+      debounceTimeUS = setDebounceTimeMS * MS_to_US;
+    }
+  } 
+  else {
+    print_error_text (ERR_NOT_COMPLETE);
+  }
+}
 
 
 void MTD2A_binary_input::set_debugPrint (bool setEnableOrDisable) {
@@ -260,6 +284,16 @@ uint8_t MTD2A_binary_input::get_inputCount () const {
 }
 
 
+bool MTD2A_binary_input::get_countingState () const {
+  return countingState;
+}
+
+
+uint8_t MTD2A_binary_input::get_debounceTimeMS () const {
+  return debounceTimeUS / MS_to_US;
+}
+
+
 bool MTD2A_binary_input::get_inputGoLow () const {
   return inputGoLow;
 }
@@ -286,7 +320,8 @@ uint8_t MTD2A_binary_input::get_reset_error () {
 
 
 void MTD2A_binary_input::loop_fast () {
-  phaseChange = false;
+  phaseChange    = false;
+  countingState  = false;
   loop_fast_input ();
   if (pinBlockState == ENABLE) {
     // BLOCKING_PHASE short-circuit: poll block expiry every loop and ignore all
@@ -336,7 +371,8 @@ void MTD2A_binary_input::loop_fast_binary () {
       begin_state ();
     }
     if (processState == ACTIVE) {
-      inputCount = 1;
+      inputCount    = 1;
+      countingState = true;
     }
   }
   //
@@ -395,42 +431,44 @@ void MTD2A_binary_input::loop_fast_last () {
 
 
 void MTD2A_binary_input::begin_input_count () {
-  // Counting after DEBOUNCE_MS milliseconds ensures stability, noise cancellation and rejection of unrealistically fast switching.
+  // Counting after debounceTimeUS milliseconds ensures stability, noise cancellation and rejection of unrealistically fast switching.
   // If it is necessary to detect rapid switching, optical buttons and switches can be used.
-  if (delayTimeUS >= DEBOUNCE_US) {
-    if (!countState) {  // edge during debounce window: ignore
-      countState  = true;
+  if (delayTimeUS >= debounceTimeUS) {
+    if (bounceCheck == false) {  // edge during debounce window: ignore
+      bounceCheck  = true;
       countTimeUS = globalSyncTimeUS;
     }
   }
   else {
-    countState = false;
-    inputCount = 1;
+    bounceCheck   = false;
+    countingState = true;
+    inputCount    = 1;
   }
 }  // button_count_begin
 
 
 void MTD2A_binary_input::timer_input_count () {
-  // In MONO_STABLE a press within the last DEBOUNCE_MS of the delay is not counted."
-  if (countState) {
-    if ((globalSyncTimeUS - countTimeUS) >= DEBOUNCE_US) {
+  // In MONO_STABLE a press within the last debounceTimeUS of the delay is not counted.
+  if (bounceCheck) {
+    if ((globalSyncTimeUS - countTimeUS) >= debounceTimeUS) {
       if (currentState == LOW) {
         if (inputCount < UINT8_MAX) inputCount++;
+          countingState = true;
       }
-      countState = false;
+      bounceCheck = false;
     }
   }
 } // timer_input_count
 
 
 void MTD2A_binary_input::begin_state () {
-  processState = ACTIVE;
-  firstTimeUS  = globalSyncTimeUS;
-  lastTimeUS   = firstTimeUS;
-  inputCount   = 0;
-  countState   = false;
-  phaseChange  = true;
-  phaseNumber  = FIRST_TIME_PHASE;
+  processState  = ACTIVE;
+  firstTimeUS   = globalSyncTimeUS;
+  lastTimeUS    = firstTimeUS;
+  bounceCheck   = false;
+  inputCount    = 0;
+  phaseChange   = true;
+  phaseNumber   = FIRST_TIME_PHASE;
   print_phase_line ();
 } // begin_state
 
@@ -463,7 +501,8 @@ void MTD2A_binary_input::complete_state () {
   stopDelayTimer = DISABLE;   // discard unconsumed stop requests -
   stopBlockTimer = DISABLE;   // they must not leak into the next cycle
   endTimeUS      = globalSyncTimeUS;
-  countState     = false;
+  countingState  = false;
+  bounceCheck    = false;
   phaseChange    = true;
   processState   = COMPLETE;
   phaseNumber    = COMPLETE_PHASE;
@@ -485,8 +524,9 @@ void MTD2A_binary_input::reset () {
   firstTimeUS    = 0;
   lastTimeUS     = 0;
   endTimeUS      = 0;
+  countingState  = false;
+  bounceCheck    = false;
   inputCount     = 0;
-  countState     = false;
   countTimeUS    = 0;
   blockTimeUS    = 0;
   errorNumber    = 0;

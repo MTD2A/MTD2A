@@ -2,8 +2,8 @@
  ******************************************************************************
  * @file    MTD2A_base.cpp
  * @author  Joergen Bo Madsen
- * @version 1.3.3
- * @date    26. september 2026
+ * @version 1.3.4
+ * @date    8. october 2026
  * @brief   Base class for common functions (Model Train Detection And Action)
  * 
  * MTD2A is a collection of user friendly advanced and functional C++ classes - 
@@ -613,8 +613,8 @@ void MTD2A::MTD2A_print_error_text
       case ERR_TONE_PWM_CONFLICT:  PortPrintln (F("tone() conflicts with PWM pin"));         break;
       case ERR_NO_INT_SUPPORT:     PortPrintln (F("Pin does not support interrupt"));        break;
       case ERR_INPUT_TYPE:         PortPrintln (F("Must be INPUT or INPUT_PULLUP"));         break;
-      case ERR_TIME_BELOW_DELAY:   PortPrint   (F("Timer set to globalDelayTimeMS = ")); PortPrintln (globalDelayTimeMS); break;
-      case ERR_TIME_ABOVE_MAX:     PortPrint   (F("Timer set to MAX_TIME_MS = "));       PortPrintln (MAX_TIME_MS); break;
+      case ERR_TIME_BELOW_DELAY:   PortPrint   (F("Time set to globalDelayTimeMS = ")); PortPrintln (globalDelayTimeMS); break;
+      case ERR_TIME_ABOVE_MAX:     PortPrint   (F("Time set to MAX_TIME_MS = "));       PortPrintln (MAX_TIME_MS); break;
       case ERR_PIN_WRITE_DISABLED: PortPrintln (F("Pin write is disabled"));                 break;
       case ERR_NOT_COMPLETE:       PortPrintln (F("Process state must be COMPLETE"));        break;
       case ERR_STOP_OR_RESET:      PortPrintln (F("Select STOP_TIMER or RESET_TIMER"));      break;
@@ -625,6 +625,7 @@ void MTD2A::MTD2A_print_error_text
       case ERR_TIMER_NOT_IN_USE:   PortPrintln (F("Must be ACTIVE and timer configured"));   break;
       case ERR_ALREADY_INIT:       PortPrintln (F("Already initialized"));                   break;
       case ERR_OBJECT_INSTANT:     PortPrintln (F("Object instantiation error / warning"));  break;
+      case ERR_MAX_DEBOUNCE:       PortPrint   (F("Time set to MAX_DEBOUNCE_MS = "));  PortPrintln (MAX_DEBOUNCE_MS); break;
 
       // Warnings {128-255}
       case WARN_DIGITAL_NO_CHECK:  PortPrintln (F("Digital Pin check not possible"));        break;
