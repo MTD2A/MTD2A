@@ -1,11 +1,11 @@
 /*
 Rotary encoder with and without MTD2A. 
-Using KY-040 Specific incremental, quadrature og releative encoder.
+Using KY-040 Specific incremental, quadrature and relative encoder.
   Uses two pulsed output signals and one signal from the puch button.
   20 steps (detents) pr. 360 degrees revolution, builtin push button switch, 
   5 volts, 10 KΩ on board pull-up resistors for Clock. Some versions lave the Switch resistor unpopulated.
   2 bit gray code: Two digital outputs, four states and only one bit changes at each step
-the contacts are mechanical and bounce. A state-table decoder like #7 below handles this, 
+The contacts are mechanical and bounce. A state-table decoder like #7 and #8 below handles this, 
 because a bounce just steps back and forth between two neighbouring states and cancels itself out.
 Two LEDs: Green and Red shows PN status or encoding output status
 The push button switch is connected to passive buzzer and the frequency is controlled by tone()
@@ -71,7 +71,7 @@ void setup() {
   Serial.begin(9600);
   while (!Serial) { delay(10); } // ESP32 Serial Monitor ready delay
 
-  Serial.println (F("Count number bounces (Twice is corret: falling edge and rising edge)."));
+  Serial.println (F("Count number bounces (Twice is correct: falling edge and rising edge)."));
   Serial.println (F("Turn/press the knob one step only and waith for the result on the monitor. Start over"));
   #if   section == 1
     Serial.println (F("(1) CLK (clock) test."));
@@ -238,7 +238,7 @@ void loop() {
   // Read the current state of inputCLK
   currentCLKstate = digitalRead(ROTARY_CLK_PIN);
   
-  // If the previous and the current state of the inputCLK are different then a pulse has occured
+  // If the previous and the current state of the inputCLK are different then a pulse has occurred
   if (currentCLKstate != previousCLKstate  &&  currentCLKstate == COUNT_STATE) { 
     // If the inputDT state is different than the inputCLK state then 
     if (digitalRead(ROTARY_DT_PIN) != currentCLKstate) { 
@@ -329,7 +329,7 @@ void loop() {
   // Read the current state of inputCLK
    currentCLKstate = rotaryCLK.get_pinState ();
 
-  // If the previous and the current state of the inputCLK are different then a pulse has occured
+  // If the previous and the current state of the inputCLK are different then a pulse has occurred
   if (currentCLKstate != previousCLKstate  &&  currentCLKstate == COUNT_STATE) {
  
     // If the inputDT state is different than the inputCLK state then 
